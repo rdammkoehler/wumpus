@@ -63,4 +63,9 @@ class Room {
     public int hashCode() {
         return instanceNumber;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        return hashCode()==o.hashCode();
+    }
 }

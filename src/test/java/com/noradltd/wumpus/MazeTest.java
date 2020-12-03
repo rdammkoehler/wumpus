@@ -10,7 +10,8 @@ import static org.hamcrest.Matchers.is;
 public class MazeTest {
     @Test
     public void testMazeDefaultsTo20Rooms() {
-        MazeBuilder.Maze maze = MazeBuilder.build();
+        MazeBuilder.Maze maze = MazeBuilder.build(new String[]{"--reporting", "HUMAN"});
+        System.out.println(maze);
         assertThat(countRooms(maze.firstRoom()), is(equalTo(20)));
     }
 }
