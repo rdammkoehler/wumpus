@@ -1,0 +1,7 @@
+.DS_Store
+.idea/
+target/
+wumpus.iml
+
+neato.gv
+test_maze.png
