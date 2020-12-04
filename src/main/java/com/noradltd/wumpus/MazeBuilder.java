@@ -10,7 +10,7 @@ interface Maze {
 class MazeBuilder {
     static class MazeStruct implements Maze {
         private Room currentRoom;
-        private Set<Room> rooms;
+        private final Set<Room> rooms;
 
         private MazeStruct(Set<Room> rooms) {
             this.rooms = rooms;
@@ -35,7 +35,7 @@ class MazeBuilder {
 
     private static final Random random = new Random(0);
 
-    private Set<Room> rooms = new HashSet<Room>();
+    private final Set<Room> rooms = new HashSet<>();
 
     private MazeBuilder() {
     }
@@ -67,7 +67,7 @@ class MazeBuilder {
 
     private Stream<Integer> randomLengthIntegerStream(Integer upperBound) {
         Integer number = random.nextInt(upperBound - 1) + 1;
-        return Arrays.asList(new Integer[number]).stream();
+        return Arrays.stream(new Integer[number]);
     }
 
     private void addExit(Room room, boolean forceLinking) {
@@ -84,7 +84,8 @@ class MazeBuilder {
 
     private void linkExit(Room room) {
         Room exit;
-        for (exit = room; exit == room; exit = getRandomRoom(rooms)) ;
+        for (exit = room; exit == room; exit = getRandomRoom(rooms)) {
+        }
         room.add(exit);
     }
 
