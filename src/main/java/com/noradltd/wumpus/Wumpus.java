@@ -10,7 +10,7 @@ class Wumpus extends Occupier implements Room.Occupant {
     }
 
     public Wumpus flee() {
-        Room exitRoom = room.exits().get(new Random().nextInt(room.exits().size()));
+        Room exitRoom = getRoom().exits().get(new Random().nextInt(getRoom().exits().size()));
         moveTo(exitRoom);
         return this;
     }

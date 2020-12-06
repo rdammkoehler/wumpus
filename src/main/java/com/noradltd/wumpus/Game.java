@@ -45,22 +45,24 @@ class Game {
         }
     }
 
-    private final Room firstRoom;
     private Hunter hunter = new Hunter();
+    private Maze maze;
 
     Game() {
-        firstRoom = new Room();
-        firstRoom.add(new Room());
-        hunter.moveTo(firstRoom);
+        maze = MazeBuilder.build(new String[] {});
+        hunter().moveTo(maze.entrance());
         System.out.println(this.describe());
     }
-    public Hunter hunter() { return hunter; }
 
-    public Room firstRoom() {
-        return firstRoom;
+    public Maze maze() {
+        return maze;
+    }
+
+    public Hunter hunter() {
+        return hunter;
     }
 
     public String describe() {
-        return new Game.RoomDescriber(firstRoom).description();
+        return new Game.RoomDescriber(hunter.getRoom()).description();
     }
 }

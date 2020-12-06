@@ -47,17 +47,17 @@ public class GameSteps {
 
     @Then("^the hunter is in the first room$")
     public void the_hunter_is_in_the_first_room() throws Throwable {
-        assertThat(game.firstRoom().occupants().contains(game.hunter()), is(true));
+        assertThat(game.maze().entrance().occupants().contains(game.hunter()), is(true));
     }
 
     @Then("the hunter can move through the first exit")
     public void the_hunter_can_move_through_the_first_exit() {
-        game.hunter().moveTo(game.firstRoom().exits().get(0));
+        game.hunter().moveTo(game.maze().entrance().exits().get(0));
     }
 
 
     @Then("the first room is empty")
     public void the_first_room_is_empty() {
-        assertThat(game.firstRoom().occupants(), is(empty()));
+        assertThat(game.maze().entrance().occupants(), is(empty()));
     }
 }

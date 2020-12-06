@@ -1,7 +1,11 @@
 package com.noradltd.wumpus;
 
 class Occupier implements Room.Occupant {
-    protected Room room;
+    private Room room;
+
+    public Room getRoom() {
+        return room;
+    }
 
     public void moveTo(Room newRoom) {
         if (room != null ) {
