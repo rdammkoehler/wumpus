@@ -13,7 +13,6 @@ class Game {
         private String describe(Occupant occupant) {
             StringBuilder sb = new StringBuilder();
             String occupantName = occupant.getClass().getSimpleName();
-            // plural?
             sb.append("a ");
             sb.append(occupantName);
             return sb.toString();
@@ -21,15 +20,12 @@ class Game {
 
         public String description() {
             StringBuilder sb = new StringBuilder();
-            sb.append("Has exits ");
-            boolean comma = false;
-            for (Room exit : room.exits()) {
-                if (comma) {
-                    sb.append(',');
-                }
-                sb.append(exit.number());
-                comma = true;
-            }
+            describeExits(sb);
+            describeOccupants(sb);
+            return sb.toString();
+        }
+
+        private void describeOccupants(StringBuilder sb) {
             if (room.occupants().size() > 0) {
                 sb.append("\nContains ");
                 boolean and = false;
@@ -41,15 +37,26 @@ class Game {
                     and = true;
                 }
             }
-            return sb.toString();
+        }
+
+        private void describeExits(StringBuilder sb) {
+            sb.append("Has exits ");
+            boolean comma = false;
+            for (Room exit : room.exits()) {
+                if (comma) {
+                    sb.append(',');
+                }
+                sb.append(exit.number());
+                comma = true;
+            }
         }
     }
 
     private Hunter hunter = new Hunter();
     private Maze maze;
 
-    Game() {
-        maze = MazeBuilder.build(new String[] {});
+    Game(String[] options) {
+        maze = MazeBuilder.build(options);
         hunter().moveTo(maze.entrance());
         System.out.println(this.describe());
     }

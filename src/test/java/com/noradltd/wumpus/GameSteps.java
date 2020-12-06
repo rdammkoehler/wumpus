@@ -13,7 +13,7 @@ import static org.hamcrest.Matchers.*;
 
 
 public class GameSteps {
-    ByteArrayOutputStream stdout = new ByteArrayOutputStream();
+    ByteArrayOutputStream stdout;
     Game game;
 
     @After
@@ -36,7 +36,7 @@ public class GameSteps {
                 return instanceCounter++;
             }
         };
-        game = new Game();
+        game = new Game(new String[] {});
     }
 
     @Then("^the first room is described as \"([^\"]*)\"$")
