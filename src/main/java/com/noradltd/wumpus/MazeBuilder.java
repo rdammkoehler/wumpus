@@ -41,7 +41,7 @@ class MazeBuilder {
                 Set<Room> rooms = roomsOf(maze.entrance());
                 StringBuilder sb = new StringBuilder();
                 for (Room room : rooms) {
-                    sb.append("Room ").append(room.hashCode()).append(": ");
+                    sb.append("Room ").append(room.number()).append(": ");
                     sb.append(new Game.RoomDescriber(room).description()).append("\n*****\n");
                 }
                 return sb.toString();
@@ -56,8 +56,8 @@ class MazeBuilder {
                 Set<Integer> bookKeeper = new HashSet<>();
                 for (Room room : rooms) {
                     for (Room exit : room.exits()) {
-                        if(!bookKeeper.contains(room.hashCode())) {
-                            sb.append("\t").append(room.hashCode()).append(" -> ").append(exit.hashCode()).append(";\n");
+                        if(!bookKeeper.contains(room.number())) {
+                            sb.append("\t").append(room.number()).append(" -> ").append(exit.hashCode()).append(";\n");
                             bookKeeper.add(exit.hashCode());
                         }
                     }
@@ -75,8 +75,8 @@ class MazeBuilder {
                 Set<Integer> bookKeeper = new HashSet<>();
                 for (Room room : rooms) {
                     for (Room exit : room.exits()) {
-                        if (!bookKeeper.contains(room.hashCode())) {
-                            sb.append("\t").append(room.hashCode()).append(" -- ").append(exit.hashCode()).append(";\n");
+                        if (!bookKeeper.contains(room.number())) {
+                            sb.append("\t").append(room.number()).append(" -- ").append(exit.hashCode()).append(";\n");
                             bookKeeper.add(exit.hashCode());
                         }
                     }
