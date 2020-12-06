@@ -1,43 +1,200 @@
 package com.noradltd.wumpus;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 interface Maze {
-    Room currentRoom();
+    Room entrance();
 }
 
 class MazeBuilder {
     static class MazeStruct implements Maze {
-        private Room currentRoom;
+        private final Room entrance;
         private final Set<Room> rooms;
+        private final Stringifier stringifier;
 
-        private MazeStruct(Set<Room> rooms) {
+        private MazeStruct(Set<Room> rooms, Stringifier stringifier) {
             this.rooms = rooms;
+            this.stringifier = stringifier;
             // todo make sure the room is empty!
-            currentRoom = getRandomRoom(rooms);
+            entrance = getRandomRoom(rooms);
         }
 
-        public Room currentRoom() {
-            return currentRoom;
+        public Room entrance() {
+            return entrance;
         }
 
         @Override
         public String toString() {
-            StringBuilder sb = new StringBuilder();
-            for (Room room : rooms) {
-                sb.append("Room ").append(room.hashCode()).append(": ");
-                sb.append(new Game.RoomDescriber(room).description()).append("\n*****\n");
+            return stringifier.stringify(this);
+        }
+    }
+
+    enum Stringifier {
+        HUMAN {
+            @Override
+            String stringify(Maze maze) {
+                Set<Room> rooms = roomsOf(maze.entrance());
+                StringBuilder sb = new StringBuilder();
+                for (Room room : rooms) {
+                    sb.append("Room ").append(room.hashCode()).append(": ");
+                    sb.append(new Game.RoomDescriber(room).description()).append("\n*****\n");
+                }
+                return sb.toString();
             }
+        },
+        DOT {
+            @Override
+            String stringify(Maze maze) {
+                Set<Room> rooms = roomsOf(maze.entrance());
+                StringBuilder sb = new StringBuilder();
+                sb.append("digraph G {\n");
+                Set<Integer> bookKeeper = new HashSet<>();
+                for (Room room : rooms) {
+                    for (Room exit : room.exits()) {
+                        if(!bookKeeper.contains(room.hashCode())) {
+                            sb.append("\t").append(room.hashCode()).append(" -> ").append(exit.hashCode()).append(";\n");
+                            bookKeeper.add(exit.hashCode());
+                        }
+                    }
+                }
+                sb.append("}\n");
+                return sb.toString();
+            }
+        },
+        NEATO {
+            @Override
+            String stringify(Maze maze) {
+                Set<Room> rooms = roomsOf(maze.entrance());
+                StringBuilder sb = new StringBuilder();
+                sb.append("graph G {\n");
+                Set<Integer> bookKeeper = new HashSet<>();
+                for (Room room : rooms) {
+                    for (Room exit : room.exits()) {
+                        if (!bookKeeper.contains(room.hashCode())) {
+                            sb.append("\t").append(room.hashCode()).append(" -- ").append(exit.hashCode()).append(";\n");
+                            bookKeeper.add(exit.hashCode());
+                        }
+                    }
+                }
+                sb.append("}\n");
+                return sb.toString();
+            }
+        };
+
+        private static Set<Room> roomsOf(Room room) {
+            class MazeRunner {
+                Set<Room> findAll(Room room, Set<Room> rooms) {
+                    rooms.add(room);
+                    for (Room exit : room.exits()) {
+                        if (!rooms.contains(exit)) {
+                            rooms.addAll(findAll(exit, rooms));
+                        }
+                    }
+                    return rooms;
+                }
+            }
+            return new MazeRunner().findAll(room, new HashSet<>());
+        }
+
+        abstract String stringify(Maze maze);
+    }
+
+    static class Options {
+        private static final Map<String, String> optionNameAttrMap = new HashMap<>() {{
+            put("rooms", "roomCount");
+            put("seed", "randomSeed");
+            put("format", "displayFormat");
+        }};
+        private static final Options DEFAULT = new Options();
+        private Integer roomCount = 20;
+        private Long randomSeed = null;
+        private Stringifier displayFormat = Stringifier.HUMAN;
+
+        private Options() {
+        }
+
+        Options(String[] options) {
+            if (isHelpRequested(options)) {
+                printHelp();
+            } else {
+                processOptions(options);
+            }
+        }
+
+        private void processOptions(String[] options) {
+            for (int optionIdx = 0; optionIdx < options.length - 1; optionIdx += 2) {
+                String optionName = options[optionIdx].substring(2);
+                String attrName = optionNameAttrMap.getOrDefault(optionName, null);
+                if (attrName != null) {
+                    String optionValue = options[optionIdx + 1].toUpperCase();
+                    setOptionValue(attrName, optionValue);
+                }
+            }
+        }
+
+        private void setOptionValue(String attrName, String optionValue) {
+            try {
+                Field field = this.getClass().getDeclaredField(attrName);
+                Method valueOf = field.getType().getMethod("valueOf", String.class);
+                field.set(this, valueOf.invoke(null, optionValue));
+            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | NoSuchFieldException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+
+        private void printHelp() {
+            System.out.println("\t--rooms #\t\tLimit the number or rooms\n" +
+                    "\t--seed  #\t\tSet the Randomizer seed\n" +
+                    "\t--format $\t\tSet the output format (human, dot, neato)");
+        }
+
+        private boolean isHelpRequested(String[] options) {
+            return Arrays.asList(options).contains("--help");
+        }
+
+        public Integer getRoomCount() {
+            return roomCount;
+        }
+
+        public boolean hasRandomSeed() {
+            return randomSeed != null;
+        }
+
+        public Long getRandomSeed() {
+            return randomSeed;
+        }
+
+        public Stringifier getDisplayFormat() {
+            return displayFormat;
+        }
+
+        @Override
+        public String toString() {
+            final StringBuilder sb = new StringBuilder("Options{");
+            sb.append("roomCount=").append(roomCount);
+            sb.append(", randomSeed=").append(randomSeed);
+            sb.append(", displayFormat=").append(displayFormat);
+            sb.append('}');
             return sb.toString();
         }
     }
 
-    private static final Random random = new Random(0);
-
+    private static Random random = new Random();
     private final Set<Room> rooms = new HashSet<>();
+    private final MazeBuilder.Options options;
 
-    private MazeBuilder() {
+    private MazeBuilder(MazeBuilder.Options options) {
+        this.options = options;
+        if (options.hasRandomSeed()) {
+            random = new Random(options.getRandomSeed());
+        } else {
+            random = new Random(0); // todo consider removing the seed here
+        }
     }
 
     private Set<Room> createRooms() {
@@ -84,8 +241,7 @@ class MazeBuilder {
 
     private void linkExit(Room room) {
         Room exit;
-        for (exit = room; exit == room; exit = getRandomRoom(rooms)) {
-        }
+        for (exit = room; exit == room; exit = getRandomRoom(rooms)) ;
         room.add(exit);
     }
 
@@ -98,7 +254,7 @@ class MazeBuilder {
     }
 
     private boolean hasEnoughRooms() {
-        return rooms.size() > 19;
+        return rooms.size() > options.getRoomCount() - 1;
     }
 
     private boolean needsMoreExits(Room room) {
@@ -106,10 +262,14 @@ class MazeBuilder {
     }
 
     private Maze buildMaze() {
-        return new MazeStruct(createRooms());
+        return new MazeStruct(createRooms(), options.getDisplayFormat());
     }
 
     static Maze build() {
-        return new MazeBuilder().buildMaze();
+        return new MazeBuilder(MazeBuilder.Options.DEFAULT).buildMaze();
+    }
+
+    static Maze build(String[] options) {
+        return new MazeBuilder(new MazeBuilder.Options(options)).buildMaze();
     }
 }

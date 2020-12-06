@@ -13,7 +13,7 @@ public class MazeSteps {
 
     @Given("a new Maze")
     public void aNewMaze() {
-        firstRoom = MazeBuilder.build().currentRoom();
+        firstRoom = MazeBuilder.build().entrance();
     }
 
     @Then("there are {int} rooms")
