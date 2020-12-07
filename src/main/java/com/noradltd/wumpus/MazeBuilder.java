@@ -4,7 +4,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 interface Maze {
@@ -56,7 +55,7 @@ class MazeBuilder {
                 Set<Integer> bookKeeper = new HashSet<>();
                 for (Room room : rooms) {
                     for (Room exit : room.exits()) {
-                        if(!bookKeeper.contains(room.number())) {
+                        if (!bookKeeper.contains(room.number())) {
                             sb.append("\t").append(room.number()).append(" -> ").append(exit.hashCode()).append(";\n");
                             bookKeeper.add(exit.hashCode());
                         }
@@ -184,16 +183,15 @@ class MazeBuilder {
         }
     }
 
-    private static Random random = new Random();
+    private static Random random = Random.getRandomizer();
     private final Set<Room> rooms = new HashSet<>();
     private final MazeBuilder.Options options;
 
     private MazeBuilder(MazeBuilder.Options options) {
         this.options = options;
+        random = Random.getRandomizer();
         if (options.hasRandomSeed()) {
-            random = new Random(options.getRandomSeed());
-        } else {
-            random = new Random(0); // todo consider removing the seed here
+            random.setSeed(options.getRandomSeed());
         }
     }
 

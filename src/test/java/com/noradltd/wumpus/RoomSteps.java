@@ -5,7 +5,7 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 
-import static com.noradltd.wumpus.Helpers.reinterpolatEscapedCharacters;
+import static com.noradltd.wumpus.Helpers.reInterpolateEscapedCharacters;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
@@ -26,7 +26,7 @@ public class RoomSteps {
     @When("^the hunter enters the room$")
     public void theHunterEntersTheRoom() {
         hunter = new Hunter();
-        room.add(hunter);
+        hunter.moveTo(room);
     }
 
     @Then("^the room describes itself$")
@@ -38,12 +38,12 @@ public class RoomSteps {
     public void aRoomWithAWumpus() {
         room = new Room();
         wumpus = new Wumpus();
-        room.add(wumpus);
+        wumpus.moveTo(room);
     }
 
     @Then("^the room describes itself with \"([^\"]*)\"$")
     public void theRoomDescribesItselfWithA(String description) throws Throwable {
-        description = reinterpolatEscapedCharacters(description);
+        description = reInterpolateEscapedCharacters(description);
         assertThat(describeRoom(), equalTo(description));
     }
 

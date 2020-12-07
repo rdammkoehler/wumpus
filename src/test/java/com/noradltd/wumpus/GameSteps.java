@@ -41,7 +41,7 @@ public class GameSteps {
 
     @Then("^the first room is described as \"([^\"]*)\"$")
     public void the_first_room_is_described(String description) throws Throwable {
-        description = reinterpolatEscapedCharacters(description) + '\n';
+        description = reInterpolateEscapedCharacters(description) + '\n';
         assertThat(stdout.toString(), equalTo(description));
     }
 

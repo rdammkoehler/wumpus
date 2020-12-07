@@ -6,9 +6,12 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 class Room {
-    interface Occupant extends Comparable<Occupier>{
+    interface Occupant extends Comparable<Occupier> {
         void moveTo(Room room);
+
+        void respondTo(Occupant actioned);
     }
+
     interface RoomNumberer {
         Integer nextRoomNumber();
     }
@@ -31,9 +34,29 @@ class Room {
         return exits.stream().collect(Collectors.toList());
     }
 
-    public Room add(Occupant occupant) {
+    Room add(Occupant occupant) {
         occupants.add(occupant);
+        if (occupants.size() > 1) {
+            Set<Occupant> occupantsTemp = new HashSet<Occupant>(occupants);
+            for (Occupant actor : occupantsTemp) {
+                for (Occupant actioned : occupantsTemp) {
+                    if (actor != actioned) {
+                        actor.respondTo(actioned);
+                    }
+                }
+            }
+            occupants = occupantsTemp;
+        }
         return this;
+    }
+
+    Room remove(Occupant occupant) {
+        occupants.remove(occupant);
+        return this;
+    }
+
+    public Set<Occupant> occupants() {
+        return occupants.stream().collect(Collectors.toUnmodifiableSet());
     }
 
     private static void connectRooms(Room one, Room two) {
@@ -44,15 +67,6 @@ class Room {
     public Room add(Room exit) {
         connectRooms(this, exit);
         return this;
-    }
-
-    public Room remove(Occupant occupant) {
-        occupants.remove(occupant);
-        return this;
-    }
-
-    public Set<Occupant> occupants() {
-        return occupants.stream().collect(Collectors.toUnmodifiableSet());
     }
 
     public Integer number() {

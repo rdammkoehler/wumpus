@@ -1,5 +1,7 @@
 package com.noradltd.wumpus;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 class Game {
@@ -71,5 +73,12 @@ class Game {
 
     public String describe() {
         return new Game.RoomDescriber(hunter.getRoom()).description();
+    }
+
+
+    private static ThreadLocal<Map> threadLocalBag = ThreadLocal.withInitial(() -> new HashMap<>() {{put("randomizer", new Random());}});
+
+    static Map getThreadLocalBag() {
+        return threadLocalBag.get();
     }
 }

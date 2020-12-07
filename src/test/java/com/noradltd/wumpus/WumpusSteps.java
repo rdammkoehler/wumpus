@@ -23,12 +23,12 @@ public class WumpusSteps {
     @When("^a Hunter enters the room$")
     public void a_Hunter_enters_the_room() throws Throwable {
         hunter = new Hunter();
-        room.add(hunter);
+        hunter.moveTo(room);
     }
 
     @Then("^the Wumpus eats the Hunter$")
     public void the_Wumpus_eats_the_Hunter() throws Throwable {
-        wumpus.eat(hunter);
+//        wumpus.eat(hunter);
     }
 
     @Then("^the Hunter is dead$")
@@ -43,7 +43,7 @@ public class WumpusSteps {
 
     @When("^the Wumpus flees$")
     public void the_Wumpus_flees() throws Throwable {
-        wumpus.flee();
+//        wumpus.flee();
     }
 
     @Then("^the Hunter lives$")
