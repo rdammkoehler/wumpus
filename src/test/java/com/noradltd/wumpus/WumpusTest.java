@@ -4,17 +4,12 @@ import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+
 public class WumpusTest {
-    // TODO this is weak sauce, how to make it better?
-    class PermissiveWumpus extends Wumpus {
-        public PermissiveWumpus flee(Hunter hunter) {
-            super.flee(hunter);
-            return this;
-        }
-    }
+
     @Test
     public void wumpusMovesFromOneRoomToAnotherWhenFleeing() {
-        Wumpus wumpus = new PermissiveWumpus();
+        Wumpus wumpus = new Wumpus();
         Room initialRoom = new Room();
         Room secondRoom = new Room();
 
@@ -29,7 +24,7 @@ public class WumpusTest {
 
     @Test
     public void wumpusOnlyMovesOneRoomAtATimeWhenFleeing() {
-        Wumpus wumpus = new PermissiveWumpus();
+        Wumpus wumpus = new Wumpus();
         Room initialRoom = new Room();
         Room secondRoom = new Room();
         Room thirdRoom = new Room();
@@ -45,4 +40,31 @@ public class WumpusTest {
         assertThat(thirdRoom.occupants(), not(hasItem(wumpus)));
     }
 
+    @Test
+    public void wumpusEatsHunterWhenGivenAChance() {
+        Wumpus wumpus = new Wumpus();
+        Hunter hunter = new Hunter();
+
+        wumpus.respondTo(hunter);
+
+        assertThat(wumpus.isFed(), is(true));
+        assertThat(hunter.isDead(), is(true));
+    }
+
+    @Test
+    public void wumpusWillEatHunterIfThereIsNoEscape() {
+        Room room = new Room();
+        Wumpus wumpus = new Wumpus();
+        wumpus.moveTo(room);
+        Hunter hunter = new Hunter();
+        Helpers.programRandomizer(false);
+
+        wumpus.respondTo(hunter);
+
+        Helpers.resetRandomizer();
+
+        assertThat(wumpus.isFed(), is(true));
+        assertThat(hunter.isDead(), is(true));
+        assertThat(room.occupants().size(), equalTo(1));
+    }
 }

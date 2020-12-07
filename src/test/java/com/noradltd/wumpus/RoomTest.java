@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -65,20 +64,24 @@ public class RoomTest {
 
     @Test
     public void roomOccupantsInteractWithNewComersWumpusEatsHunter() {
+        Helpers.programRandomizer(true);
         Room room = new Room();
         Wumpus wumpus = new Wumpus();
-        Hunter hunter = new Hunter();
         wumpus.moveTo(room);
+        Hunter hunter = new Hunter();
 
         hunter.moveTo(room);
 
+        Helpers.resetRandomizer();
+
         assertThat(hunter.isDead(), is(0 == room.exits().size()));
         assertThat(wumpus.isFed(), is(true));
+
     }
 
 
     @Test
-    public void roomOccupantsInteractWithNewComersWumpusFleesHunter() { // TODO failing
+    public void roomOccupantsInteractWithNewComersWumpusFleesHunter() {
         Helpers.programRandomizer(false);
         Room room = new Room();
         room.add(new Room());
@@ -90,8 +93,10 @@ public class RoomTest {
 
         hunter.moveTo(room);
 
+        Helpers.resetRandomizer();
+
         assertThat(hunter.isDead(), is(false));
         assertThat(wumpus.isFed(), is(false));
-        Helpers.resetRandomizer();
+
     }
 }

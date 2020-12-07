@@ -1,5 +1,6 @@
 package com.noradltd.wumpus;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -10,6 +11,8 @@ class Room {
         void moveTo(Room room);
 
         void respondTo(Occupant actioned);
+
+        Boolean isDead();
     }
 
     interface RoomNumberer {
@@ -28,7 +31,7 @@ class Room {
     static RoomNumberer roomNumberer = DEFAULT_ROOM_NUMBERER;
     private final int instanceNumber = roomNumberer.nextRoomNumber();
     private Set<Room> exits = new HashSet<Room>();
-    private Set<Occupant> occupants = new HashSet<Occupant>();
+    private List<Occupant> occupants = new ArrayList<Occupant>();
 
     public List<Room> exits() {
         return exits.stream().collect(Collectors.toList());
@@ -37,11 +40,13 @@ class Room {
     Room add(Occupant occupant) {
         occupants.add(occupant);
         if (occupants.size() > 1) {
-            Set<Occupant> occupantsTemp = new HashSet<Occupant>(occupants);
+            List<Occupant> occupantsTemp = new ArrayList<>(occupants);
             for (Occupant actor : occupantsTemp) {
-                for (Occupant actioned : occupantsTemp) {
-                    if (actor != actioned) {
-                        actor.respondTo(actioned);
+                if (!actor.isDead()) {
+                    for (Occupant actioned : occupantsTemp) {
+                        if (actor != actioned) {
+                            actor.respondTo(actioned);
+                        }
                     }
                 }
             }

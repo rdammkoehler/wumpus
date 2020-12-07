@@ -171,27 +171,15 @@ class MazeBuilder {
         public Stringifier getDisplayFormat() {
             return displayFormat;
         }
-
-        @Override
-        public String toString() {
-            final StringBuilder sb = new StringBuilder("Options{");
-            sb.append("roomCount=").append(roomCount);
-            sb.append(", randomSeed=").append(randomSeed);
-            sb.append(", displayFormat=").append(displayFormat);
-            sb.append('}');
-            return sb.toString();
-        }
     }
 
-    private static Random random = Random.getRandomizer();
     private final Set<Room> rooms = new HashSet<>();
     private final MazeBuilder.Options options;
 
     private MazeBuilder(MazeBuilder.Options options) {
         this.options = options;
-        random = Random.getRandomizer();
         if (options.hasRandomSeed()) {
-            random.setSeed(options.getRandomSeed());
+            Random.getRandomizer().setSeed(options.getRandomSeed());
         }
     }
 
@@ -215,13 +203,13 @@ class MazeBuilder {
             randomLengthIntegerStream(3)
                     .forEach(integer -> addExit(room, forceLinking));
             room.exits().stream()
-                    .filter(exit -> random.nextBoolean())
+                    .filter(exit -> Random.getRandomizer().nextBoolean())
                     .forEach(exit -> addExits(exit, hasEnoughRooms()));
         }
     }
 
     private Stream<Integer> randomLengthIntegerStream(Integer upperBound) {
-        Integer number = random.nextInt(upperBound - 1) + 1;
+        Integer number = Random.getRandomizer().nextInt(upperBound - 1) + 1;
         return Arrays.stream(new Integer[number]);
     }
 
@@ -244,7 +232,7 @@ class MazeBuilder {
     }
 
     public static Room getRandomRoom(Collection<Room> rooms) {
-        return rooms.toArray(new Room[]{})[random.nextInt(rooms.size())];
+        return rooms.toArray(new Room[]{})[Random.getRandomizer().nextInt(rooms.size())];
     }
 
     private boolean needsMoreRooms() {

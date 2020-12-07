@@ -1,11 +1,8 @@
 package com.noradltd.wumpus;
 
-import java.util.Map;
-
-class Occupier implements Room.Occupant {
+abstract class Occupier implements Room.Occupant {
     private Room room;
-
-    protected final Random randomizer = Random.getRandomizer();
+    private Boolean dead = Boolean.FALSE;
 
     public Occupier() {
     }
@@ -16,21 +13,24 @@ class Occupier implements Room.Occupant {
 
     @Override
     public void moveTo(Room newRoom) {
-        if (room != null ) {
+        if (room != null) {
             room.remove(this);
         }
         room = newRoom.add(this);
     }
 
-    // Default
     @Override
-    public void respondTo(Room.Occupant visitor) {
-        System.out.println("Hello " + visitor.getClass().getSimpleName() + " I'm "+ this.getClass().getSimpleName());
+    public Boolean isDead() {
+        return dead;
+    }
+
+    protected void setDead(Boolean dead) {
+        this.dead = dead;
     }
 
     @Override
-    public int compareTo(Occupier o) {
-        return this.getClass().getSimpleName().compareTo(o.getClass().getSimpleName());
+    public int compareTo(Occupier other) {
+        return this.getClass().getSimpleName().compareTo(other.getClass().getSimpleName());
     }
 
 }

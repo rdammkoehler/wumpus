@@ -87,9 +87,9 @@ public class MazeTest {
     @Test
     public void testToStringReturnsOutputFormattedForHumansByDefault() {
         String[] options = {"--rooms", "2"};
-        String humanReadableOutput = "Room 29: Has exits 30\n" +
+        String humanReadableOutput = "Room 30: Has exits 31\n" +
                 "*****\n" +
-                "Room 30: Has exits 29\n" +
+                "Room 31: Has exits 30\n" +
                 "*****\n";
 
         assertThat(MazeBuilder.build(options).toString(), is(equalTo(humanReadableOutput)));
@@ -98,9 +98,9 @@ public class MazeTest {
     @Test
     public void testToStringReturnsOutputFormattedForHumansByWhenRequested() {
         String[] options = {"--format", "human", "--rooms", "2"};
-        String humanReadableOutput = "Room 33: Has exits 34\n" +
+        String humanReadableOutput = "Room 34: Has exits 35\n" +
                 "*****\n" +
-                "Room 34: Has exits 33\n" +
+                "Room 35: Has exits 34\n" +
                 "*****\n";
 
         assertThat(MazeBuilder.build(options).toString(), is(equalTo(humanReadableOutput)));
@@ -110,7 +110,7 @@ public class MazeTest {
     public void testToStringReturnsDOTFormatWhenRequested() {
         String[] options = {"--format", "dot", "--rooms", "2"};
         String dotOutput = "digraph G {\n" +
-                "\t27 -> 28;\n" +
+                "\t28 -> 29;\n" +
                 "}\n";
 
         assertThat(MazeBuilder.build(options).toString(), is(equalTo(dotOutput)));
@@ -120,7 +120,7 @@ public class MazeTest {
     public void testToStringReturnsNEATOFormatWhenRequested() {
         String[] options = {"--format", "neato", "--rooms", "2"};
         String neatoOutput = "graph G {\n" +
-                "\t21 -- 22;\n" +
+                "\t22 -- 23;\n" +
                 "}\n";
 
         assertThat(MazeBuilder.build(options).toString(), is(equalTo(neatoOutput)));

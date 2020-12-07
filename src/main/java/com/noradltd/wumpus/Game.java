@@ -76,7 +76,9 @@ class Game {
     }
 
 
-    private static ThreadLocal<Map> threadLocalBag = ThreadLocal.withInitial(() -> new HashMap<>() {{put("randomizer", new Random());}});
+    private static ThreadLocal<Map> threadLocalBag = ThreadLocal.withInitial(() -> new HashMap<>() {{
+        put("randomizer", new Random());
+    }});
 
     static Map getThreadLocalBag() {
         return threadLocalBag.get();

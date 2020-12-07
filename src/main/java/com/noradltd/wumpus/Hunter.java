@@ -1,24 +1,30 @@
 package com.noradltd.wumpus;
 
 class Hunter extends Occupier implements Room.Occupant {
-    private boolean dead = false;
 
-    public Boolean isDead() {
-        return dead;
+    private Integer kills = Integer.valueOf(0);
+
+    public Integer kills() {
+        return kills;
     }
 
-    public void die() {
-        dead = true;
-        if (getRoom() != null ) {
-            getRoom().remove(this);  // TODO untested experiment
+    void die() {
+        setDead(Boolean.TRUE);
+        if (getRoom() != null) {
+            getRoom().remove(this);
         }
+    }
+
+    protected void kill(Wumpus wumpus) {
+        wumpus.die();
+        kills += 1;
     }
 
     @Override
     public void respondTo(Room.Occupant visitor) {
         if (Wumpus.class.isAssignableFrom(visitor.getClass())) {
             Wumpus wumpus = (Wumpus) visitor;
-            System.out.println("AHHHAHAHKKKKK ! A Wumpus!");
+            kill(wumpus);
         }
     }
 }

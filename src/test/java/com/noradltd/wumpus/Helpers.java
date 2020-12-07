@@ -4,8 +4,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileDescriptor;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
+import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 public class Helpers {
@@ -40,17 +40,15 @@ public class Helpers {
     }
 
     public static void programRandomizer(boolean... bools) {
-        Map bag = Game.getThreadLocalBag();
-        bag.replace("randomizer", new Helpers.ProgrammableRandom(bools));
+        Game.getThreadLocalBag().replace("randomizer", new Helpers.ProgrammableRandom(bools));
     }
 
     public static void resetRandomizer() {
-        Map bag = Game.getThreadLocalBag();
-        bag.replace("randomizer", new Random());
+        Game.getThreadLocalBag().replace("randomizer", new Random());
     }
 
     static class ProgrammableRandom extends Random {
-        private boolean[] bools = new boolean[]{};
+        private boolean[] bools;
         private int boolIdx = 0;
 
         ProgrammableRandom(boolean... bools) {
@@ -60,6 +58,15 @@ public class Helpers {
         @Override
         boolean nextBoolean() {
             return bools[boolIdx++];
+        }
+
+        @Override
+        public String toString() {
+            final StringBuilder sb = new StringBuilder("ProgrammableRandom{");
+            sb.append("bools=").append(Arrays.toString(bools));
+            sb.append(", boolIdx=").append(boolIdx);
+            sb.append('}');
+            return sb.toString();
         }
     }
 }

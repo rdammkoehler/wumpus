@@ -36,7 +36,7 @@ public class GameSteps {
                 return instanceCounter++;
             }
         };
-        game = new Game(new String[] {});
+        game = new Game(new String[]{});
     }
 
     @Then("^the first room is described as \"([^\"]*)\"$")
