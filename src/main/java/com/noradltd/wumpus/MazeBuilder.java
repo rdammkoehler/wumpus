@@ -8,6 +8,78 @@ import java.util.stream.Stream;
 
 interface Maze {
     Room entrance();
+
+    @SuppressWarnings("FieldMayBeFinal")
+    class Options {
+        private static final Map<String, String> optionNameAttrMap = new HashMap<>() {{
+            put("rooms", "roomCount");
+            put("seed", "randomSeed");
+            put("format", "displayFormat");
+        }};
+        public static final Options DEFAULT = new Options();
+        @SuppressWarnings("FieldCanBeLocal")
+        private Integer roomCount = 20;
+        private Long randomSeed = null;
+        private MazeBuilder.Stringifier displayFormat = MazeBuilder.Stringifier.HUMAN;
+
+        private Options() {
+        }
+
+        protected Options(String[] options) {
+            if (isHelpRequested(options)) {
+                printHelp();
+            } else {
+                processOptions(options);
+            }
+        }
+
+        private void processOptions(String[] options) {
+            for (int optionIdx = 0; optionIdx < options.length - 1; optionIdx += 2) {
+                String optionName = options[optionIdx].substring(2);
+                String attrName = optionNameAttrMap.getOrDefault(optionName, null);
+                if (attrName != null) {
+                    String optionValue = options[optionIdx + 1].toUpperCase();
+                    setOptionValue(attrName, optionValue);
+                }
+            }
+        }
+
+        private void setOptionValue(String attrName, String optionValue) {
+            try {
+                Field field = this.getClass().getDeclaredField(attrName);
+                Method valueOf = field.getType().getMethod("valueOf", String.class);
+                field.set(this, valueOf.invoke(null, optionValue));
+            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | NoSuchFieldException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+
+        private void printHelp() {
+            System.out.println("\t--rooms #\t\tLimit the number or rooms\n" +
+                    "\t--seed  #\t\tSet the Randomizer seed\n" +
+                    "\t--format $\t\tSet the output format (human, dot, neato)");
+        }
+
+        private boolean isHelpRequested(String[] options) {
+            return Arrays.asList(options).contains("--help");
+        }
+
+        public Integer getRoomCount() {
+            return roomCount;
+        }
+
+        public boolean hasRandomSeed() {
+            return randomSeed != null;
+        }
+
+        public Long getRandomSeed() {
+            return randomSeed;
+        }
+
+        public MazeBuilder.Stringifier getDisplayFormat() {
+            return displayFormat;
+        }
+    }
 }
 
 class MazeBuilder {
@@ -102,82 +174,10 @@ class MazeBuilder {
         abstract String stringify(Maze maze);
     }
 
-    @SuppressWarnings("FieldMayBeFinal")
-    static class Options {
-        private static final Map<String, String> optionNameAttrMap = new HashMap<>() {{
-            put("rooms", "roomCount");
-            put("seed", "randomSeed");
-            put("format", "displayFormat");
-        }};
-        private static final Options DEFAULT = new Options();
-        @SuppressWarnings("FieldCanBeLocal")
-        private Integer roomCount = 20;
-        private Long randomSeed = null;
-        private Stringifier displayFormat = Stringifier.HUMAN;
-
-        private Options() {
-        }
-
-        Options(String[] options) {
-            if (isHelpRequested(options)) {
-                printHelp();
-            } else {
-                processOptions(options);
-            }
-        }
-
-        private void processOptions(String[] options) {
-            for (int optionIdx = 0; optionIdx < options.length - 1; optionIdx += 2) {
-                String optionName = options[optionIdx].substring(2);
-                String attrName = optionNameAttrMap.getOrDefault(optionName, null);
-                if (attrName != null) {
-                    String optionValue = options[optionIdx + 1].toUpperCase();
-                    setOptionValue(attrName, optionValue);
-                }
-            }
-        }
-
-        private void setOptionValue(String attrName, String optionValue) {
-            try {
-                Field field = this.getClass().getDeclaredField(attrName);
-                Method valueOf = field.getType().getMethod("valueOf", String.class);
-                field.set(this, valueOf.invoke(null, optionValue));
-            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | NoSuchFieldException ex) {
-                throw new RuntimeException(ex);
-            }
-        }
-
-        private void printHelp() {
-            System.out.println("\t--rooms #\t\tLimit the number or rooms\n" +
-                    "\t--seed  #\t\tSet the Randomizer seed\n" +
-                    "\t--format $\t\tSet the output format (human, dot, neato)");
-        }
-
-        private boolean isHelpRequested(String[] options) {
-            return Arrays.asList(options).contains("--help");
-        }
-
-        public Integer getRoomCount() {
-            return roomCount;
-        }
-
-        public boolean hasRandomSeed() {
-            return randomSeed != null;
-        }
-
-        public Long getRandomSeed() {
-            return randomSeed;
-        }
-
-        public Stringifier getDisplayFormat() {
-            return displayFormat;
-        }
-    }
-
     private final Set<Room> rooms = new HashSet<>();
-    private final MazeBuilder.Options options;
+    private final Maze.Options options;
 
-    private MazeBuilder(MazeBuilder.Options options) {
+    private MazeBuilder(Maze.Options options) {
         this.options = options;
         if (options.hasRandomSeed()) {
             Random.getRandomizer().setSeed(options.getRandomSeed());
@@ -254,17 +254,17 @@ class MazeBuilder {
     }
 
     static Maze build() {
-        return new MazeBuilder(MazeBuilder.Options.DEFAULT).buildMaze();
+        return new MazeBuilder(Maze.Options.DEFAULT).buildMaze();
     }
 
     static Maze build(String[] options) {
-        return new MazeBuilder(new MazeBuilder.Options(options)).buildMaze();
+        return new MazeBuilder(new Maze.Options(options)).buildMaze();
     }
 }
 
 class MazeLoader {
-    private final MazeBuilder.Options options;
-    MazeLoader(MazeBuilder.Options options) {
+    private final Maze.Options options;
+    MazeLoader(Maze.Options options) {
         this.options = options;
     }
 
@@ -299,6 +299,6 @@ class MazeLoader {
     }
 
     static Maze populate(Maze maze, String[] options) {
-        return new MazeLoader(new MazeBuilder.Options(options)).populateMaze(maze);
+        return new MazeLoader(new Maze.Options(options)).populateMaze(maze);
     }
 }
