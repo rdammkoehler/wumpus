@@ -28,14 +28,19 @@ public class MazeTest {
 
     @Test
     public void testMazeBuildersRandomSeedCanBeSetWithOptions() {
-        int randomSeed = 0;
-        String[] options = {"--seed", Integer.toString(randomSeed)};
+        final boolean[] seedSetDetected = {false};
+        Game.getThreadLocalBag().replace("randomizer", new Random() {
+            @Override
+            void setSeed(long seed) {
+                super.setSeed(seed);
+                seedSetDetected[0] = true;
+            }
+        });
+        String[] options = {"--seed", Integer.toString(0)};
 
-        // TODO nice idea but doesn't work, how do we prove we set it?
-        Maze maze1 = MazeBuilder.build(options);
-        Maze maze2 = MazeBuilder.build(options);
+        MazeBuilder.build(options);
 
-//        assertThat(maze1.toString(), is(equalTo(maze2.toString())));
+        assertThat(seedSetDetected[0], is(true));
     }
 
     @Test
