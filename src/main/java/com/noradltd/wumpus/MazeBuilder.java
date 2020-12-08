@@ -261,3 +261,44 @@ class MazeBuilder {
         return new MazeBuilder(new MazeBuilder.Options(options)).buildMaze();
     }
 }
+
+class MazeLoader {
+    private final MazeBuilder.Options options;
+    MazeLoader(MazeBuilder.Options options) {
+        this.options = options;
+    }
+
+    private Maze populateMaze(Maze maze) {
+        Room entrance = maze.entrance();
+
+        List<Wumpus> wumpi = new ArrayList<>();
+        final int wumpiRequired = options.getRoomCount() / 7;
+        for (int idx = 0; idx < wumpiRequired; idx++) {
+            wumpi.add(new Wumpus());
+        }
+
+        Room currentRoom = entrance;
+        Room nextRoom = currentRoom;
+        for (Wumpus wumpus : wumpi) {
+            boolean wumpidump = false;
+            while(!wumpidump) {
+                for (Room exit : currentRoom.exits()) {
+                    if (!exit.equals(entrance)) {
+                        if (Random.getRandomizer().nextBoolean()) {
+                            wumpus.moveTo(exit);
+                            wumpidump = true;
+                        } else {
+                            nextRoom = exit; //possible ccmex
+                        }
+                    }
+                }
+                currentRoom = nextRoom;
+            }
+        }
+        return maze;
+    }
+
+    static Maze populate(Maze maze, String[] options) {
+        return new MazeLoader(new MazeBuilder.Options(options)).populateMaze(maze);
+    }
+}

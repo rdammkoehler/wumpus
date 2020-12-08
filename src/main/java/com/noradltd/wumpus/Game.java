@@ -58,7 +58,7 @@ class Game {
     private final Maze maze;
 
     Game(String[] options) {
-        maze = MazeBuilder.build(options);
+        maze = MazeLoader.populate(MazeBuilder.build(options), options);
         hunter().moveTo(maze.entrance());
         System.out.println(this.describe());
     }
