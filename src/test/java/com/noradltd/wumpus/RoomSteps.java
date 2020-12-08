@@ -42,18 +42,18 @@ public class RoomSteps {
     }
 
     @Then("^the room describes itself with \"([^\"]*)\"$")
-    public void theRoomDescribesItselfWithA(String description) throws Throwable {
+    public void theRoomDescribesItselfWithA(String description) {
         description = reInterpolateEscapedCharacters(description);
         assertThat(describeRoom(), equalTo(description));
     }
 
     @Given("^a room with \"([^\"]*)\" exits$")
-    public void aRoomWithExits(String exitCountString) throws Throwable {
+    public void aRoomWithExits(String exitCountString) {
         int exitCount = Integer.parseInt(exitCountString);
         Room.RoomNumberer defaultRoomNumberer = Room.roomNumberer;
         Room.roomNumberer = new Room.RoomNumberer() {
             private int idx = 0;
-            private int[] values;
+            private final int[] values;
 
             {
                 values = new int[exitCount + 1];
@@ -75,8 +75,7 @@ public class RoomSteps {
     }
 
     @Then("^the room describes itself as having exits \"([^\"]*)\"$")
-    public void theRoomDescribesItselfAsHavingExits(String exitList) throws Throwable {
-        StringBuilder sb = new StringBuilder().append("Has exits ").append(exitList).append("\nContains a Hunter");
-        assertThat(describeRoom(), equalTo(sb.toString()));
+    public void theRoomDescribesItselfAsHavingExits(String exitList) {
+        assertThat(describeRoom(), equalTo("Has exits " + exitList + "\nContains a Hunter"));
     }
 }

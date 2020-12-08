@@ -1,7 +1,7 @@
 package com.noradltd.wumpus;
 
 public class Random {
-    private java.util.Random randomizer = new java.util.Random(0);
+    private final java.util.Random randomizer = new java.util.Random(0);
 
     int nextInt(int bound) {
         return randomizer.nextInt(bound);

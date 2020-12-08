@@ -4,10 +4,10 @@ class Wumpus extends Occupier implements Room.Occupant {
 
     private Boolean fed = Boolean.FALSE;
 
-    void die() {
-        setDead(Boolean.TRUE);
+    protected void die() {
+        super.die();
         if (getRoom() != null) {
-            getRoom().remove(this);  // TODO untested experiment
+            getRoom().remove(this);
         }
     }
 
@@ -15,7 +15,7 @@ class Wumpus extends Occupier implements Room.Occupant {
         return fed;
     }
 
-    protected Wumpus flee(Hunter hunter) {
+    private void flee(Hunter hunter) {
         int exitCount = getRoom().exits().size();
         if (exitCount > 0) {
             Room exitRoom = getRoom().exits().get(Random.getRandomizer().nextInt(exitCount));
@@ -23,13 +23,11 @@ class Wumpus extends Occupier implements Room.Occupant {
         } else {
             eat(hunter);
         }
-        return this;
     }
 
-    protected Wumpus eat(Hunter hunter) {
+    private void eat(Hunter hunter) {
         hunter.die();
         fed = Boolean.TRUE;
-        return this;
     }
 
     @Override

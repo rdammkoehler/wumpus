@@ -22,12 +22,12 @@ public class GameSteps {
     }
 
     @Given("^the program is executed$")
-    public void the_program_is_executed() throws Throwable {
+    public void the_program_is_executed() {
         stdout = captureStdout();
     }
 
     @When("^the game has initialized$")
-    public void the_game_has_initialized() throws Throwable {
+    public void the_game_has_initialized() {
         Room.roomNumberer = new Room.RoomNumberer() {
             private int instanceCounter = 1;
 
@@ -40,13 +40,13 @@ public class GameSteps {
     }
 
     @Then("^the first room is described as \"([^\"]*)\"$")
-    public void the_first_room_is_described(String description) throws Throwable {
+    public void the_first_room_is_described(String description) {
         description = reInterpolateEscapedCharacters(description) + '\n';
         assertThat(stdout.toString(), equalTo(description));
     }
 
     @Then("^the hunter is in the first room$")
-    public void the_hunter_is_in_the_first_room() throws Throwable {
+    public void the_hunter_is_in_the_first_room() {
         assertThat(game.maze().entrance().occupants().contains(game.hunter()), is(true));
     }
 

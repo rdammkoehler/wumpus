@@ -28,8 +28,8 @@ public class MazeTest {
 
     @Test
     public void testMazeBuildersRandomSeedCanBeSetWithOptions() {
-        Integer randomSeed = 0;
-        String[] options = {"--seed", randomSeed.toString()};
+        int randomSeed = 0;
+        String[] options = {"--seed", Integer.toString(randomSeed)};
 
         // TODO nice idea but doesn't work, how do we prove we set it?
         Maze maze1 = MazeBuilder.build(options);
@@ -70,12 +70,10 @@ public class MazeTest {
     public void testMazeBuilderPrintsHelpWhenAsked() {
         ByteArrayOutputStream stdout = captureStdout();
         String[] options = {"--help"};
-        String helpStatement = new StringBuilder()
-                .append("\t--rooms #\t\tLimit the number or rooms\n")
-                .append("\t--seed  #\t\tSet the Randomizer seed\n")
-                .append("\t--format $\t\tSet the output format (human, dot, neato)")
-                .append("\n")
-                .toString();
+        String helpStatement = "\t--rooms #\t\tLimit the number or rooms\n" +
+                "\t--seed  #\t\tSet the Randomizer seed\n" +
+                "\t--format $\t\tSet the output format (human, dot, neato)" +
+                "\n";
 
         MazeBuilder.build(options);
 

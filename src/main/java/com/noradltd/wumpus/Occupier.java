@@ -24,8 +24,8 @@ abstract class Occupier implements Room.Occupant {
         return dead;
     }
 
-    protected void setDead(Boolean dead) {
-        this.dead = dead;
+    protected void die() {
+        dead = Boolean.TRUE;
     }
 
     @Override

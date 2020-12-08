@@ -8,8 +8,8 @@ class Hunter extends Occupier implements Room.Occupant {
         return kills;
     }
 
-    void die() {
-        setDead(Boolean.TRUE);
+    protected void die() {
+        super.die();
         if (getRoom() != null) {
             getRoom().remove(this);
         }

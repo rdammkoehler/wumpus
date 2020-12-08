@@ -37,7 +37,7 @@ public class RoomTest {
     @Test
     public void roomCanHaveManyExits() {
         Room room = new Room();
-        List<Room> exits = new ArrayList<Room>();
+        List<Room> exits = new ArrayList<>();
         for (int idx = 0; idx < 10; idx++) {
             Room exit = new Room();
             exits.add(exit);

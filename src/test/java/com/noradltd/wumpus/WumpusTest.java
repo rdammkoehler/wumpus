@@ -15,9 +15,11 @@ public class WumpusTest {
 
         initialRoom.add(secondRoom);
         wumpus.moveTo(initialRoom);
+        Helpers.programRandomizer(false);
 
-        wumpus.flee(null);
+        wumpus.respondTo(new Hunter());
 
+        Helpers.resetRandomizer();
         assertThat(initialRoom.occupants(), not(hasItem(wumpus)));
         assertThat(secondRoom.occupants(), hasItem(wumpus));
     }
@@ -32,9 +34,11 @@ public class WumpusTest {
         initialRoom.add(secondRoom);
         secondRoom.add(thirdRoom);
         wumpus.moveTo(initialRoom);
+        Helpers.programRandomizer(false);
 
-        wumpus.flee(null);
+        wumpus.respondTo(new Hunter());
 
+        Helpers.resetRandomizer();
         assertThat(initialRoom.occupants(), not(hasItem(wumpus)));
         assertThat(secondRoom.occupants(), hasItem(wumpus));
         assertThat(thirdRoom.occupants(), not(hasItem(wumpus)));

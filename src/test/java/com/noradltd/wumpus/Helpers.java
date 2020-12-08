@@ -14,7 +14,7 @@ public class Helpers {
     }
 
     static Integer countRooms(Room room) {
-        return collectRoom(room, new HashSet<Room>()).size();
+        return collectRoom(room, new HashSet<>()).size();
     }
 
     private static Set<Room> collectRoom(Room room, Set<Room> rooms) {
@@ -48,7 +48,7 @@ public class Helpers {
     }
 
     static class ProgrammableRandom extends Random {
-        private boolean[] bools;
+        private final boolean[] bools;
         private int boolIdx = 0;
 
         ProgrammableRandom(boolean... bools) {
@@ -62,11 +62,7 @@ public class Helpers {
 
         @Override
         public String toString() {
-            final StringBuilder sb = new StringBuilder("ProgrammableRandom{");
-            sb.append("bools=").append(Arrays.toString(bools));
-            sb.append(", boolIdx=").append(boolIdx);
-            sb.append('}');
-            return sb.toString();
+            return "ProgrammableRandom{bools=" + Arrays.toString(bools) + ", boolIdx=" + boolIdx + '}';
         }
     }
 }
