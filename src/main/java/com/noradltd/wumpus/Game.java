@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 
 class Game {
     static class RoomDescriber extends Room {
-        private Room room;
+        private final Room room;
 
         RoomDescriber(Room room) {
             this.room = room;
@@ -54,8 +54,8 @@ class Game {
         }
     }
 
-    private Hunter hunter = new Hunter();
-    private Maze maze;
+    private final Hunter hunter = new Hunter();
+    private final Maze maze;
 
     Game(String[] options) {
         maze = MazeBuilder.build(options);
@@ -76,11 +76,11 @@ class Game {
     }
 
 
-    private static ThreadLocal<Map> threadLocalBag = ThreadLocal.withInitial(() -> new HashMap<>() {{
+    private static final ThreadLocal<Map<String,?>> threadLocalBag = ThreadLocal.withInitial(() -> new HashMap<>() {{
         put("randomizer", new Random());
     }});
 
-    static Map getThreadLocalBag() {
+    static Map<String,?> getThreadLocalBag() {
         return threadLocalBag.get();
     }
 }

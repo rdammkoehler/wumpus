@@ -2,7 +2,7 @@ package com.noradltd.wumpus;
 
 class Hunter extends Occupier implements Room.Occupant {
 
-    private Integer kills = Integer.valueOf(0);
+    private Integer kills = 0;
 
     public Integer kills() {
         return kills;

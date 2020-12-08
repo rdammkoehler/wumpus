@@ -30,11 +30,11 @@ class Room {
 
     static RoomNumberer roomNumberer = DEFAULT_ROOM_NUMBERER;
     private final int instanceNumber = roomNumberer.nextRoomNumber();
-    private Set<Room> exits = new HashSet<Room>();
-    private List<Occupant> occupants = new ArrayList<Occupant>();
+    private final Set<Room> exits = new HashSet<>();
+    private List<Occupant> occupants = new ArrayList<>();
 
     public List<Room> exits() {
-        return exits.stream().collect(Collectors.toList());
+        return new ArrayList<>(exits);
     }
 
     Room add(Occupant occupant) {
@@ -59,6 +59,7 @@ class Room {
         occupants = occupantsTemp;
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     Room remove(Occupant occupant) {
         occupants.remove(occupant);
         return this;
@@ -69,8 +70,8 @@ class Room {
     }
 
     private static void connectRooms(Room one, Room two) {
-        if (!one.exits.contains(two)) one.exits.add(two);
-        if (!two.exits.contains(one)) two.exits.add(one);
+        one.exits.add(two);
+        two.exits.add(one);
     }
 
     public Room add(Room exit) {
