@@ -13,11 +13,9 @@ interface Maze {
 class MazeBuilder {
     static class MazeStruct implements Maze {
         private final Room entrance;
-        private final Set<Room> rooms;
         private final Stringifier stringifier;
 
         private MazeStruct(Set<Room> rooms, Stringifier stringifier) {
-            this.rooms = rooms;
             this.stringifier = stringifier;
             // todo make sure the room is empty!
             entrance = getRandomRoom(rooms);
@@ -33,6 +31,7 @@ class MazeBuilder {
         }
     }
 
+    @SuppressWarnings("unused")
     enum Stringifier {
         HUMAN {
             @Override
@@ -103,6 +102,7 @@ class MazeBuilder {
         abstract String stringify(Maze maze);
     }
 
+    @SuppressWarnings("FieldMayBeFinal")
     static class Options {
         private static final Map<String, String> optionNameAttrMap = new HashMap<>() {{
             put("rooms", "roomCount");
@@ -110,6 +110,7 @@ class MazeBuilder {
             put("format", "displayFormat");
         }};
         private static final Options DEFAULT = new Options();
+        @SuppressWarnings("FieldCanBeLocal")
         private Integer roomCount = 20;
         private Long randomSeed = null;
         private Stringifier displayFormat = Stringifier.HUMAN;
@@ -209,7 +210,7 @@ class MazeBuilder {
     }
 
     private Stream<Integer> randomLengthIntegerStream(Integer upperBound) {
-        Integer number = Random.getRandomizer().nextInt(upperBound - 1) + 1;
+        int number = Random.getRandomizer().nextInt(upperBound - 1) + 1;
         return Arrays.stream(new Integer[number]);
     }
 
@@ -227,6 +228,7 @@ class MazeBuilder {
 
     private void linkExit(Room room) {
         Room exit;
+        //noinspection StatementWithEmptyBody
         for (exit = room; exit == room; exit = getRandomRoom(rooms)) ;
         room.add(exit);
     }

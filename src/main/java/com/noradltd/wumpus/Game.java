@@ -76,11 +76,11 @@ class Game {
     }
 
 
-    private static final ThreadLocal<Map<String,?>> threadLocalBag = ThreadLocal.withInitial(() -> new HashMap<>() {{
+    private static final ThreadLocal<Map<String,Object>> threadLocalBag = ThreadLocal.withInitial(() -> new HashMap<>() {{
         put("randomizer", new Random());
     }});
 
-    static Map<String,?> getThreadLocalBag() {
+    static Map<String,Object> getThreadLocalBag() {
         return threadLocalBag.get();
     }
 }
