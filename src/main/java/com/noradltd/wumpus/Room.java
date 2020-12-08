@@ -40,19 +40,23 @@ class Room {
     Room add(Occupant occupant) {
         occupants.add(occupant);
         if (occupants.size() > 1) {
-            List<Occupant> occupantsTemp = new ArrayList<>(occupants);
-            for (Occupant actor : occupantsTemp) {
-                if (!actor.isDead()) {
-                    for (Occupant actioned : occupantsTemp) {
-                        if (actor != actioned) {
-                            actor.respondTo(actioned);
-                        }
+            executeOccupantInteractions();
+        }
+        return this;
+    }
+
+    private void executeOccupantInteractions() {
+        List<Occupant> occupantsTemp = new ArrayList<>(occupants);
+        for (Occupant actor : occupantsTemp) {
+            if (!actor.isDead()) {
+                for (Occupant cohabitant : occupantsTemp) {
+                    if (actor != cohabitant) {
+                        actor.respondTo(cohabitant);
                     }
                 }
             }
-            occupants = occupantsTemp;
         }
-        return this;
+        occupants = occupantsTemp;
     }
 
     Room remove(Occupant occupant) {
