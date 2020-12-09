@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 interface Maze {
@@ -264,38 +265,69 @@ class MazeBuilder {
 
 class MazeLoader {
     private final Maze.Options options;
+    private List<Room> allRooms;
+
     MazeLoader(Maze.Options options) {
         this.options = options;
     }
 
     private Maze populateMaze(Maze maze) {
-        Room entrance = maze.entrance();
+        allRooms = getAllRooms(maze);
+        addWumpi(maze);
+        addPits(maze);
+        return maze;
+    }
 
+    private List<Room> getAllRooms(Maze maze) {
+        return collectRoom(maze.entrance(), new HashSet<>());
+    }
+
+    private List<Room> collectRoom(Room room, Set<Room> rooms) {
+        if (!rooms.contains(room)) {
+            rooms.add(room);
+            for (Room exit : room.exits()) {
+                if (!rooms.contains(exit)) {
+                    collectRoom(exit, rooms);
+                }
+            }
+        }
+        return rooms.stream().collect(Collectors.toUnmodifiableList());
+    }
+
+    private void addOccupants(Maze maze, List<? extends Room.Occupant> occupants) {
+        for (Room.Occupant occupant : occupants) {
+            int occupantIdx = Random.getRandomizer().nextInt(allRooms.size());
+            while (maze.entrance().equals(allRooms.get(occupantIdx))) {  // TODO don't double up pits
+                occupantIdx = Random.getRandomizer().nextInt(allRooms.size());
+            }
+            occupant.moveTo(allRooms.get(occupantIdx));
+        }
+    }
+
+    private void addPits(Maze maze) {
+        addOccupants(maze, getPits());
+    }
+
+    private List<BottomlessPit> getPits() {
+        List<BottomlessPit> pits = new ArrayList<>();
+        final int pitsRequired = Math.max(1, options.getRoomCount() / 5);
+        for (int idx = 0; idx < pitsRequired; idx++) {
+            pits.add(new BottomlessPit());
+        }
+        return pits;
+    }
+
+    private void addWumpi(Maze maze) {
+        addOccupants(maze, getWumpi());
+    }
+
+    private List<Wumpus> getWumpi() {
         List<Wumpus> wumpi = new ArrayList<>();
-        final int wumpiRequired = options.getRoomCount() / 7;
+        final int wumpiRequired = Math.max(1, options.getRoomCount() / 7);
         for (int idx = 0; idx < wumpiRequired; idx++) {
             wumpi.add(new Wumpus());
         }
-
-        Room currentRoom = entrance;
-        Room nextRoom = currentRoom;
-        for (Wumpus wumpus : wumpi) {
-            boolean wumpidump = false;
-            while(!wumpidump) {
-                for (Room exit : currentRoom.exits()) {
-                    if (!exit.equals(entrance)) {
-                        if (Random.getRandomizer().nextBoolean()) {
-                            wumpus.moveTo(exit);
-                            wumpidump = true;
-                        } else {
-                            nextRoom = exit; //possible ccmex
-                        }
-                    }
-                }
-                currentRoom = nextRoom;
-            }
-        }
-        return maze;
+        return wumpi;
     }
 
     static Maze populate(Maze maze, String[] options) {
