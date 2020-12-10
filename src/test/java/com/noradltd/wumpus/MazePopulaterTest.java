@@ -2,7 +2,10 @@ package com.noradltd.wumpus;
 
 import org.junit.Test;
 
-import static com.noradltd.wumpus.Helpers.countMazeOccupantsByType;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static com.noradltd.wumpus.Helpers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
@@ -54,5 +57,54 @@ public class MazePopulaterTest {
         checkPitPopulation(3);
     }
 
-    // TODO figure out how to get into a situation with
+    private List<Integer> getRoomIdsContainingOccupantsOfType(Class<? extends Room.Occupant> occupantType, Maze maze) {
+        return getAllRooms(maze).stream()
+                .map(room -> room.occupants())
+                .flatMap(occupants -> occupants.stream())
+                .filter(occupant -> occupantType.isInstance(occupant))
+                .map(occupant -> ((Occupier) occupant).getRoom().number())
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
+    private boolean noMoreThanOneOccupantOfTheSameTypePerRoom(Class<? extends Room.Occupant> occupantType) {
+        int roomCount = 5;
+        int occupantCount = roomCount - 1;
+        String optionKey = OPTION_KEY_LOOKUP_BY_OCCUPANT_TYPE.get(occupantType);
+        String[] options = {
+                "--rooms", Integer.toString(roomCount),
+                optionKey, Integer.toString(occupantCount)
+        };
+        Maze maze = MazeLoader.populate(MazeBuilder.build(options), options);
+
+        List<Integer> occupantRoomIds = getRoomIdsContainingOccupantsOfType(occupantType, maze);
+
+        return countMazeOccupantsByType(maze, occupantType) == (roomCount - 1)
+                &&
+                occupantRoomIds.size() == occupantCount;
+    }
+
+    @Test
+    public void noMoreThanOneWumpusPerRoom() {
+        assertThat(noMoreThanOneOccupantOfTheSameTypePerRoom(Wumpus.class), is(true));
+    }
+
+    @Test
+    public void noMoreThanOnePitPerRoom() {
+        assertThat(noMoreThanOneOccupantOfTheSameTypePerRoom(BottomlessPit.class), is(true));
+    }
+
+    @Test
+    public void noMoreThanOneColonyOfBatsPerRoom() {
+        assertThat(noMoreThanOneOccupantOfTheSameTypePerRoom(ColonyOfBats.class), is(true));
+    }
+
+    // TODO so what about mazes smaller than the requested number of Bats, Wumpi, or Pits?
+    //  so what would happen if we had a 1 room maze? 2 room maze?
+    //  in the first case, we should blow up!
+    //  in the second case, we should have a wumus, pit, and bats all in the first room off the entrance
+    //
+    // TODO so there should be a test for a maze MUST have 2 rooms (entrance and other)
+    //
+
 }

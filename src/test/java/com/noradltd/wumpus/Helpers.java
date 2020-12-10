@@ -4,13 +4,16 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileDescriptor;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Helpers {
+    public static final Map<Class<? extends Room.Occupant>, String> OPTION_KEY_LOOKUP_BY_OCCUPANT_TYPE = new HashMap<>() {{
+        put(Wumpus.class, "--wumpi");
+        put(BottomlessPit.class, "--pits");
+        put(ColonyOfBats.class, "--bats");
+    }};
+
     public static String reInterpolateEscapedCharacters(String input) {
         return input.replaceAll("\\\\n", "\n");
     }

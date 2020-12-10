@@ -16,12 +16,22 @@ interface Maze {
             put("rooms", "roomCount");
             put("seed", "randomSeed");
             put("format", "displayFormat");
+            put("wumpi", "wumpiCount");
+            put("pits", "pitCount");
+            put("bats", "batCount");
         }};
         public static final Options DEFAULT = new Options();
+        public static final int DEFAULT_BAT_COUNT = 0;
+        public static final int DEFAULT_PIT_COUNT = 0;
+        public static final int DEFAULT_WUMPUS_COUNT = 1;
+        public static final int DEFAULT_ROOM_COUNT = 20;
         @SuppressWarnings("FieldCanBeLocal")
-        private Integer roomCount = 20;
+        private Integer roomCount = DEFAULT_ROOM_COUNT;
         private Long randomSeed = null;
         private MazeBuilder.Stringifier displayFormat = MazeBuilder.Stringifier.HUMAN;
+        private Integer wumpiCount = DEFAULT_WUMPUS_COUNT;
+        private Integer pitCount = DEFAULT_PIT_COUNT;
+        private Integer batCount = DEFAULT_BAT_COUNT;
 
         private Options() {
         }
@@ -79,6 +89,18 @@ interface Maze {
 
         public MazeBuilder.Stringifier getDisplayFormat() {
             return displayFormat;
+        }
+
+        public Integer getWumpiCount() {
+            return wumpiCount;
+        }
+
+        public Integer getPitCount() {
+            return pitCount;
+        }
+
+        public Integer getBatCount() {
+            return batCount;
         }
     }
 }
@@ -264,70 +286,97 @@ class MazeBuilder {
 }
 
 class MazeLoader {
+    public static final int MINIMUM_PIT_COUNT = 1;
+    public static final int MINIMUM_WUMPUS_COUNT = 1;
+    public static final int MINIMUM_BAT_COUNT = 1;
     private final Maze.Options options;
-    private List<Room> allRooms;
+    private Collection<Room> allRooms;
 
     MazeLoader(Maze.Options options) {
         this.options = options;
     }
 
+    private int getPitCount() {
+        return Math.max(Math.max(MINIMUM_PIT_COUNT, options.getRoomCount() / 5), options.getPitCount());
+    }
+
+    private int getWumpiCount() {
+        return Math.max(Math.max(MINIMUM_WUMPUS_COUNT, options.getRoomCount() / 7), options.getWumpiCount());
+    }
+
+    private int getBatCount() {
+        return Math.max(Math.max(MINIMUM_BAT_COUNT, options.getRoomCount() / 5), options.getBatCount());
+    }
+
     private Maze populateMaze(Maze maze) {
-        allRooms = getAllRooms(maze);
+        allRooms = collectAllRooms(maze);
         addWumpi(maze);
         addPits(maze);
+        addBats(maze);
         return maze;
     }
 
-    private List<Room> getAllRooms(Maze maze) {
-        return collectRoom(maze.entrance(), new HashSet<>());
-    }
+    private Collection<Room> collectAllRooms(Maze maze) {
+        class RoomCollector {
+            private final Collection<Room> allRooms;
 
-    private List<Room> collectRoom(Room room, Set<Room> rooms) {
-        if (!rooms.contains(room)) {
-            rooms.add(room);
-            for (Room exit : room.exits()) {
-                if (!rooms.contains(exit)) {
-                    collectRoom(exit, rooms);
+            RoomCollector(Maze maze) {
+                allRooms = collectRoom(maze.entrance(), new HashSet<>());
+            }
+
+            private Collection<Room> collectRoom(Room room, Set<Room> rooms) {
+                if (!rooms.contains(room)) {
+                    rooms.add(room);
+                    room.exits().stream().filter(exit -> !rooms.contains(exit)).forEach(exit -> collectRoom(exit, rooms));
                 }
+                return rooms.stream().collect(Collectors.toUnmodifiableList());
+            }
+
+            public Collection<Room> getAllRooms() {
+                return allRooms;
             }
         }
-        return rooms.stream().collect(Collectors.toUnmodifiableList());
+        return new RoomCollector(maze).getAllRooms();
     }
 
-    private void addOccupants(Maze maze, List<? extends Room.Occupant> occupants) {
-        for (Room.Occupant occupant : occupants) {
-            int occupantIdx = Random.getRandomizer().nextInt(allRooms.size());
-            while (maze.entrance().equals(allRooms.get(occupantIdx))) {  // TODO don't double up pits
-                occupantIdx = Random.getRandomizer().nextInt(allRooms.size());
-            }
-            occupant.moveTo(allRooms.get(occupantIdx));
-        }
-    }
 
     private void addPits(Maze maze) {
-        addOccupants(maze, getPits());
-    }
-
-    private List<BottomlessPit> getPits() {
-        List<BottomlessPit> pits = new ArrayList<>();
-        final int pitsRequired = Math.max(1, options.getRoomCount() / 5);
-        for (int idx = 0; idx < pitsRequired; idx++) {
-            pits.add(new BottomlessPit());
-        }
-        return pits;
+        addOccupants(maze, createOccupantsByType(getPitCount(), BottomlessPit.class));
     }
 
     private void addWumpi(Maze maze) {
-        addOccupants(maze, getWumpi());
+        addOccupants(maze, createOccupantsByType(getWumpiCount(), Wumpus.class));
     }
 
-    private List<Wumpus> getWumpi() {
-        List<Wumpus> wumpi = new ArrayList<>();
-        final int wumpiRequired = Math.max(1, options.getRoomCount() / 7);
-        for (int idx = 0; idx < wumpiRequired; idx++) {
-            wumpi.add(new Wumpus());
+    private void addBats(Maze maze) {
+        addOccupants(maze, createOccupantsByType(getBatCount(), ColonyOfBats.class));
+    }
+
+    private void addOccupants(Maze maze, Collection<? extends Room.Occupant> occupants) {
+        List<Room> rooms = Arrays.asList(allRooms.toArray(new Room[]{}));
+        for (Room.Occupant occupant : occupants) {
+            int occupantIdx = Random.getRandomizer().nextInt(rooms.size());
+            while (maze.entrance().equals(rooms.get(occupantIdx))
+                    ||
+                    rooms.get(occupantIdx).occupants().stream()
+                            .filter(occ -> occupant.getClass().isInstance(occ))
+                            .count() > 0) {
+                occupantIdx = Random.getRandomizer().nextInt(allRooms.size());
+            }
+            occupant.moveTo(rooms.get(occupantIdx));
         }
-        return wumpi;
+    }
+
+    private Collection<Room.Occupant> createOccupantsByType(int requiredCount, Class<? extends Room.Occupant> occupantClass) {
+        Collection<Room.Occupant> occupants = new ArrayList<>();
+        for (int idx = 0; idx < requiredCount; idx++) {
+            try {
+                occupants.add(occupantClass.getDeclaredConstructor(null).newInstance(null));
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+        return occupants;
     }
 
     static Maze populate(Maze maze, String[] options) {
