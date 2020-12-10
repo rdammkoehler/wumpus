@@ -18,8 +18,8 @@ public class Helpers {
         return input.replaceAll("\\\\n", "\n");
     }
 
-    static Integer countRooms(Room room) {
-        return collectRoom(room, new HashSet<>()).size();
+    static Integer countRooms(Maze maze) {
+        return collectRoom(maze.entrance(), new HashSet<>()).size();
     }
 
     static List<Room> getAllRooms(Maze maze) {

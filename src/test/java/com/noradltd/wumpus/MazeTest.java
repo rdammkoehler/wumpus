@@ -14,7 +14,7 @@ public class MazeTest {
     public void testMazeDefaultsTo20Rooms() {
         Maze maze = MazeBuilder.build();
 
-        assertThat(countRooms(maze.entrance()), is(equalTo(20)));
+        assertThat(countRooms(maze), is(equalTo(20)));
     }
 
     @Test
@@ -23,7 +23,7 @@ public class MazeTest {
         String[] options = {"--rooms", roomLimit.toString()};
         Maze maze = MazeBuilder.build(options);
 
-        assertThat(countRooms(maze.entrance()), is(equalTo(roomLimit)));
+        assertThat(countRooms(maze), is(equalTo(roomLimit)));
     }
 
     @Test
@@ -127,5 +127,12 @@ public class MazeTest {
                 "}\n";
 
         assertThat(MazeBuilder.build(options).toString(), is(equalTo(neatoOutput)));
+    }
+
+    @Test
+    public void aMazeMustHaveTwoRooms() {
+        String[] options = {"--rooms", "0"};
+
+        assertThat(countRooms(MazeBuilder.build(options)), is(equalTo(2)));
     }
 }

@@ -9,16 +9,20 @@ import static org.hamcrest.Matchers.equalTo;
 
 public class MazeSteps {
 
-    Room firstRoom;
+    Maze maze;
 
     @Given("a new Maze")
     public void aNewMaze() {
-        firstRoom = MazeBuilder.build().entrance();
+        maze = MazeBuilder.build();
     }
 
     @Then("there are {int} rooms")
     public void thereAreRooms(int roomCount) {
-        assertThat(Helpers.countRooms(firstRoom), equalTo(roomCount));
+        assertThat(Helpers.countRooms(maze), equalTo(roomCount));
     }
 
+    @Given("the smallest maze possible")
+    public void theSmallestMazePossible() {
+        maze = MazeBuilder.build("--rooms", "1");
+    }
 }

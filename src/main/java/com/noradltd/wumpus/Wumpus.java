@@ -16,7 +16,6 @@ class Wumpus extends Occupier implements Room.Occupant {
     }
 
     private void flee(Hunter hunter) {
-
         int exitCount = getRoom().exits().size();
         if (exitCount > 0) {
             Room exitRoom = getRoom().exits().get(Random.getRandomizer().nextInt(exitCount));

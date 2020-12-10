@@ -106,6 +106,8 @@ interface Maze {
 }
 
 class MazeBuilder {
+    private static final Integer MIN_ROOM_COUNT = 2;
+
     static class MazeStruct implements Maze {
         private final Room entrance;
         private final Stringifier stringifier;
@@ -265,7 +267,11 @@ class MazeBuilder {
     }
 
     private boolean hasEnoughRooms() {
-        return rooms.size() > options.getRoomCount() - 1;
+        return rooms.size() > getRoomCount() - 1;
+    }
+
+    private Integer getRoomCount() {
+        return Math.max(MIN_ROOM_COUNT, options.getRoomCount());
     }
 
     private boolean needsMoreExits(Room room) {
@@ -280,7 +286,7 @@ class MazeBuilder {
         return new MazeBuilder(Maze.Options.DEFAULT).buildMaze();
     }
 
-    static Maze build(String[] options) {
+    static Maze build(String... options) {
         return new MazeBuilder(new Maze.Options(options)).buildMaze();
     }
 }

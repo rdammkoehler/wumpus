@@ -2,11 +2,13 @@ package com.noradltd.wumpus;
 
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.noradltd.wumpus.Helpers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 
 public class MazePopulaterTest {
@@ -99,12 +101,19 @@ public class MazePopulaterTest {
         assertThat(noMoreThanOneOccupantOfTheSameTypePerRoom(ColonyOfBats.class), is(true));
     }
 
-    // TODO so what about mazes smaller than the requested number of Bats, Wumpi, or Pits?
-    //  so what would happen if we had a 1 room maze? 2 room maze?
-    //  in the first case, we should blow up!
-    //  in the second case, we should have a wumus, pit, and bats all in the first room off the entrance
-    //
-    // TODO so there should be a test for a maze MUST have 2 rooms (entrance and other)
-    //
+    @Test
+    public void noMoreThanOneOfEachHazardPerRoomButAllInOneRoom() {
+        String[] options = {"--rooms", "1"};
+
+        Maze maze = MazeLoader.populate(MazeBuilder.build(options), options);
+
+        Integer countOfUniqueRooms = (int) Arrays.asList(Wumpus.class, BottomlessPit.class, ColonyOfBats.class)
+                .stream()
+                .map(occupantType -> getRoomIdsContainingOccupantsOfType(occupantType, maze))
+                .flatMap(subList -> subList.stream())
+                .distinct()
+                .count();
+        assertThat(countOfUniqueRooms, is(equalTo(1)));
+    }
 
 }

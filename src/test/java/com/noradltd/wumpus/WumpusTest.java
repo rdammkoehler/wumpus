@@ -2,6 +2,7 @@ package com.noradltd.wumpus;
 
 import org.junit.jupiter.api.Test;
 
+import static com.noradltd.wumpus.Helpers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
@@ -15,11 +16,11 @@ public class WumpusTest {
 
         initialRoom.add(secondRoom);
         wumpus.moveTo(initialRoom);
-        Helpers.programRandomizer(false);
+        programRandomizer(false);
 
         wumpus.respondTo(new Hunter());
 
-        Helpers.resetRandomizer();
+        resetRandomizer();
         assertThat(initialRoom.occupants(), not(hasItem(wumpus)));
         assertThat(secondRoom.occupants(), hasItem(wumpus));
     }
@@ -34,11 +35,11 @@ public class WumpusTest {
         initialRoom.add(secondRoom);
         secondRoom.add(thirdRoom);
         wumpus.moveTo(initialRoom);
-        Helpers.programRandomizer(false);
+        programRandomizer(false);
 
         wumpus.respondTo(new Hunter());
 
-        Helpers.resetRandomizer();
+        resetRandomizer();
         assertThat(initialRoom.occupants(), not(hasItem(wumpus)));
         assertThat(secondRoom.occupants(), hasItem(wumpus));
         assertThat(thirdRoom.occupants(), not(hasItem(wumpus)));
@@ -48,9 +49,11 @@ public class WumpusTest {
     public void wumpusEatsHunterWhenGivenAChance() {
         Wumpus wumpus = new Wumpus();
         Hunter hunter = new Hunter();
+        programRandomizer(true);
 
         wumpus.respondTo(hunter);
 
+        resetRandomizer();
         assertThat(wumpus.isFed(), is(true));
         assertThat(hunter.isDead(), is(true));
     }
@@ -61,11 +64,11 @@ public class WumpusTest {
         Wumpus wumpus = new Wumpus();
         wumpus.moveTo(room);
         Hunter hunter = new Hunter();
-        Helpers.programRandomizer(false);
+        programRandomizer(false);
 
         wumpus.respondTo(hunter);
 
-        Helpers.resetRandomizer();
+        resetRandomizer();
 
         assertThat(wumpus.isFed(), is(true));
         assertThat(hunter.isDead(), is(true));
