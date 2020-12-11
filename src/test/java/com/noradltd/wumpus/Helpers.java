@@ -1,5 +1,7 @@
 package com.noradltd.wumpus;
 
+import io.cucumber.java.Before;
+
 import java.io.ByteArrayOutputStream;
 import java.io.FileDescriptor;
 import java.io.FileOutputStream;
@@ -87,4 +89,5 @@ public class Helpers {
             return "ProgrammableRandom{bools=" + Arrays.toString(bools) + ", boolIdx=" + boolIdx + '}';
         }
     }
+
 }

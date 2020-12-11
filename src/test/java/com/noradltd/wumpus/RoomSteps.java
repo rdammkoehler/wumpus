@@ -6,27 +6,25 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 
 import static com.noradltd.wumpus.Helpers.reInterpolateEscapedCharacters;
+import static com.noradltd.wumpus.ScenarioContext.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
 public class RoomSteps {
-    Room room;
-    Hunter hunter;
-    Wumpus wumpus;
 
     private String describeRoom() {
-        return new Game.RoomDescriber(room).description();
+        return new Game.RoomDescriber(getRoom()).description();
     }
 
     @Given("^an empty room$")
     public void anEmptyRoom() {
-        room = new Room();
+        setRoom(new Room());
     }
 
     @When("^the hunter enters the room$")
     public void theHunterEntersTheRoom() {
-        hunter = new Hunter();
-        hunter.moveTo(room);
+        setHunter(new Hunter());
+        getHunter().moveTo(getRoom());
     }
 
     @Then("^the room describes itself$")
@@ -36,15 +34,14 @@ public class RoomSteps {
 
     @Given("^a room with a Wumpus$")
     public void aRoomWithAWumpus() {
-        room = new Room();
-        wumpus = new Wumpus();
-        wumpus.moveTo(room);
+        setRoom(new Room());
+        setWumpus(new Wumpus());
+        getWumpus().moveTo(getRoom());
     }
 
     @Then("^the room describes itself with \"([^\"]*)\"$")
     public void theRoomDescribesItselfWithA(String description) {
-        description = reInterpolateEscapedCharacters(description);
-        assertThat(describeRoom(), equalTo(description));
+        assertThat(describeRoom(), equalTo(reInterpolateEscapedCharacters(description)));
     }
 
     @Given("^a room with \"([^\"]*)\" exits$")
@@ -67,7 +64,8 @@ public class RoomSteps {
                 return values[idx++];
             }
         };
-        room = new Room();
+        Room room = new Room();
+        setRoom(room);
         for (int count = 0; count < exitCount; count++) {
             room.add(new Room());
         }

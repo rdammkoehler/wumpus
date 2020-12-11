@@ -6,5 +6,4 @@ import org.junit.runner.RunWith;
 
 @RunWith(Cucumber.class)
 @CucumberOptions(monochrome = true)
-public class CukeTest {
-}
+public class CukeTest {}

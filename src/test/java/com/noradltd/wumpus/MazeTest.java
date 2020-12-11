@@ -6,8 +6,7 @@ import java.io.ByteArrayOutputStream;
 
 import static com.noradltd.wumpus.Helpers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 
 public class MazeTest {
     @Test
@@ -90,43 +89,43 @@ public class MazeTest {
     @Test
     public void testToStringReturnsOutputFormattedForHumansByDefault() {
         String[] options = {"--rooms", "2"};
-        String humanReadableOutput = "Room 30: Has exits 31\n" +
-                "*****\n" +
-                "Room 31: Has exits 30\n" +
-                "*****\n";
+        String humanReadableOutput = "^Room \\d+: Has exits \\d+\n" +
+                "\\*\\*\\*\\*\\*\n" +
+                "Room \\d+: Has exits \\d+\n" +
+                "\\*\\*\\*\\*\\*\n$";
 
-        assertThat(MazeBuilder.build(options).toString(), is(equalTo(humanReadableOutput)));
+        assertThat(MazeBuilder.build(options).toString(), matchesPattern(humanReadableOutput));
     }
 
     @Test
     public void testToStringReturnsOutputFormattedForHumansByWhenRequested() {
         String[] options = {"--format", "human", "--rooms", "2"};
-        String humanReadableOutput = "Room 34: Has exits 35\n" +
-                "*****\n" +
-                "Room 35: Has exits 34\n" +
-                "*****\n";
+        String humanReadableOutput = "^Room \\d+: Has exits \\d+\n" +
+                "\\*\\*\\*\\*\\*\n" +
+                "Room \\d+: Has exits \\d+\n" +
+                "\\*\\*\\*\\*\\*\n$";
 
-        assertThat(MazeBuilder.build(options).toString(), is(equalTo(humanReadableOutput)));
+        assertThat(MazeBuilder.build(options).toString(), matchesPattern(humanReadableOutput));
     }
 
     @Test
     public void testToStringReturnsDOTFormatWhenRequested() {
         String[] options = {"--format", "dot", "--rooms", "2"};
-        String dotOutput = "digraph G {\n" +
-                "\t28 -> 29;\n" +
-                "}\n";
+        String dotOutput = "^digraph G \\{\n" +
+                "\t\\d+ -> \\d+;\n" +
+                "\\}\n$";
 
-        assertThat(MazeBuilder.build(options).toString(), is(equalTo(dotOutput)));
+        assertThat(MazeBuilder.build(options).toString(), matchesPattern(dotOutput));
     }
 
     @Test
     public void testToStringReturnsNEATOFormatWhenRequested() {
         String[] options = {"--format", "neato", "--rooms", "2"};
-        String neatoOutput = "graph G {\n" +
-                "\t22 -- 23;\n" +
-                "}\n";
+        String neatoOutput = "^graph G \\{\n" +
+                "\t\\d+ -- \\d+;\n" +
+                "\\}\n$";
 
-        assertThat(MazeBuilder.build(options).toString(), is(equalTo(neatoOutput)));
+        assertThat(MazeBuilder.build(options).toString(), matchesPattern(neatoOutput));
     }
 
     @Test

@@ -1,5 +1,6 @@
 package com.noradltd.wumpus;
 
+import org.junit.Ignore;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -18,7 +19,8 @@ public class HunterTest {
         assertThat(hunter.kills(), equalTo(1));
     }
 
-    @Test
+    // TODO maybe not? Maybe the corpse lays there...silly since the game is over, but what if you have 'lives'?
+    @Ignore
     public void huntersLeaveTheRoomWhenTheyDie() {
         Room room = new Room();
         Hunter hunter = new Hunter();
