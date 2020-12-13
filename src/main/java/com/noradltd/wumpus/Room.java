@@ -7,12 +7,43 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 class Room {
-    interface Occupant extends Comparable<Occupier> {
-        void moveTo(Room room);
+    static abstract class Occupant implements Comparable<Occupant> {
+        private Room room;
+        private Boolean dead = Boolean.FALSE;
 
-        void respondTo(Occupant actioned);
+        public Room getRoom() {
+            return room;
+        }
 
-        Boolean isDead();
+        public void moveTo(Room newRoom) {
+            if (room != null) {
+                System.out.println("Moving " + this.getClass().getSimpleName() + " from " + room.number() + " to " + newRoom.number());
+                room.remove(this);
+            } else {
+                System.out.println("Moving " + this.getClass().getSimpleName() + " to " + newRoom.number());
+            }
+            room = newRoom;
+            newRoom.add(this);
+        }
+
+        abstract void respondTo(Occupant actioned);
+
+        public Boolean isDead() {
+            return dead;
+        }
+
+        protected void die() {
+            System.out.println(this.getClass().getSimpleName() + " has died!");
+            dead = Boolean.TRUE;
+        }
+
+        abstract String describe();
+
+        @Override
+        public int compareTo(Occupant other) {
+            return this.getClass().getSimpleName().compareTo(other.getClass().getSimpleName());
+        }
+
     }
 
     interface RoomNumberer {
@@ -38,25 +69,32 @@ class Room {
     }
 
     Room add(Occupant occupant) {
-        occupants.add(occupant);
-        if (occupants.size() > 1) {
-            executeOccupantInteractions();
-        }
+        executeOccupantInteractions(occupant);
         return this;
     }
 
-    private void executeOccupantInteractions() {
-        List<Occupant> occupantsTemp = new ArrayList<>(occupants);
-        for (Occupant actor : occupantsTemp) {
-            if (!actor.isDead()) {
-                for (Occupant cohabitant : occupantsTemp) {
-                    if (actor != cohabitant) {
-                        actor.respondTo(cohabitant);
+    private void executeOccupantInteractions(Occupant interloper) {
+        if (occupants.size() > 0) {
+            System.out.println(interloper.getClass().getSimpleName() + " is interacting with " + occupants.stream()
+                    .map(occupant -> occupant.getClass().getSimpleName() + "(" + ((occupant.isDead()) ? "DEAD" : "ALIVE") + ")")
+                    .collect(Collectors.joining(", ")));
+            for (Occupant cohabitant : new ArrayList<>(occupants)) {
+                if (!interloper.isDead()) {
+                    if (Random.getRandomizer().nextBoolean()) {
+                        cohabitant.respondTo(interloper);
+                        interloper.respondTo(cohabitant);
+                    } else {
+                        interloper.respondTo(cohabitant);
+                        cohabitant.respondTo(interloper);
                     }
                 }
             }
+        } else {
+            System.out.println("this room is empty");
         }
-        occupants = occupantsTemp;
+        if (!interloper.isDead() && interloper.getRoom().equals(this)) { // bad casting, please fix
+            occupants.add(interloper);
+        }
     }
 
     @SuppressWarnings("UnusedReturnValue")

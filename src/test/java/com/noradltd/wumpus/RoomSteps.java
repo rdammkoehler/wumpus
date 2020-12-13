@@ -9,6 +9,7 @@ import static com.noradltd.wumpus.Helpers.reInterpolateEscapedCharacters;
 import static com.noradltd.wumpus.ScenarioContext.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.matchesPattern;
 
 public class RoomSteps {
 
@@ -29,7 +30,7 @@ public class RoomSteps {
 
     @Then("^the room describes itself$")
     public void theRoomDescribesItself() {
-        assertThat(describeRoom(), equalTo("Has exits \nContains a Hunter"));
+        assertThat(describeRoom(), matchesPattern("Room #\\d+\nHas \\d+ exits."));
     }
 
     @Given("^a room with a Wumpus$")
@@ -39,9 +40,9 @@ public class RoomSteps {
         getWumpus().moveTo(getRoom());
     }
 
-    @Then("^the room describes itself with \"([^\"]*)\"$")
-    public void theRoomDescribesItselfWithA(String description) {
-        assertThat(describeRoom(), equalTo(reInterpolateEscapedCharacters(description)));
+    @Then("^the room describes itself with as containing a Wumpus$")
+    public void theRoomDescribesItselfWithA() {
+        assertThat(describeRoom(), matchesPattern("Room #\\d+\nHas \\d+ exits.\nContains a Wumpus"));
     }
 
     @Given("^a room with \"([^\"]*)\" exits$")
@@ -73,7 +74,7 @@ public class RoomSteps {
     }
 
     @Then("^the room describes itself as having exits \"([^\"]*)\"$")
-    public void theRoomDescribesItselfAsHavingExits(String exitList) {
-        assertThat(describeRoom(), equalTo("Has exits " + exitList + "\nContains a Hunter"));
+    public void theRoomDescribesItselfAsHavingExits(String exitCount) {
+        assertThat(describeRoom(), matchesPattern("Room #\\d+\nHas " + exitCount + " exits."));
     }
 }

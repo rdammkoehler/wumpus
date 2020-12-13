@@ -39,10 +39,9 @@ public class GameSteps {
         game = new Game(new String[]{});
     }
 
-    @Then("^the first room is described as \"([^\"]*)\"$")
-    public void the_first_room_is_described(String description) {
-        description = reInterpolateEscapedCharacters(description) + '\n';
-        assertThat(stdout.toString(), equalTo(description));
+    @Then("^the first room is described$")
+    public void the_first_room_is_described() {
+        assertThat(stdout.toString(), matchesPattern("^Room #\\d+\\nHas \\d+ exits.\\n"));
     }
 
     @Then("^the hunter is in the first room$")

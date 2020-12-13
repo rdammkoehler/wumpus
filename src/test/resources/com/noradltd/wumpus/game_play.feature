@@ -3,7 +3,7 @@ Feature: Game Play
   Scenario: Game Start
     Given the program is executed
     When the game has initialized
-    Then the first room is described as "Has exits 10\nContains a Hunter"
+    Then the first room is described
 
   Scenario: Hunter is in the First Room
     Given the program is executed

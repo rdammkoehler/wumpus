@@ -64,7 +64,7 @@ public class MazePopulaterTest {
                 .map(room -> room.occupants())
                 .flatMap(occupants -> occupants.stream())
                 .filter(occupant -> occupantType.isInstance(occupant))
-                .map(occupant -> ((Occupier) occupant).getRoom().number())
+                .map(occupant -> occupant.getRoom().number())
                 .distinct()
                 .collect(Collectors.toList());
     }

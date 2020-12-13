@@ -89,9 +89,9 @@ public class MazeTest {
     @Test
     public void testToStringReturnsOutputFormattedForHumansByDefault() {
         String[] options = {"--rooms", "2"};
-        String humanReadableOutput = "^Room \\d+: Has exits \\d+\n" +
+        String humanReadableOutput = "^Room #\\d+\\nHas \\d+ exits.\n" +
                 "\\*\\*\\*\\*\\*\n" +
-                "Room \\d+: Has exits \\d+\n" +
+                "Room #\\d+\\nHas \\d+ exits.\n" +
                 "\\*\\*\\*\\*\\*\n$";
 
         assertThat(MazeBuilder.build(options).toString(), matchesPattern(humanReadableOutput));
@@ -100,9 +100,9 @@ public class MazeTest {
     @Test
     public void testToStringReturnsOutputFormattedForHumansByWhenRequested() {
         String[] options = {"--format", "human", "--rooms", "2"};
-        String humanReadableOutput = "^Room \\d+: Has exits \\d+\n" +
+        String humanReadableOutput = "^Room #\\d+\\nHas \\d+ exits.\n" +
                 "\\*\\*\\*\\*\\*\n" +
-                "Room \\d+: Has exits \\d+\n" +
+                "Room #\\d+\\nHas \\d+ exits.\n" +
                 "\\*\\*\\*\\*\\*\n$";
 
         assertThat(MazeBuilder.build(options).toString(), matchesPattern(humanReadableOutput));

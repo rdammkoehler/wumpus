@@ -80,6 +80,11 @@ public class HunterSteps {
             arrowCount--;
             return getArrow();
         }
+
+        @Override
+        public String arrowsRemaining() {
+            return Integer.toString(arrowCount);
+        }
     }
 
     @Given("a fresh maze")
