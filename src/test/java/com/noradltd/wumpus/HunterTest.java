@@ -10,10 +10,12 @@ import static org.hamcrest.Matchers.is;
 public class HunterTest {
     @Test
     public void aHunterWillKillAWumpusOnSite() {
+        Room room = new Room();
         Hunter hunter = new Hunter();
         Wumpus wumpus = new Wumpus();
+        hunter.moveTo(room);
 
-        hunter.respondTo(wumpus);
+        wumpus.moveTo(room);
 
         assertThat(wumpus.isDead(), is(true));
         assertThat(hunter.kills(), equalTo(1));

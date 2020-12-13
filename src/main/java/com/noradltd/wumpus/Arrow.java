@@ -50,7 +50,7 @@ public class Arrow extends Room.Occupant {
 
 class ArrowQuiver implements Hunter.Quiver {
 
-    private final Integer arrowCount;
+    private int arrowCount;
 
     ArrowQuiver(Integer initialArrowCount) {
         arrowCount = initialArrowCount;
@@ -67,12 +67,13 @@ class ArrowQuiver implements Hunter.Quiver {
             System.out.println("No more arrows in the quiver. You'll have to use your wits!");
             return Arrow.NULL_ARROW;
         }
+        arrowCount--;
         return new Arrow();
     }
 
     @Override
     public String arrowsRemaining() {
-        return arrowCount.toString();
+        return Integer.toString(arrowCount);
     }
 
 
