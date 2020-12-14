@@ -32,4 +32,35 @@ public class HunterTest {
 
         assertThat(room.occupants().size(), equalTo(0));
     }
+
+    @Test
+    public void toStringRevealsOurProwess() {
+        assertThat(new Hunter().toString(), is(equalTo("A genuine specimen of Wumpus murdering prowess")));
+    }
+
+    @Test
+    public void toStringRevealsOurStateInDeath() {
+        Hunter deadHunter = new Hunter();
+
+        deadHunter.die();
+
+        assertThat(deadHunter.toString(), is(equalTo("The corpse of an unfortunate soul lies here")));
+    }
+
+    @Test
+    public void inventoryRevealsOurAmmoCount() {
+        assertThat(new Hunter().inventory(), is(equalTo("Inventory:\n\tArrows: 0\n\tWumpus Scalps: 0\n")));
+    }
+
+    @Test
+    public void inventroyTellsUsHowMuchWeKill() {
+        Room room = new Room();
+        Hunter killer = new Hunter();
+        Wumpus wumpus = new Wumpus();
+        killer.moveTo(room);
+
+        wumpus.moveTo(room);
+
+        assertThat(killer.inventory(), is(equalTo("Inventory:\n\tArrows: 0\n\tWumpus Scalps: 1\n")));
+    }
 }

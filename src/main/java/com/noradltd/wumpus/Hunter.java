@@ -47,12 +47,18 @@ class Hunter extends Room.Occupant {
         if (validExitNumber(exitNumber)) {
             Room target = getRoom().exits().get(exitNumber);
             Arrow arrow = quiver.next();
+            Logger.info("Your arrow hurtles down tunnel " + (exitNumber + 1));
+            if (target.occupants().stream().filter(occupant -> Wumpus.class.isAssignableFrom(occupant.getClass())).count() > 0) {
+                Logger.info("There is a Wumpus in the room!");
+            } else {
+                Logger.info("There is no Wumpus there");
+            }
             arrow.moveTo(target);
             if (arrow.killedAWumpus()) {
                 kills++;
             }
         } else {
-            System.out.println("You can't shoot that way");
+            Logger.info("You can't shoot that way");
         }
     }
 
@@ -60,14 +66,14 @@ class Hunter extends Room.Occupant {
         if (validExitNumber(exitNumber)) {
             super.moveTo(getRoom().exits().get(exitNumber));
         } else {
-            System.err.println("WTF?");
+            Logger.error("invalid exitNumber (" + exitNumber +") in Hunter.moveTo()");
         }
     }
 
     private boolean validExitNumber(int exitNumber) {
         final int limit = getRoom().exits().size() - 1;
         if (exitNumber < 0 || exitNumber > limit) {
-            System.out.println("Invalid Choice: Pick from 1 to " + (limit + 1));
+            Logger.error("Invalid Choice: Pick from 1 to " + (limit + 1));
             return false;
         }
         return true;
@@ -75,11 +81,11 @@ class Hunter extends Room.Occupant {
 
     protected void kill(Wumpus wumpus) {
         if (getRoom().equals(wumpus.getRoom())) {
-            System.out.println("With a slash of your knife you eviscerate a Wumpus; it's corpse slides to the floor");
+            Logger.info("With a slash of your knife you eviscerate a Wumpus; it's corpse slides to the floor");
             wumpus.die();
             kills += 1;
         } else {
-            System.out.println("The Wumpus escapes your violent assault");
+            Logger.info("The Wumpus escapes your violent assault");  // TODO this means the wumpus fled from you!
         }
 
     }
@@ -97,13 +103,13 @@ class Hunter extends Room.Occupant {
         return "You sense the presence of death";
     }
 
-    public void inventory() {
-        System.out.println(new StringBuilder()
+    public String inventory() {
+        return new StringBuilder()
                 .append("Inventory:\n\tArrows: ")
                 .append(quiver.arrowsRemaining())
                 .append("\n\tWumpus Scalps: " + kills())
                 .append("\n")
-                .toString());
+                .toString();
     }
 
     public String toString() {

@@ -31,4 +31,15 @@ public class ColonyOfBatsTest {
 
         assertThat(wumpus.getRoom(), is(equalTo(room)));
     }
+
+    @Test
+    public void describeColonyOfBatsTellsUsWhatWeKnow() {
+        assertThat(new ColonyOfBats().describe(), is(equalTo("You hear the rustling of leathery wings")));
+    }
+
+    @Test
+    public void toStringIllustratesTheHorror() {
+        assertThat(new ColonyOfBats().toString(), is(equalTo("A horde of blackened leather, slick with the blood of their victims undulates across the ceiling")));
+    }
+
 }

@@ -66,7 +66,7 @@ interface Maze {
         }
 
         private void printHelp() {
-            System.out.println("\t--rooms #\t\tLimit the number or rooms\n" +
+            Logger.info("\t--rooms #\t\tLimit the number or rooms\n" +
                     "\t--seed  #\t\tSet the Randomizer seed\n" +
                     "\t--format $\t\tSet the output format (human, dot, neato)");
         }

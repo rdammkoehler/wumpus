@@ -7,19 +7,19 @@ public class Arrow extends Room.Occupant {
     private boolean killedAWumpus = false;
 
     @Override
-    public void respondTo(Room.Occupant visitor) {
-        if (Wumpus.class.isInstance(visitor)) {
-            Wumpus wumpus = (Wumpus) visitor;
+    public void respondTo(Room.Occupant occupant) {
+        if (Wumpus.class.isInstance(occupant)) {
+            Wumpus wumpus = (Wumpus) occupant;
             wumpus.die();
             killedAWumpus = true;
-            System.out.println("Your arrow drives itself deep into the hideous beast; it's life force escaping from the hole");
+            Logger.info("Your arrow drives itself deep into the hideous beast; it's life force escaping from the hole");
             die(); // not a totally appropriate verb
         } else {
             if(Random.getRandomizer().nextBoolean()) {
-                System.out.println("You hear the sharp crack of your arrow as it splitters against the cave wall");
+                Logger.info("You hear the sharp crack of your arrow as it splitters against the cave wall");
                 die(); // not a totally appropriate verb
             } else {
-                System.out.println("You hear a clattering sound in the distance");
+                Logger.info("You hear a clattering sound in the distance");
             }
         }
     }
@@ -35,7 +35,7 @@ public class Arrow extends Room.Occupant {
 
     static final Arrow NULL_ARROW = new Arrow() {
         @Override
-        public void respondTo(Room.Occupant visitor) {
+        public void respondTo(Room.Occupant occupant) {
             // no-op
         }
     };
@@ -64,7 +64,7 @@ class ArrowQuiver implements Hunter.Quiver {
     @Override
     public Arrow next() {
         if (isEmpty()) {
-            System.out.println("No more arrows in the quiver. You'll have to use your wits!");
+            Logger.info("No more arrows in the quiver. You'll have to use your wits!");
             return Arrow.NULL_ARROW;
         }
         arrowCount--;

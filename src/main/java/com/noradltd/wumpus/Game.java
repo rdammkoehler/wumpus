@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 class Game {
+
     static class RoomDescriber extends Room {
         private final Room room;
 
@@ -94,9 +95,9 @@ class Game {
     }
 
     void diagnostics() {
-        System.out.println("Current Room " + hunter.getRoom().number());
-        System.out.println("Occupants: " + diagnoticFor(hunter.getRoom()));
         StringBuilder sb = new StringBuilder();
+        sb.append("Current Room ").append(hunter.getRoom().number()).append("\n");
+        sb.append("Occupants: ").append(diagnosticFor(hunter.getRoom())).append("\n");
         sb.append("Exits:");
         int idx = 1;
         for (Room exit : hunter.getRoom().exits()) {
@@ -107,18 +108,18 @@ class Game {
             sb.append("Will be described as:\n");
             sb.append(new RoomDescriber(exit).description());
             sb.append("\t");
-            sb.append(diagnoticFor(exit));
+            sb.append(diagnosticFor(exit));
             sb.append("\t\n*****\n");
         }
         sb.append("----------------------------------------");
         sb.append("Room List\n");
-        allRooms(maze).forEach(room -> sb.append("[#")
-                .append(room.number())
-                .append(" {")
-                .append(room.occupants().stream().map(occupant -> occupant.getClass().getSimpleName()).collect(Collectors.joining(", ")))
-                .append("}] ")
+        allRooms(maze).forEach(room -> {
+                    final String occupantList = room.occupants().stream()
+                            .map(occupant -> occupant.getClass().getSimpleName()).collect(Collectors.joining(", "));
+                    sb.append("[#").append(room.number()).append(" {").append(occupantList).append("}] ");
+                }
         );
-        System.out.println(sb.toString());
+        Logger.info(sb.toString());
 
     }
 
@@ -139,7 +140,7 @@ class Game {
     }
 
 
-    private String diagnoticFor(Room room) {
+    private String diagnosticFor(Room room) {
         return room.occupants().stream()
                 .map(occupant -> occupant.getClass().getSimpleName() + "(" + ((occupant.isDead()) ? "DEAD" : "ALIVE") + ")")
                 .collect(Collectors.joining(", "));

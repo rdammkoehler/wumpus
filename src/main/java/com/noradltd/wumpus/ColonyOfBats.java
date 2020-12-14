@@ -5,8 +5,8 @@ public class ColonyOfBats extends Room.Occupant {
     public void respondTo(Room.Occupant actioned) {
         if (Hunter.class.isInstance(actioned)) {
             Hunter hunter = (Hunter) actioned;
-            System.out.println("A swarm of bats lift you from the ground in a blinding flurry of leathery wings");
-            hunter.moveTo(findRandomRoom()); // TODO but hunter is now in both rooms, why?
+            Logger.info("A swarm of bats lift you from the ground in a blinding flurry of leathery wings");
+            hunter.moveTo(findRandomRoom());
         }
     }
 

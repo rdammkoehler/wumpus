@@ -20,14 +20,14 @@ class Wumpus extends Room.Occupant {
             if (exitCount > 0) {
                 Room exitRoom = getRoom().exits().get(Random.getRandomizer().nextInt(exitCount));
                 moveTo(exitRoom);
-                System.out.println("The startled Wumpus runs away! (" + exitRoom.number() + ")");
+                Logger.info("The startled Wumpus runs away! (" + exitRoom.number() + ")");
             } else {
                 eat(hunter);
             }
     }
 
     private void eat(Hunter hunter) {
-        System.out.println("Nom Nom Nom, the Wumpus has eaten you.");
+        Logger.info("Nom Nom Nom, the Wumpus has eaten you.");
         hunter.die();
         fed = Boolean.TRUE;
     }

@@ -17,10 +17,10 @@ class Room {
 
         public void moveTo(Room newRoom) {
             if (room != null) {
-                System.out.println("Moving " + this.getClass().getSimpleName() + " from " + room.number() + " to " + newRoom.number());
+                Logger.debug("Moving " + this.getClass().getSimpleName() + " from " + room.number() + " to " + newRoom.number());
                 room.remove(this);
             } else {
-                System.out.println("Moving " + this.getClass().getSimpleName() + " to " + newRoom.number());
+                Logger.debug("Moving " + this.getClass().getSimpleName() + " to " + newRoom.number());
             }
             room = newRoom;
             newRoom.add(this);
@@ -33,7 +33,7 @@ class Room {
         }
 
         protected void die() {
-            System.out.println(this.getClass().getSimpleName() + " has died!");
+            Logger.debug(this.getClass().getSimpleName() + " has died!");
             dead = Boolean.TRUE;
         }
 
@@ -75,7 +75,7 @@ class Room {
 
     private void executeOccupantInteractions(Occupant interloper) {
         if (occupants.size() > 0) {
-            System.out.println(interloper.getClass().getSimpleName() + " is interacting with " + occupants.stream()
+            Logger.debug(interloper.getClass().getSimpleName() + " is interacting with " + occupants.stream()
                     .map(occupant -> occupant.getClass().getSimpleName() + "(" + ((occupant.isDead()) ? "DEAD" : "ALIVE") + ")")
                     .collect(Collectors.joining(", ")));
             for (Occupant cohabitant : new ArrayList<>(occupants)) {
@@ -90,7 +90,7 @@ class Room {
                 }
             }
         } else {
-            System.out.println("this room is empty");
+            Logger.debug("this room is empty");
         }
         if (!interloper.isDead() && interloper.getRoom().equals(this)) { // bad casting, please fix
             occupants.add(interloper);
