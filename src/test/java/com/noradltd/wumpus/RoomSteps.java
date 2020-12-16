@@ -1,21 +1,18 @@
 package com.noradltd.wumpus;
 
 
-import io.cucumber.java.PendingException;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 
-import static com.noradltd.wumpus.Helpers.reInterpolateEscapedCharacters;
 import static com.noradltd.wumpus.ScenarioContext.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.matchesPattern;
 
 public class RoomSteps {
 
     private String describeRoom() {
-        return new Game.RoomDescriber(getRoom()).description();
+        return new Room.RoomDescriber(getRoom()).description();
     }
 
     @Given("^an empty room$")

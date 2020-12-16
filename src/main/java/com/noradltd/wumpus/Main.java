@@ -28,14 +28,14 @@ public class Main {
 
         {
             addCommands((game, arg) -> game.quit(), "q", "x", "quit", "exit");
-            addCommands((game, arg) -> game.hunter().moveTo(exitNumber(arg)), "m", "move");
-            addCommands((game, arg) -> game.hunter().shoot(exitNumber(arg)), "s", "shoot");
-            addCommands((game, arg) -> Logger.info(game.hunter().inventory()), "i", "inv", "inventory");
+            addCommands((game, arg) -> game.move(exitNumber(arg)), "m", "move");
+            addCommands((game, arg) -> game.shoot(exitNumber(arg)), "s", "shoot");
+            addCommands((game, arg) -> Logger.info(game.inventory()), "i", "inv", "inventory");
             addCommands((game, arg) -> showHelp(), "?", "h", "help");
             addCommands((game, arg) -> game.isPlaying(), "l", "look");
             // TODO remove the following commands after play-testing
-            addCommands((game, arg) -> game.diagnostics(), "show");
-            addCommands((game, arg) -> game.hunter().moveTo(findRoom(game.maze(), Integer.parseInt(arg))), "g", "goto");
+            addCommands((game, arg) -> Logger.info(game.diagnostics()), "show");
+            addCommands((game, arg) -> game.gotoRoom(Integer.parseInt(arg)), "g", "goto");
         }
     };
 
@@ -51,7 +51,7 @@ public class Main {
             while (game.isPlaying()) {
                 Command command = COMMANDS.get("what");
                 String arg = null;
-                Logger.info(game.describe());
+                Logger.info(game.toString());
                 Logger.info("move/shoot?");
                 try {
                     final String input = terminal.readLine();
@@ -93,22 +93,6 @@ public class Main {
         return Integer.parseInt(arg) - 1;
     }
 
-    private Room findRoom(Maze maze, Integer roomNumber) {
-        List<Room> allRooms = collectRoom(maze.entrance(), new HashSet<>()).stream().collect(Collectors.toUnmodifiableList());
-        return allRooms.stream().filter(room -> room.number() == roomNumber).distinct().collect(Collectors.toList()).get(0);
-    }
-
-    private Set<Room> collectRoom(Room room, Set<Room> rooms) {
-        if (!rooms.contains(room)) {
-            rooms.add(room);
-            for (Room exit : room.exits()) {
-                if (!rooms.contains(exit)) {
-                    collectRoom(exit, rooms);
-                }
-            }
-        }
-        return rooms;
-    }
 
     public static void main(String[] args) {
         new Main().play(args);

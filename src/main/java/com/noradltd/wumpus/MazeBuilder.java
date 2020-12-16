@@ -136,7 +136,7 @@ class MazeBuilder {
                 Set<Room> rooms = roomsOf(maze.entrance());
                 StringBuilder sb = new StringBuilder();
                 for (Room room : rooms) {
-                    sb.append(new Game.RoomDescriber(room).description()).append("\n*****\n");
+                    sb.append(new Room.RoomDescriber(room).description()).append("\n*****\n");
                 }
                 return sb.toString();
             }

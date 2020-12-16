@@ -2,7 +2,7 @@ package com.noradltd.wumpus;
 
 class Wumpus extends Room.Occupant {
 
-    private Boolean fed = Boolean.FALSE;
+    private boolean fed = false;
 
     protected void die() {
         super.die();
@@ -11,7 +11,8 @@ class Wumpus extends Room.Occupant {
         }
     }
 
-    public Boolean isFed() {
+    // TODO who care's if the Wumpus is Fed?
+    public boolean isFed() {
         return fed;
     }
 
@@ -20,7 +21,7 @@ class Wumpus extends Room.Occupant {
             if (exitCount > 0) {
                 Room exitRoom = getRoom().exits().get(Random.getRandomizer().nextInt(exitCount));
                 moveTo(exitRoom);
-                Logger.info("The startled Wumpus runs away! (" + exitRoom.number() + ")");
+                Logger.info("The startled Wumpus runs away!");
             } else {
                 eat(hunter);
             }
@@ -29,7 +30,7 @@ class Wumpus extends Room.Occupant {
     private void eat(Hunter hunter) {
         Logger.info("Nom Nom Nom, the Wumpus has eaten you.");
         hunter.die();
-        fed = Boolean.TRUE;
+        fed = true;
     }
 
     @Override

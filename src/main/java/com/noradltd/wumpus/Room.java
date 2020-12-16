@@ -1,9 +1,6 @@
 package com.noradltd.wumpus;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 class Room {
@@ -124,5 +121,67 @@ class Room {
     @Override
     public int hashCode() {
         return instanceNumber;
+    }
+
+    @Override
+    public String toString() {
+        return new RoomDescriber(this).description();
+    }
+    static class RoomDescriber {
+        private final Room room;
+
+        RoomDescriber(Room room) {
+            this.room = room;
+        }
+
+        public String description() {
+            StringBuilder sb = new StringBuilder();
+            sb.append("You are in room #").append(room.number()).append("\n");
+            describeExits(sb);
+            describeOccupants(sb);
+            describeNeighbors(sb);
+            return sb.toString();
+        }
+
+        private void describeNeighbors(StringBuilder sb) {
+            sb.append("\n");
+            room.exits().stream()
+                    .flatMap(exit -> exit.occupants().stream())
+                    .filter(occupant -> !Arrow.class.isInstance(occupant))
+                    .map(Occupant::describe)
+                    .distinct()
+                    .forEach(description -> sb.append(description).append("\n"));
+        }
+
+        private void describeOccupants(StringBuilder sb) {
+            final Collection<Occupant> describableOccupants = room.occupants().stream()
+                    .filter(occupant -> !Hunter.class.isInstance(occupant))
+                    .filter(occupant -> !occupant.isDead())
+                    .sorted()
+                    .collect(Collectors.toList());
+            if (describableOccupants.size() > 1) {
+                sb.append("\nContains ");
+                boolean and = false;
+                for (Occupant occupant : describableOccupants) {
+                    if (and) {
+                        sb.append(" and ");
+                    }
+                    sb.append(describe(occupant));
+                    and = true;
+                }
+            }
+        }
+
+        private String describe(Occupant occupant) {
+            StringBuilder sb = new StringBuilder();
+            String occupantName = occupant.getClass().getSimpleName();
+            sb.append("a "); // TODO plural
+            sb.append(occupantName);
+            return sb.toString();
+        }
+
+        private void describeExits(StringBuilder sb) {
+            sb.append("This room has ").append(room.exits().size()).append(" exits.");
+        }
     }
 }
