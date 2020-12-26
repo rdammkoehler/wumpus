@@ -3,6 +3,7 @@ package com.noradltd.wumpus;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 
 public class ArrowTest {
@@ -35,8 +36,39 @@ public class ArrowTest {
     }
 
     @Test
-    public void arrowsCannotBeReused() {
+    public void arrowsKnowWhenTheyFail() {
+        Room emptyRoom = new Room();
+        Arrow arrow = new Arrow();
 
+        arrow.moveTo(emptyRoom);
+
+        assertThat(arrow.killedAWumpus(),is(false));
+    }
+
+    @Test
+    public void brokenArrowsCannotBeReused() {
+        Room batRoom = new Room();
+        ColonyOfBats bats = new ColonyOfBats();
+        bats.moveTo(batRoom);
+        Arrow arrow = new Arrow();
+
+        arrow.moveTo(batRoom);
+
+        assertThat(arrow.isBroken(), is(true));
+    }
+
+    @Test
+    public void unBrokenArrowsCanBeReused() {
+        Room batRoom = new Room();
+        ColonyOfBats bats = new ColonyOfBats();
+        bats.moveTo(batRoom);
+        Arrow arrow = new Arrow();
+        Helpers.programRandomizer(false, false);
+
+        arrow.moveTo(batRoom);
+
+        assertThat(arrow.isBroken(), is(false));
+        Helpers.resetRandomizer();
     }
 
     @Test
@@ -46,5 +78,30 @@ public class ArrowTest {
         quiver.next();
 
         assertThat(quiver.isEmpty(), is(true));
+    }
+
+    @Test
+    public void brokenArrowsAreShattered() {
+        Arrow arrow = new Arrow();
+        arrow.die();
+
+        assertThat(arrow.toString(), is(equalTo("A shattered arrow lies here")));
+    }
+
+    @Test
+    public void unBrokenArrowsAreViciouslyBarbed() {
+        assertThat(new Arrow().toString(), is(equalTo("A nasty looking arrow with a viciously barbed point lies here")));
+    }
+
+    @Test
+    public void describedArrowsShouldntBe() {
+        assertThat(new Arrow().describe(), is(equalTo("--arrows should not be described--")));
+    }
+
+    @Test
+    public void nullArrowsAreHarmless() {
+        // how?
+        Arrow.NULL_ARROW.respondTo(null);
+        //doesn't throw an exception?
     }
 }

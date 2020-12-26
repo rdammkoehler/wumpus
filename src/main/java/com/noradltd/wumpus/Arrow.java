@@ -2,7 +2,7 @@ package com.noradltd.wumpus;
 
 public class Arrow extends Room.Occupant {
 
-    private static int nextArrowId=0;
+    private static int nextArrowId = 0;
     private int arrowId = nextArrowId++;
     private boolean killedAWumpus = false;
 
@@ -13,15 +13,23 @@ public class Arrow extends Room.Occupant {
             wumpus.die();
             killedAWumpus = true;
             Logger.info("Your arrow drives itself deep into the hideous beast; it's life force escaping from the hole");
-            die(); // not a totally appropriate verb
+            shatter();
         } else {
-            if(Random.getRandomizer().nextBoolean()) {
+            if (Random.getRandomizer().nextBoolean()) {
                 Logger.info("You hear the sharp crack of your arrow as it splitters against the cave wall");
-                die(); // not a totally appropriate verb
+                shatter();
             } else {
                 Logger.info("You hear a clattering sound in the distance");
             }
         }
+    }
+
+    public boolean isBroken() {
+        return isDead();
+    }
+
+    private void shatter() {
+        die();
     }
 
     public boolean killedAWumpus() {
@@ -42,9 +50,9 @@ public class Arrow extends Room.Occupant {
 
     public String toString() {
         if (isDead()) {
-            return "A shattered arrow (" + arrowId + ")";
+            return "A shattered arrow lies here";
         }
-        return "A nasty arrow with a viciously barbed point (" + arrowId + ")";
+        return "A nasty looking arrow with a viciously barbed point lies here";
     }
 }
 
