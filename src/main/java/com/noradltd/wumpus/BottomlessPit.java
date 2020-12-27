@@ -16,6 +16,6 @@ public class BottomlessPit extends Room.Occupant {
     }
 
     public String toString() {
-        return "A gaping maw, fillwed with darkeness and emitting an icy breath of despair";
+        return "A gaping maw, filled with darkness and emitting an icy breath of despair";
     }
 }

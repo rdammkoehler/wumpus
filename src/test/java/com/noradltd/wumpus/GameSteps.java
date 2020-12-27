@@ -1,8 +1,6 @@
 package com.noradltd.wumpus;
 
-import io.cucumber.core.backend.Pending;
 import io.cucumber.java.After;
-import io.cucumber.java.PendingException;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -11,7 +9,6 @@ import java.io.ByteArrayOutputStream;
 
 import static com.noradltd.wumpus.Helpers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
 
 
 public class GameSteps {
@@ -30,14 +27,7 @@ public class GameSteps {
 
     @When("^the game has initialized$")
     public void the_game_has_initialized() {
-        Room.roomNumberer = new Room.RoomNumberer() {
-            private int instanceCounter = 1;
-
-            @Override
-            public Integer nextRoomNumber() {
-                return instanceCounter++;
-            }
-        };
+        restartRoomNumberer();
         game = new Game(new String[]{});
     }
 

@@ -77,6 +77,7 @@ class Room {
                     .collect(Collectors.joining(", ")));
             for (Occupant cohabitant : new ArrayList<>(occupants)) {
                 if (!interloper.isDead()) {
+                    // TODO this could potentially be cleaner
                     if (Random.getRandomizer().nextBoolean()) {
                         cohabitant.respondTo(interloper);
                         interloper.respondTo(cohabitant);

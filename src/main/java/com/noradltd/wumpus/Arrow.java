@@ -1,6 +1,17 @@
 package com.noradltd.wumpus;
 
 public class Arrow extends Room.Occupant {
+    static final Arrow NULL_ARROW = new Arrow() {
+        @Override
+        public void respondTo(Room.Occupant occupant) {
+            // no-op
+        }
+
+        @Override
+        public String toString() {
+            return "this arrow does nothing";
+        }
+    };
 
     private static int nextArrowId = 0;
     private int arrowId = nextArrowId++;
@@ -41,13 +52,7 @@ public class Arrow extends Room.Occupant {
         return "--arrows should not be described--";
     }
 
-    static final Arrow NULL_ARROW = new Arrow() {
-        @Override
-        public void respondTo(Room.Occupant occupant) {
-            // no-op
-        }
-    };
-
+    @Override
     public String toString() {
         if (isDead()) {
             return "A shattered arrow lies here";
@@ -83,6 +88,5 @@ class ArrowQuiver implements Hunter.Quiver {
     public String arrowsRemaining() {
         return Integer.toString(arrowCount);
     }
-
 
 }

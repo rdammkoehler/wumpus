@@ -1,7 +1,5 @@
 package com.noradltd.wumpus;
 
-import io.cucumber.java.Before;
-
 import java.io.ByteArrayOutputStream;
 import java.io.FileDescriptor;
 import java.io.FileOutputStream;
@@ -15,6 +13,7 @@ public class Helpers {
         put(BottomlessPit.class, "--pits");
         put(ColonyOfBats.class, "--bats");
     }};
+    public static final String RANDOMIZER_THREADLOCALBAGKEY = "randomizer";
 
     public static String reInterpolateEscapedCharacters(String input) {
         return input.replaceAll("\\\\n", "\n");
@@ -64,29 +63,69 @@ public class Helpers {
     }
 
     public static void programRandomizer(boolean... bools) {
-        Game.getThreadLocalBag().replace("randomizer", new Helpers.ProgrammableRandom(bools));
+        Game.getThreadLocalBag().replace(RANDOMIZER_THREADLOCALBAGKEY, new Helpers.ProgrammableRandom(bools));
+    }
+
+    public static void programRandomizer(int... ints) {
+        Game.getThreadLocalBag().replace(RANDOMIZER_THREADLOCALBAGKEY, new Helpers.ProgrammableRandom(ints));
     }
 
     public static void resetRandomizer() {
-        Game.getThreadLocalBag().replace("randomizer", new Random());
+        Game.getThreadLocalBag().replace(RANDOMIZER_THREADLOCALBAGKEY, new Random());
+    }
+
+    static void restartRoomNumberer() {
+        Room.roomNumberer = new Room.RoomNumberer() {
+            private int instanceCounter = 1;
+
+            @Override
+            public Integer nextRoomNumber() {
+                return instanceCounter++;
+            }
+        };
     }
 
     static class ProgrammableRandom extends Random {
         private final boolean[] bools;
         private int boolIdx = 0;
+        private final int[] ints;
+        private int intIdx = 0;
 
         ProgrammableRandom(boolean... bools) {
             this.bools = bools;
+            this.ints = new int[0];
+        }
+
+        ProgrammableRandom(int... ints) {
+            this.ints = ints;
+            this.bools = new boolean[0];
         }
 
         @Override
         boolean nextBoolean() {
-            return bools[boolIdx++];
+            if (bools.length > 0) {
+                return bools[boolIdx++];
+            }
+            return super.nextBoolean();
+        }
+
+        @Override
+        int nextInt(int bound) {
+            if (ints.length > 0) {
+                return ints[intIdx++];
+            }
+            return super.nextInt(bound);
         }
 
         @Override
         public String toString() {
-            return "ProgrammableRandom{bools=" + Arrays.toString(bools) + ", boolIdx=" + boolIdx + '}';
+            final StringBuilder sb = new StringBuilder("ProgrammableRandom{");
+            sb.append("bools=").append(Arrays.toString(bools));
+            sb.append(", boolIdx=").append(boolIdx);
+            sb.append(", ints=").append(Arrays.toString(ints));
+            sb.append(", intIdx=").append(intIdx);
+            sb.append('}');
+            return sb.toString();
         }
     }
 

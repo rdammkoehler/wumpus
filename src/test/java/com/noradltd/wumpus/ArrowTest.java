@@ -104,4 +104,16 @@ public class ArrowTest {
         Arrow.NULL_ARROW.respondTo(null);
         //doesn't throw an exception?
     }
+
+    @Test
+    public void emptyQuiversReturnNullArrows() {
+        Hunter.Quiver quiver = new ArrowQuiver(0);
+
+        assertThat(quiver.next(), is(Arrow.NULL_ARROW));
+    }
+
+    @Test
+    public void weCanAskAnArrowQuiverHowManyArrowsRemain() {
+        assertThat(new ArrowQuiver(5).arrowsRemaining(), is(equalTo("5")));
+    }
 }

@@ -21,7 +21,7 @@ class Hunter extends Room.Occupant {
 
             @Override
             public Arrow next() {
-                return null;
+                return Arrow.NULL_ARROW;
             }
 
             @Override
