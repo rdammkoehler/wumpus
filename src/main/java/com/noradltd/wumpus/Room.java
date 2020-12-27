@@ -128,6 +128,7 @@ class Room {
     public String toString() {
         return new RoomDescriber(this).description();
     }
+
     static class RoomDescriber {
         private final Room room;
 
@@ -151,25 +152,21 @@ class Room {
                     .filter(occupant -> !Arrow.class.isInstance(occupant))
                     .map(Occupant::describe)
                     .distinct()
+                    .sorted()
                     .forEach(description -> sb.append(description).append("\n"));
         }
 
         private void describeOccupants(StringBuilder sb) {
             final Collection<Occupant> describableOccupants = room.occupants().stream()
                     .filter(occupant -> !Hunter.class.isInstance(occupant))
-                    .filter(occupant -> !occupant.isDead())
+                    .filter(occupant -> !occupant.isDead()) // TODO not necesarily!
                     .sorted()
                     .collect(Collectors.toList());
-            if (describableOccupants.size() > 1) {
-                sb.append("\nContains ");
-                boolean and = false;
-                for (Occupant occupant : describableOccupants) {
-                    if (and) {
-                        sb.append(" and ");
-                    }
-                    sb.append(describe(occupant));
-                    and = true;
-                }
+            if (!describableOccupants.isEmpty()) {
+                sb.append("\nContains ")
+                        .append(describableOccupants.stream()
+                                .map(occupant -> describe(occupant))
+                                .collect(Collectors.joining(" and ")));
             }
         }
 
@@ -177,7 +174,7 @@ class Room {
             StringBuilder sb = new StringBuilder();
             String occupantName = occupant.getClass().getSimpleName();
             sb.append("a "); // TODO plural
-            sb.append(occupantName);
+            sb.append(occupantName); // TODO should we use toString instead?
             return sb.toString();
         }
 
