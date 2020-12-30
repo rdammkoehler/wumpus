@@ -31,13 +31,9 @@ public class Main {
             addCommands((game, arg) -> Logger.info(game.inventory()), "i", "inv", "inventory");
             addCommands((game, arg) -> showHelp(), "?", "h", "help");
             addCommands((game, arg) -> game.isPlaying(), "l", "look");
-            // TODO remove the following commands after play-testing
-            addCommands((game, arg) -> Logger.info(game.diagnostics()), "show");
-            addCommands((game, arg) -> game.gotoRoom(Integer.parseInt(arg)), "g", "goto");
         }
     };
 
-    // TODO FML vis
     void play(InputStream inputStream, String... options) {
         try {
             Logger.info("Welcome to Hunt The Wumpus!");
