@@ -149,7 +149,7 @@ class Room {
             sb.append("\n");
             room.exits().stream()
                     .flatMap(exit -> exit.occupants().stream())
-                    .filter(occupant -> !Arrow.class.isInstance(occupant))
+                    .filter(occupant -> !(occupant instanceof Arrow))
                     .map(Occupant::describe)
                     .distinct()
                     .sorted()
@@ -158,24 +158,20 @@ class Room {
 
         private void describeOccupants(StringBuilder sb) {
             final Collection<Occupant> describableOccupants = room.occupants().stream()
-                    .filter(occupant -> !Hunter.class.isInstance(occupant))
+                    .filter(occupant -> !(occupant instanceof Hunter))
                     .filter(occupant -> !occupant.isDead()) // TODO not necesarily!
                     .sorted()
                     .collect(Collectors.toList());
             if (!describableOccupants.isEmpty()) {
                 sb.append("\nContains ")
                         .append(describableOccupants.stream()
-                                .map(occupant -> describe(occupant))
+                                .map(this::describe)
                                 .collect(Collectors.joining(" and ")));
             }
         }
 
         private String describe(Occupant occupant) {
-            StringBuilder sb = new StringBuilder();
-            String occupantName = occupant.getClass().getSimpleName();
-            sb.append("a "); // TODO plural
-            sb.append(occupantName); // TODO should we use toString instead?
-            return sb.toString();
+            return occupant.toString();
         }
 
         private void describeExits(StringBuilder sb) {

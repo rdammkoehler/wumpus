@@ -2,11 +2,13 @@ package com.noradltd.wumpus;
 
 public class ColonyOfBats extends Room.Occupant {
     @Override
-    public void respondTo(Room.Occupant actioned) {
-        if (Hunter.class.isInstance(actioned)) {
-            Hunter hunter = (Hunter) actioned;
-            Logger.info("A swarm of bats lift you from the ground in a blinding flurry of leathery wings");
-            hunter.moveTo(findRandomRoom());
+    public void respondTo(Room.Occupant interloper) {
+        if (interloper instanceof Hunter) {
+            Hunter hunter = (Hunter) interloper;
+            final Room randomRoom = findRandomRoom();
+            Logger.info("A swarm of bats lift you from the ground in a blinding flurry of leathery wings. They drop you in room " + randomRoom.number());
+            Logger.info(new Room.RoomDescriber(randomRoom).description());
+            hunter.moveTo(randomRoom);
         }
     }
 
@@ -30,6 +32,6 @@ public class ColonyOfBats extends Room.Occupant {
     }
 
     public String toString() {
-        return "A horde of blackened leather, slick with the blood of their victims undulates across the ceiling";
+        return "a horde of blackened leather, slick with the blood of their victims undulates across the ceiling";
     }
 }

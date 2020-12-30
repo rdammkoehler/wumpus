@@ -100,7 +100,7 @@ public class Main {
         boolean playAgain = true;
         while (playAgain) {
             new Main().play(args);
-            Logger.info("- Play again? (yes/[no])");
+            Logger.info("Play again? (yes/[no])");
             try {
                 String yesOrNo = new BufferedReader(new InputStreamReader(System.in)).readLine();
                 playAgain = yesOrNo.toLowerCase().charAt(0) == 'y';

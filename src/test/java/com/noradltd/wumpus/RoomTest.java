@@ -75,8 +75,6 @@ public class RoomTest {
         Helpers.resetRandomizer();
 
         assertThat(hunter.isDead(), is(0 == room.exits().size()));
-        assertThat(wumpus.isFed(), is(true));
-
     }
 
 
@@ -96,8 +94,6 @@ public class RoomTest {
         Helpers.resetRandomizer();
 
         assertThat(hunter.isDead(), is(false));
-        assertThat(wumpus.isFed(), is(false));
-
     }
 
     @Test
@@ -151,7 +147,7 @@ public class RoomTest {
         BottomlessPit pit = new BottomlessPit();
         pit.moveTo(room);
 
-        assertThat(room.toString(), matchesPattern("You are in room #\\d+\\nThis room has 0 exits.\\nContains a BottomlessPit\\n"));
+        assertThat(room.toString(), matchesPattern("You are in room #\\d+\\nThis room has 0 exits.\\nContains a gaping maw, filled with darkness and emitting an icy breath of despair\\n"));
     }
 
     @Test
@@ -160,7 +156,7 @@ public class RoomTest {
         ColonyOfBats bats = new ColonyOfBats();
         bats.moveTo(room);
 
-        assertThat(room.toString(), matchesPattern("You are in room #\\d+\\nThis room has 0 exits.\\nContains a ColonyOfBats\\n"));
+        assertThat(room.toString(), matchesPattern("You are in room #\\d+\\nThis room has 0 exits.\\nContains a horde of blackened leather, slick with the blood of their victims undulates across the ceiling\\n"));
     }
 
     @Test
@@ -169,7 +165,7 @@ public class RoomTest {
         Wumpus wumpus = new Wumpus();
         wumpus.moveTo(room);
 
-        assertThat(room.toString(), matchesPattern("You are in room #\\d+\\nThis room has 0 exits.\\nContains a Wumpus\\n"));
+        assertThat(room.toString(), matchesPattern("You are in room #\\d+\\nThis room has 0 exits.\\nContains a horrifying mass of tentacles, suckers, and eyes, that writhes before you\\n"));
     }
 
     @Test
@@ -191,7 +187,7 @@ public class RoomTest {
         new BottomlessPit().moveTo(room);
         new ColonyOfBats().moveTo(room);
 
-        assertThat(room.toString(), matchesPattern("You are in room #\\d+\\nThis room has 0 exits.\\nContains a BottomlessPit and a ColonyOfBats and a Wumpus\\n"));
+        assertThat(room.toString(), matchesPattern("You are in room #\\d+\\nThis room has 0 exits.\\nContains a gaping maw, filled with darkness and emitting an icy breath of despair and a horde of blackened leather, slick with the blood of their victims undulates across the ceiling and a horrifying mass of tentacles, suckers, and eyes, that writhes before you\\n"));
     }
 
     @Test

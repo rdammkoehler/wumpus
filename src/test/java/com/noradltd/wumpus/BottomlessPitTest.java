@@ -34,6 +34,6 @@ public class BottomlessPitTest {
 
     @Test
     public void bottomlessPitsAreStringifiedAsGapingMaws() {
-        assertThat(new BottomlessPit().toString(), is(equalTo("A gaping maw, filled with darkness and emitting an icy breath of despair")));
+        assertThat(new BottomlessPit().toString(), is(equalTo("a gaping maw, filled with darkness and emitting an icy breath of despair")));
     }
 }

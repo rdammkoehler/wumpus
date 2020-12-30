@@ -54,7 +54,6 @@ public class WumpusTest {
         wumpus.respondTo(hunter);
 
         resetRandomizer();
-        assertThat(wumpus.isFed(), is(true));
         assertThat(hunter.isDead(), is(true));
     }
 
@@ -70,7 +69,6 @@ public class WumpusTest {
 
         resetRandomizer();
 
-        assertThat(wumpus.isFed(), is(true));
         assertThat(hunter.isDead(), is(true));
         assertThat(room.occupants().size(), equalTo(1));
     }

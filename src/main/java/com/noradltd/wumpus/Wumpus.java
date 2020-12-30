@@ -2,18 +2,11 @@ package com.noradltd.wumpus;
 
 class Wumpus extends Room.Occupant {
 
-    private boolean fed = false;
-
     protected void die() {
         super.die();
         if (getRoom() != null) {
             getRoom().remove(this);
         }
-    }
-
-    // TODO who care's if the Wumpus is Fed?
-    public boolean isFed() {
-        return fed;
     }
 
     private void flee(Hunter hunter) {
@@ -30,14 +23,13 @@ class Wumpus extends Room.Occupant {
     private void eat(Hunter hunter) {
         Logger.info("Nom Nom Nom, the Wumpus has eaten you.");
         hunter.die();
-        fed = true;
     }
 
     @Override
-    public void respondTo(Room.Occupant visitor) {
+    public void respondTo(Room.Occupant interloper) {
         if (!isDead()) {
-            if (Hunter.class.isAssignableFrom(visitor.getClass())) {
-                Hunter hunter = (Hunter) visitor;
+            if (interloper instanceof Hunter) {
+                Hunter hunter = (Hunter) interloper;
                 if (Random.getRandomizer().nextBoolean()) {
                     eat(hunter);
                 } else {
@@ -54,8 +46,8 @@ class Wumpus extends Room.Occupant {
 
     public String toString() {
         if (isDead()) {
-            return "The rotting corpse of a Wumpus has made the floor slick with ichor";
+            return "the rotting corpse of a Wumpus has made the floor slick with ichor";
         }
-        return "A horrifying mass of tentacles, suckers, and eyes, writhes before you";
+        return "a horrifying mass of tentacles, suckers, and eyes, that writhes before you";
     }
 }

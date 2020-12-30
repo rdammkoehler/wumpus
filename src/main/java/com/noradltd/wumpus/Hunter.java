@@ -48,7 +48,7 @@ class Hunter extends Room.Occupant {
             Room target = getRoom().exits().get(exitNumber);
             Arrow arrow = quiver.next();
             Logger.info("Your arrow hurtles down tunnel " + (exitNumber + 1));
-            if (target.occupants().stream().filter(occupant -> Wumpus.class.isAssignableFrom(occupant.getClass())).count() > 0) {
+            if (target.occupants().stream().anyMatch(Wumpus.class::isInstance)) {
                 Logger.info("There is a Wumpus in the room!");
             } else {
                 Logger.info("There is no Wumpus there");
@@ -91,9 +91,9 @@ class Hunter extends Room.Occupant {
     }
 
     @Override
-    public void respondTo(Room.Occupant visitor) {
-        if (Wumpus.class.isAssignableFrom(visitor.getClass())) {
-            Wumpus wumpus = (Wumpus) visitor;
+    public void respondTo(Room.Occupant interloper) {
+        if (interloper instanceof Wumpus) {
+            Wumpus wumpus = (Wumpus) interloper;
             kill(wumpus);
         }
     }
@@ -104,12 +104,10 @@ class Hunter extends Room.Occupant {
     }
 
     public String inventory() {
-        return new StringBuilder()
-                .append("Inventory:\n\tArrows: ")
-                .append(quiver.arrowsRemaining())
-                .append("\n\tWumpus Scalps: " + kills())
-                .append("\n")
-                .toString();
+        return "Inventory:\n\tArrows: " +
+                quiver.arrowsRemaining() +
+                "\n\tWumpus Scalps: " + kills() +
+                "\n";
     }
 
     public String toString() {
