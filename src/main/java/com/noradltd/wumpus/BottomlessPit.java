@@ -5,6 +5,7 @@ public class BottomlessPit extends Room.Occupant {
     public void respondTo(Room.Occupant interloper) {
         if (interloper instanceof Hunter) {
             Hunter hunter = (Hunter) interloper;
+            Logger.info(new Room.RoomDescriber(getRoom()).description());
             Logger.info("You've stumbled into a bottomless pit and died!");
             hunter.die();
         }

@@ -11,6 +11,7 @@ public class BottomlessPitTest {
     public void huntersDieInBottomlessPits() {
         Hunter hunter = new Hunter();
         BottomlessPit pit = new BottomlessPit();
+        pit.moveTo(new Room());
 
         pit.respondTo(hunter);
 
