@@ -7,7 +7,6 @@ public class ColonyOfBats extends Room.Occupant {
             Hunter hunter = (Hunter) interloper;
             final Room randomRoom = findRandomRoom();
             Logger.info("A swarm of bats lift you from the ground in a blinding flurry of leathery wings. They drop you in room " + randomRoom.number());
-            Logger.info(new Room.RoomDescriber(randomRoom).description());
             hunter.moveTo(randomRoom);
         }
     }
@@ -32,6 +31,6 @@ public class ColonyOfBats extends Room.Occupant {
     }
 
     public String toString() {
-        return "a horde of blackened leather, slick with the blood of their victims undulates across the ceiling";
+        return "a horde of blackened leather, slick with the blood of their victims undulating across the ceiling";
     }
 }

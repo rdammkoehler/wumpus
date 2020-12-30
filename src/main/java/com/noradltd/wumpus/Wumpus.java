@@ -2,13 +2,6 @@ package com.noradltd.wumpus;
 
 class Wumpus extends Room.Occupant {
 
-    protected void die() {
-        super.die();
-        if (getRoom() != null) {
-            getRoom().remove(this);
-        }
-    }
-
     private void flee(Hunter hunter) {
         int exitCount = getRoom().exits().size();
         if (exitCount > 0) {
@@ -21,7 +14,7 @@ class Wumpus extends Room.Occupant {
     }
 
     private void eat(Hunter hunter) {
-        Logger.info("Nom Nom Nom, the Wumpus has eaten you.");
+        Logger.info("Nom Nom Nom, a Wumpus has eaten you.");
         hunter.die();
     }
 
@@ -46,7 +39,7 @@ class Wumpus extends Room.Occupant {
 
     public String toString() {
         if (isDead()) {
-            return "the rotting corpse of a Wumpus has made the floor slick with ichor";
+            return "the rotting corpse of a Wumpus that has made the floor slick with ichor";
         }
         return "a horrifying mass of tentacles, suckers, and eyes, that writhes before you";
     }

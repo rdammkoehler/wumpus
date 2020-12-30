@@ -13,9 +13,9 @@ public class HunterTest {
         Room room = new Room();
         Hunter hunter = new Hunter();
         Wumpus wumpus = new Wumpus();
-        hunter.moveTo(room);
-
         wumpus.moveTo(room);
+
+        hunter.moveTo(room);
 
         assertThat(wumpus.isDead(), is(true));
         assertThat(hunter.kills(), equalTo(1));
@@ -226,7 +226,7 @@ public class HunterTest {
         Hunter hunter = new Hunter(new ArrowQuiver(initialArrowCount));
         hunter.moveTo(room);
 
-        hunter.take(arrow);
+        hunter.takeArrow();
 
         assertThat(hunter.inventory(), is(equalTo("Inventory:\n\tArrows: " + (initialArrowCount + 1) + "\n\tWumpus Scalps: 0\n")));
     }
@@ -242,7 +242,7 @@ public class HunterTest {
         Hunter hunter = new Hunter(new ArrowQuiver(initialArrowCount));
         hunter.moveTo(room);
 
-        hunter.take(arrow);
+        hunter.takeArrow();
 
         assertThat(hunter.inventory(), is(equalTo("Inventory:\n\tArrows: " + initialArrowCount + "\n\tWumpus Scalps: 0\n")));
     }

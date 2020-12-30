@@ -154,7 +154,7 @@ public class RoomTest {
         ColonyOfBats bats = new ColonyOfBats();
         bats.moveTo(room);
 
-        assertThat(room.toString(), matchesPattern("You are in room #\\d+\\nThis room has 0 exits.\\nContains a horde of blackened leather, slick with the blood of their victims undulates across the ceiling\\n"));
+        assertThat(room.toString(), matchesPattern("You are in room #\\d+\\nThis room has 0 exits.\\nContains a horde of blackened leather, slick with the blood of their victims undulating across the ceiling\\n"));
     }
 
     @Test
@@ -167,13 +167,13 @@ public class RoomTest {
     }
 
     @Test
-    public void roomsWithDeadWumpiDoNotDescribeTheWumpi() {
+    public void roomsWithDeadWumpiDescribeTheWumpi() {
         Room room = new Room();
         Wumpus wumpus = new Wumpus();
         wumpus.moveTo(room);
         wumpus.die();
 
-        assertThat(room.toString(), matchesPattern("You are in room #\\d+\\nThis room has 0 exits.\\n"));
+        assertThat(room.toString(), matchesPattern("You are in room #\\d+\\nThis room has 0 exits.\\nContains the rotting corpse of a Wumpus that has made the floor slick with ichor\\n"));
     }
 
     // TODO might want to use the toString for each occupant rather than the class name
@@ -185,7 +185,7 @@ public class RoomTest {
         new BottomlessPit().moveTo(room);
         new ColonyOfBats().moveTo(room);
 
-        assertThat(room.toString(), matchesPattern("You are in room #\\d+\\nThis room has 0 exits.\\nContains a gaping maw, filled with darkness and emitting an icy breath of despair and a horde of blackened leather, slick with the blood of their victims undulates across the ceiling and a horrifying mass of tentacles, suckers, and eyes, that writhes before you\\n"));
+        assertThat(room.toString(), matchesPattern("You are in room #\\d+\\nThis room has 0 exits.\\nContains a gaping maw, filled with darkness and emitting an icy breath of despair and a horde of blackened leather, slick with the blood of their victims undulating across the ceiling and a horrifying mass of tentacles, suckers, and eyes, that writhes before you\\n"));
     }
 
     @Test

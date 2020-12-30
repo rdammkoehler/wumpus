@@ -38,7 +38,7 @@ public class Main {
             addCommands(arg -> Logger.info(game.inventory()), "i", "inv", "inventory");
             addCommands(arg -> showHelp(), "?", "h", "help");
             addCommands(arg -> game.isPlaying(), "l", "look");
-            addCommands(arg -> game.take(arg), "t", "take");
+            addCommands(arg -> game.takeArrow(), "t", "take");
         }
 
         private Integer exitNumber(String arg) {
@@ -59,6 +59,7 @@ public class Main {
                 executeUserCommand();
             }
         } catch (Throwable thrown) {
+            thrown.printStackTrace(System.err);
             Logger.error("something went terribly wrong.");
         } finally {
             Logger.info(game.inventory());
@@ -70,14 +71,15 @@ public class Main {
             Matcher matcher = USER_COMMAND.matcher(nextCommand());
             //noinspection ResultOfMethodCallIgnored
             matcher.matches();
-            COMMANDS.get(matcher.group(1)).execute(matcher.group(2));
+            COMMANDS.get(matcher.group(1).toLowerCase()).execute(matcher.group(2).toLowerCase());
         } catch (IllegalStateException ise) {
+            ise.printStackTrace(System.err);
             COMMANDS.get("what").execute(null);
         }
     }
 
     private void promptUser() {
-        Logger.info(game.toString() + "\n" + "m|s|l|i?");
+        Logger.info(game.toString() + "\n" + "i|l|m|s|t?");
     }
 
     private String nextCommand() {
@@ -89,12 +91,12 @@ public class Main {
     }
 
     private void showHelp() {
-        // TODO what about command line args?
         Logger.info("Instructions:\n" +
+                "(i|inv|inventory)\tShow inventory\n" +
+                "(l|look)\t\t\tLook around\n" +
                 "(m|move) #\t\t\tMove through tunnel #\n" +
                 "(s|shoot) #\t\t\tShoot through tunnel #\n" +
-                "(l|look)\t\t\tLook around\n" +
-                "(i|inv|inventory)\tShow inventory\n" +
+                "(t|take)\t\t\tTake (an unbroken arrow)\n" +
                 "(?|h|help)\t\t\tShow help\n" +
                 "(q|x|quit|exit)\t\tQuit the game\n");
     }

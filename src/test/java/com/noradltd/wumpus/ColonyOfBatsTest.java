@@ -40,7 +40,7 @@ public class ColonyOfBatsTest {
 
     @Test
     public void toStringIllustratesTheHorror() {
-        assertThat(new ColonyOfBats().toString(), is(equalTo("a horde of blackened leather, slick with the blood of their victims undulates across the ceiling")));
+        assertThat(new ColonyOfBats().toString(), is(equalTo("a horde of blackened leather, slick with the blood of their victims undulating across the ceiling")));
     }
 
     @ExtendWith(ResetRandomizerExtension.class)

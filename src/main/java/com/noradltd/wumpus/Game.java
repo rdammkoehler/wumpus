@@ -26,7 +26,7 @@ class Game {
         return hunter.inventory();
     }
 
-    public void take(String item) { hunter.take(item); }
+    public void takeArrow() { hunter.takeArrow(); }
 
     @Override
     public String toString() {

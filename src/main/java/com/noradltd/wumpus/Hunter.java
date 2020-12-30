@@ -88,38 +88,38 @@ class Hunter extends Room.Occupant {
     }
 
     protected void kill(Wumpus wumpus) {
-        if (getRoom().equals(wumpus.getRoom())) {
+        if (!isDead() && !wumpus.isDead() && getRoom().equals(wumpus.getRoom())) {
             if (Random.getRandomizer().nextBoolean()) {
                 Logger.info("With a slash of your knife you eviscerate a Wumpus; it's corpse slides to the floor");
                 wumpus.die();
                 kills += 1;
             } else {
-                Logger.info("You slash you knife at the Wumpus as it's slimy tenticales wrap around you, crushing the life out of your body");
+                Logger.info("You slash you knife at the Wumpus as it's slimy tentacles wrap around you, trying to crushing the life out of your body");
                 wumpus.respondTo(this);
             }
         } else {
-            Logger.info("The Wumpus escapes your violent assault");  // TODO this means the wumpus fled from you!
+            if (!wumpus.isDead()) {
+                Logger.info("The Wumpus escapes your violent assault");  // TODO this means the wumpus fled from you!
+            }
         }
 
     }
 
-    void take(String item) {
-        // yuk!
+    void takeArrow() {
         getRoom().occupants().stream()
-                .filter(occupant -> occupant.getClass().getSimpleName().contains(item)).collect(Collectors.toList())
+                .filter(occupant -> occupant instanceof Arrow).collect(Collectors.toList())
                 .forEach(occupant -> {
-                    if (occupant instanceof Arrow && !((Arrow)occupant).isBroken()) {
-                        Logger.info("You collect an unbroken arrow off the floor.");
-                        take((Arrow) occupant);
-                    }
-                    if (occupant instanceof Arrow && ((Arrow)occupant).isBroken()) {
-                        Logger.info("The broken arrow crumbles in your hand.");
+                    if (occupant instanceof Arrow) {
+                        Arrow arrow = (Arrow) occupant;
+                        if (arrow.isBroken()) {
+                            Logger.info("The broken arrow crumbles in your hand.");
+                        } else {
+                            arrow.getRoom().remove(arrow);
+                            Logger.info("You collect an unbroken arrow off the floor.");
+                            quiver.add(arrow);
+                        }
                     }
                 });
-    }
-
-    void take(Arrow arrow) {
-        quiver.add(arrow);
     }
 
     @Override

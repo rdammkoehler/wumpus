@@ -30,6 +30,8 @@ public class MainTest {
     public static final String HELP_HELP = "help";
     public static final String LOOK_L = "l";
     public static final String LOOK_LOOK = "look";
+    public static final String TAKE_T = "t";
+    public static final String TAKE_TAKE = "take";
 
     @BeforeEach
     public void beforeEach() {
@@ -137,7 +139,7 @@ public class MainTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"t", "take"})
+    @ValueSource(strings = {TAKE_T, TAKE_TAKE})
     public void huntersCannotPickupBrokenArrows(String takeCommand) {
         // TODO the excessive number of shots is because we can't controll the randomizer!
         assertThat("The broken arrow crumbles in your hand.", SHOOT_SHOOT + " 1",
@@ -146,5 +148,11 @@ public class MainTest {
                 SHOOT_SHOOT + " 1", SHOOT_SHOOT + " 1", SHOOT_SHOOT + " 1", SHOOT_SHOOT + " 1", SHOOT_SHOOT + " 1",
                 SHOOT_SHOOT + " 1", SHOOT_SHOOT + " 1", SHOOT_SHOOT + " 1", SHOOT_SHOOT + " 1", MOVE_MOVE + " 1",
                 takeCommand, QUIT_QUIT);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {HELP_QMARK, HELP_H, HELP_HELP, LOOK_L, LOOK_LOOK, TAKE_T, TAKE_TAKE, MOVE_M, MOVE_MOVE, SHOOT_S, SHOOT_SHOOT, QUIT_Q, QUIT_QUIT, QUIT_EXIT, QUIT_X, INVENTORY_I, INVENTORY_INV, INVENTORY_INVENTORY})
+    public void upperCaseCommandsWorkToo(String command) {
+        assertThat("[^What]", command, QUIT_QUIT);
     }
 }
