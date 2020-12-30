@@ -66,7 +66,7 @@ class Hunter extends Room.Occupant {
         if (validExitNumber(exitNumber)) {
             super.moveTo(getRoom().exits().get(exitNumber));
         } else {
-            Logger.error("invalid exitNumber (" + exitNumber +") in Hunter.moveTo()");
+            Logger.error("invalid exitNumber (" + exitNumber + ") in Hunter.moveTo()");
         }
     }
 

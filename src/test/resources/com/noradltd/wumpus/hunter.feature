@@ -1,4 +1,5 @@
 Feature: Hunter
+
   Scenario: Starts in the entrance of the maze
     Given a fresh maze
     Then the hunter starts in the entrance

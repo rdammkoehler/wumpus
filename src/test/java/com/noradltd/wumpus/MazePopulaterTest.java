@@ -3,16 +3,23 @@ package com.noradltd.wumpus;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import static com.noradltd.wumpus.Helpers.*;
+import static com.noradltd.wumpus.Helpers.countMazeOccupantsByType;
+import static com.noradltd.wumpus.Helpers.getAllRooms;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 
 public class MazePopulaterTest {
+
+    public static final Map<Class<? extends Room.Occupant>, String> OPTION_KEY_LOOKUP_BY_OCCUPANT_TYPE = new HashMap<>() {{
+        put(Wumpus.class, "--wumpi");
+        put(BottomlessPit.class, "--pits");
+        put(ColonyOfBats.class, "--bats");
+    }};
 
     private void checkWumpusPopulation(int roomCount) {
         String[] options = {"--rooms", Integer.toString(roomCount)};
@@ -62,9 +69,9 @@ public class MazePopulaterTest {
 
     private List<Integer> getRoomIdsContainingOccupantsOfType(Class<? extends Room.Occupant> occupantType, Maze maze) {
         return getAllRooms(maze).stream()
-                .map(room -> room.occupants())
-                .flatMap(occupants -> occupants.stream())
-                .filter(occupant -> occupantType.isInstance(occupant))
+                .map(Room::occupants)
+                .flatMap(Collection::stream)
+                .filter(occupantType::isInstance)
                 .map(occupant -> occupant.getRoom().number())
                 .distinct()
                 .collect(Collectors.toList());
@@ -108,13 +115,12 @@ public class MazePopulaterTest {
 
         Maze maze = MazeLoader.populate(MazeBuilder.build(options), options);
 
-        Integer countOfUniqueRooms = (int) Arrays.asList(Wumpus.class, BottomlessPit.class, ColonyOfBats.class)
-                .stream()
+        Long countOfUniqueRooms = Stream.of(Wumpus.class, BottomlessPit.class, ColonyOfBats.class)
                 .map(occupantType -> getRoomIdsContainingOccupantsOfType(occupantType, maze))
-                .flatMap(subList -> subList.stream())
+                .flatMap(Collection::stream)
                 .distinct()
                 .count();
-        assertThat(countOfUniqueRooms, is(equalTo(1)));
+        assertThat(countOfUniqueRooms, is(equalTo(1L)));
     }
 
 }

@@ -1,15 +1,14 @@
 package com.noradltd.wumpus;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.FileDescriptor;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class Helpers {
-    public static final Map<Class<? extends Room.Occupant>, String> OPTION_KEY_LOOKUP_BY_OCCUPANT_TYPE = new HashMap<>() {{
-        put(Wumpus.class, "--wumpi");
-        put(BottomlessPit.class, "--pits");
-        put(ColonyOfBats.class, "--bats");
-    }};
+
     public static final String RANDOMIZER_THREADLOCALBAGKEY = "randomizer";
 
     public static String reInterpolateEscapedCharacters(String input) {

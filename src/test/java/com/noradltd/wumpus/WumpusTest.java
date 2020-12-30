@@ -2,7 +2,8 @@ package com.noradltd.wumpus;
 
 import org.junit.jupiter.api.Test;
 
-import static com.noradltd.wumpus.Helpers.*;
+import static com.noradltd.wumpus.Helpers.programRandomizer;
+import static com.noradltd.wumpus.Helpers.resetRandomizer;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 

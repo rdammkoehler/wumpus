@@ -87,7 +87,7 @@ public class MazeTest {
         resetStdout();
     }
 
-//    @Test
+    //    @Test
     @Ignore("come back and update this when you finalize the output")
     public void testToStringReturnsOutputFormattedForHumansByDefault() {
         String[] options = {"--rooms", "2"};
@@ -99,7 +99,7 @@ public class MazeTest {
         assertThat(MazeBuilder.build(options).toString(), matchesPattern(humanReadableOutput));
     }
 
-//    @Test
+    //    @Test
     @Ignore("come back and update this when you finalize the output")
     public void testToStringReturnsOutputFormattedForHumansByWhenRequested() {
         String[] options = {"--format", "human", "--rooms", "2"};
@@ -116,7 +116,7 @@ public class MazeTest {
         String[] options = {"--format", "dot", "--rooms", "2"};
         String dotOutput = "^digraph G \\{\n" +
                 "\t\\d+ -> \\d+;\n" +
-                "\\}\n$";
+                "}\n$";
 
         assertThat(MazeBuilder.build(options).toString(), matchesPattern(dotOutput));
     }
@@ -126,7 +126,7 @@ public class MazeTest {
         String[] options = {"--format", "neato", "--rooms", "2"};
         String neatoOutput = "^graph G \\{\n" +
                 "\t\\d+ -- \\d+;\n" +
-                "\\}\n$";
+                "}\n$";
 
         assertThat(MazeBuilder.build(options).toString(), matchesPattern(neatoOutput));
     }

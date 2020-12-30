@@ -8,7 +8,6 @@ import io.cucumber.java.en.When;
 import java.io.ByteArrayOutputStream;
 
 import static com.noradltd.wumpus.Helpers.*;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 
 public class GameSteps {
