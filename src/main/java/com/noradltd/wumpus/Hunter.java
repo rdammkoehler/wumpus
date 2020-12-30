@@ -151,9 +151,9 @@ class Hunter extends Room.Occupant {
 
     public String toString() {
         if (isDead()) {
-            return "The corpse of an unfortunate soul lies here";
+            return "the corpse of an unfortunate soul";
         }
-        return "A genuine specimen of Wumpus murdering prowess";
+        return "a genuine specimen of Wumpus murdering prowess";
     }
+    
 }
-

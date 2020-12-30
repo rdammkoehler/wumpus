@@ -157,7 +157,7 @@ class Room {
 
         private void describeOccupants(StringBuilder sb) {
             final Collection<Occupant> describableOccupants = room.occupants().stream()
-//                    .filter(occupant -> !(occupant instanceof Hunter))
+                    .filter(occupant -> !(occupant instanceof Hunter && !occupant.isDead()))
                     .sorted()
                     .collect(Collectors.toList());
             if (!describableOccupants.isEmpty()) {

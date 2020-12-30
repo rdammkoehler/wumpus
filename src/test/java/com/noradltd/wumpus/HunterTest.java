@@ -34,7 +34,7 @@ public class HunterTest {
 
     @Test
     public void toStringRevealsOurProwess() {
-        assertThat(new Hunter().toString(), is(equalTo("A genuine specimen of Wumpus murdering prowess")));
+        assertThat(new Hunter().toString(), is(equalTo("a genuine specimen of Wumpus murdering prowess")));
     }
 
     @Test
@@ -43,7 +43,7 @@ public class HunterTest {
 
         deadHunter.die();
 
-        assertThat(deadHunter.toString(), is(equalTo("The corpse of an unfortunate soul lies here")));
+        assertThat(deadHunter.toString(), is(equalTo("the corpse of an unfortunate soul")));
     }
 
     @Test
