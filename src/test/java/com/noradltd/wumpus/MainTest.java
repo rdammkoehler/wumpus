@@ -32,10 +32,6 @@ public class MainTest {
     public static final String LOOK_L = "l";
     public static final String LOOK_LOOK = "look";
 
-    @BeforeAll
-    public static final void beforeAllTests() {
-    }
-
     @BeforeEach
     public void beforeEach() {
         Helpers.resetRandomizer();
@@ -43,15 +39,15 @@ public class MainTest {
     }
 
     private String playInstructions(String instructions) {
-        InputStream originalStdin = System.in;
         ByteArrayOutputStream stdout = Helpers.captureStdout();
+        InputStream originalStdin = System.in;
         try {
             System.setIn(new ByteArrayInputStream(instructions.getBytes()));
             Main.main(new String[]{});
             return stdout.toString();
         } finally {
-            Helpers.resetStdout();
             System.setIn(originalStdin);
+            Helpers.resetStdout();
         }
     }
 

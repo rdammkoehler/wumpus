@@ -50,34 +50,18 @@ public class Main {
             Logger.info("Welcome to Hunt The Wumpus!");
             game = new Game(options);
             while (game.isPlaying()) {
-                executeUserCommands();
+                promptUser();
+                executeUserCommand();
             }
         } catch (Throwable thrown) {
             Logger.error("something went terribly wrong.");
             thrown.printStackTrace(System.err);
         } finally {
-            // TODO display score!
-            Logger.info("Score: Hunter ? Wumpus ?");
+            Logger.info(game.inventory());
         }
     }
 
-    class CommandArg {
-        Command command;
-        String arg;
-
-        CommandArg(Command command, String arg) {
-            this.command = command;
-            this.arg = arg;
-        }
-    }
-
-    private void executeUserCommands() {
-        promptUser();
-        CommandArg commandArg = getUserCommand();
-        commandArg.command.execute(game, commandArg.arg);
-    }
-
-    private CommandArg getUserCommand() {
+    private void executeUserCommand() {
         Command command = COMMANDS.get("what");
         String arg = null;
         Matcher matcher = USER_COMMAND.matcher(nextCommand());
@@ -86,11 +70,11 @@ public class Main {
             arg = matcher.group(2);
             command = COMMANDS.get(action);
         }
-        return new CommandArg(command, arg);
+        command.execute(game, arg);
     }
 
     private void promptUser() {
-        Logger.info(game.toString() + "\n" + "move/shoot?");
+        Logger.info(game.toString() + "\n" + "m|s|l|i?");
     }
 
     private String nextCommand() {
@@ -113,8 +97,17 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        new Main().play(args);
-        // TODO play again?
+        boolean playAgain = true;
+        while (playAgain) {
+            new Main().play(args);
+            Logger.info("- Play again? (yes/[no])");
+            try {
+                String yesOrNo = new BufferedReader(new InputStreamReader(System.in)).readLine();
+                playAgain = yesOrNo.toLowerCase().charAt(0) == 'y';
+            } catch (Exception e) {
+                playAgain = false;
+            }
+        }
         Logger.info("Goodbye");
     }
 }
