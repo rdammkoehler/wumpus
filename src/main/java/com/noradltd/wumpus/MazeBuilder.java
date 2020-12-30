@@ -14,10 +14,8 @@ class MazeBuilder {
 
     static class MazeStruct implements Maze {
         private final Room entrance;
-        private final Stringifier stringifier;
 
-        private MazeStruct(Set<Room> rooms, Stringifier stringifier) {
-            this.stringifier = stringifier;
+        private MazeStruct(Set<Room> rooms) {
             // todo make sure the room is empty!
             entrance = getRandomRoom(rooms);
         }
@@ -25,109 +23,6 @@ class MazeBuilder {
         public Room entrance() {
             return entrance;
         }
-
-        @Override
-        public String toString() {
-            return stringifier.stringify(this);
-        }
-    }
-
-    @SuppressWarnings("unused")
-    enum Stringifier {
-        HUMAN {
-            @Override
-            String stringify(Maze maze) {
-                Set<Room> rooms = roomsOf(maze.entrance());
-                StringBuilder sb = new StringBuilder();
-                for (Room room : rooms) {
-                    sb.append(new Room.RoomDescriber(room).description()).append("\n*****\n");
-                }
-                return sb.toString();
-            }
-        },
-        DOT {
-            @Override
-            String stringify(Maze maze) {
-                Set<Room> rooms = roomsOf(maze.entrance());
-                StringBuilder sb = new StringBuilder();
-                sb.append("digraph G {\n");
-                Set<Integer> bookKeeper = new HashSet<>();
-                for (Room room : rooms) {
-                    int exitIdx = 1;
-                    for (Room exit : room.exits()) {
-                        if (!bookKeeper.contains(room.number())) {
-                            sb.append("\t").append(room.number()).append(" -> ").append(exit.number());
-                            sb.append(" [label=\"").append(exitIdx++).append("\"]");
-                            sb.append(";\n");
-                            if (room.occupants().size() > 0) {
-                                StringBuilder occupantsSb = new StringBuilder();
-                                occupantsSb.append("\t").append(room.number());
-                                occupantsSb.append(" [label=\"");
-                                occupantsSb.append(room.number()).append(" ");
-                                occupantsSb.append(room.occupants().stream()
-                                        .map(occupant -> occupant.getClass().getSimpleName())
-                                        .collect(Collectors.joining(" ")));
-                                occupantsSb.append("\"];\n");
-                                sb.append(occupantsSb.toString());
-                            }
-                            bookKeeper.add(exit.number());
-                        }
-                    }
-                }
-                sb.append("}\n");
-                return sb.toString();
-            }
-        },
-        NEATO {
-            @Override
-            String stringify(Maze maze) {
-                Set<Room> rooms = roomsOf(maze.entrance());
-                StringBuilder sb = new StringBuilder();
-                sb.append("graph G {\n");
-                Set<Integer> bookKeeper = new HashSet<>();
-                for (Room room : rooms) {
-                    int exitIdx = 1;
-                    for (Room exit : room.exits()) {
-                        if (!bookKeeper.contains(room.number())) {
-                            sb.append("\t").append(room.number()).append(" -- ").append(exit.number());
-                            sb.append(" [label=\"").append(exitIdx++).append("\"]");
-                            sb.append(";\n");
-                            if (room.occupants().size() > 0) {
-                                StringBuilder occupantsSb = new StringBuilder();
-                                occupantsSb.append("\t").append(room.number());
-                                occupantsSb.append(" [label=\"");
-                                occupantsSb.append(room.number()).append(" ");
-                                occupantsSb.append(room.occupants().stream()
-                                        .map(occupant -> occupant.getClass().getSimpleName())
-                                        .collect(Collectors.joining(" ")));
-                                occupantsSb.append("\"];\n");
-                                sb.append(occupantsSb.toString());
-                            }
-                            bookKeeper.add(exit.number());
-                        }
-                    }
-                }
-                sb.append("}\n");
-                return sb.toString();
-            }
-        };
-
-        private static Set<Room> roomsOf(Room room) {
-            class MazeRunner {
-                Set<Room> findAll(Room room, Set<Room> rooms) {
-                    rooms.add(room);
-                    for (Room exit : room.exits()) {
-                        if (!rooms.contains(exit)) {
-                            rooms.addAll(findAll(exit, rooms));
-                        }
-                    }
-                    return rooms;
-                }
-            }
-            return new MazeRunner().findAll(room, new HashSet<>());
-        }
-
-        abstract String stringify(Maze maze);
     }
 
     private final Set<Room> rooms = new HashSet<>();
@@ -210,7 +105,7 @@ class MazeBuilder {
     }
 
     private Maze buildMaze() {
-        return new MazeStruct(createRooms(), options.getDisplayFormat());
+        return new MazeStruct(createRooms());
     }
 
     static Maze build() {

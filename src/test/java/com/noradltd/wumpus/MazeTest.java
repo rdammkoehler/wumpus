@@ -90,50 +90,6 @@ public class MazeTest {
         resetStdout();
     }
 
-    //    @Test
-    @Ignore("come back and update this when you finalize the output")
-    public void testToStringReturnsOutputFormattedForHumansByDefault() {
-        Game.Options options = new Game.Options("--rooms", "2");
-        String humanReadableOutput = "^Room #\\d+\\nHas \\d+ exits.\n" +
-                "\\*\\*\\*\\*\\*\n" +
-                "Room #\\d+\\nHas \\d+ exits.\n" +
-                "\\*\\*\\*\\*\\*\n$";
-
-        assertThat(MazeBuilder.build(options).toString(), matchesPattern(humanReadableOutput));
-    }
-
-    //    @Test
-    @Ignore("come back and update this when you finalize the output")
-    public void testToStringReturnsOutputFormattedForHumansByWhenRequested() {
-        Game.Options options = new Game.Options("--format", "human", "--rooms", "2");
-        String humanReadableOutput = "^Room #\\d+\\nHas \\d+ exits.\n" +
-                "\\*\\*\\*\\*\\*\n" +
-                "Room #\\d+\\nHas \\d+ exits.\n" +
-                "\\*\\*\\*\\*\\*\n$";
-
-        assertThat(MazeBuilder.build(options).toString(), matchesPattern(humanReadableOutput));
-    }
-
-    @Test
-    public void testToStringReturnsDOTFormatWhenRequested() {
-        Game.Options options = new Game.Options("--format", "dot", "--rooms", "2");
-        String dotOutput = "^digraph G \\{\n" +
-                "\t\\d+ -> \\d+ \\[label=\"1\"\\];\n" +
-                "}\n$";
-
-        assertThat(MazeBuilder.build(options).toString(), matchesPattern(dotOutput));
-    }
-
-    @Test
-    public void testToStringReturnsNEATOFormatWhenRequested() {
-        Game.Options options = new Game.Options("--format", "neato", "--rooms", "2");
-        String neatoOutput = "^graph G \\{\n" +
-                "\t\\d+ -- \\d+ \\[label=\"1\"\\];\n" +
-                "}\n$";
-
-        assertThat(MazeBuilder.build(options).toString(), matchesPattern(neatoOutput));
-    }
-
     @Test
     public void aMazeMustHaveTwoRooms() {
         Game.Options options = new Game.Options("--rooms", "0");

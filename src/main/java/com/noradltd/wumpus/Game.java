@@ -111,13 +111,17 @@ class Game {
         public static final int DEFAULT_WUMPUS_COUNT = 1;
         public static final int DEFAULT_ROOM_COUNT = 20;
         public static final int DEFAULT_INITIAL_ARROW_COUNT = 5;
-        @SuppressWarnings("FieldCanBeLocal")
+        @SuppressWarnings({"FieldCanBeLocal", "FieldMayBeFinal"})
         private Integer roomCount = DEFAULT_ROOM_COUNT;
+        @SuppressWarnings({"FieldCanBeLocal", "FieldMayBeFinal"})
         private Long randomSeed = null;
-        private MazeBuilder.Stringifier displayFormat = MazeBuilder.Stringifier.HUMAN;
+        @SuppressWarnings({"FieldCanBeLocal", "FieldMayBeFinal"})
         private Integer wumpiCount = DEFAULT_WUMPUS_COUNT;
+        @SuppressWarnings({"FieldCanBeLocal", "FieldMayBeFinal"})
         private Integer pitCount = DEFAULT_PIT_COUNT;
+        @SuppressWarnings({"FieldCanBeLocal", "FieldMayBeFinal"})
         private Integer batCount = DEFAULT_BAT_COUNT;
+        @SuppressWarnings({"FieldCanBeLocal", "FieldMayBeFinal"})
         private Integer initialArrowCount = DEFAULT_INITIAL_ARROW_COUNT;
 
         protected Options(String... options) {
@@ -153,7 +157,6 @@ class Game {
             Logger.info(
                     "\t--arrows #\t\tLimit the number of arrows\n" +
                     "\t--bats #\t\tLimit the number of colonies of bats\n" +
-                    "\t--format $\t\tSet the output format (human, dot, neato)" +
                     "\t--pits #\t\tLimit the number of bottomless pits\n" +
                     "\t--rooms #\t\tLimit the number of rooms\n" +
                     "\t--seed  #\t\tSet the Randomizer seed\n" +
@@ -175,10 +178,6 @@ class Game {
 
         public Long getRandomSeed() {
             return randomSeed;
-        }
-
-        public MazeBuilder.Stringifier getDisplayFormat() {
-            return displayFormat;
         }
 
         public Integer getWumpiCount() {
