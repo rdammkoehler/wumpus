@@ -15,7 +15,7 @@ public class Main {
 
     public static final Pattern USER_COMMAND = Pattern.compile("\\s*(\\S+)\\s*?(\\d*)?\\s*");
     private Game game;
-    private BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
+    private final BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
 
     private interface Command {
         void execute(String arg);
@@ -62,7 +62,7 @@ public class Main {
             thrown.printStackTrace(System.err);
             Logger.error("something went terribly wrong.");
         } finally {
-            Logger.info(game.inventory());
+            Logger.info(game.getScore());
         }
     }
 

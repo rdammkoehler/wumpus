@@ -14,8 +14,10 @@ class Wumpus extends Room.Occupant {
     }
 
     private void eat(Hunter hunter) {
-        Logger.info("Nom Nom Nom, a Wumpus has eaten you.");
-        hunter.die();
+        if (hunter.getRoom().equals(getRoom())) {
+            Logger.info("Nom Nom Nom, a Wumpus has eaten you.");
+            hunter.die();
+        }
     }
 
     @Override

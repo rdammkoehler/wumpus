@@ -95,10 +95,9 @@ class Room {
         }
     }
 
-    @SuppressWarnings("UnusedReturnValue")
-    Room remove(Occupant occupant) {
+    void remove(Occupant occupant) {
+        Logger.debug("removing " + occupant.getClass().getSimpleName() + " from " + number());
         occupants.remove(occupant);
-        return this;
     }
 
     public Set<Occupant> occupants() {
@@ -158,7 +157,7 @@ class Room {
 
         private void describeOccupants(StringBuilder sb) {
             final Collection<Occupant> describableOccupants = room.occupants().stream()
-                    .filter(occupant -> !(occupant instanceof Hunter))
+//                    .filter(occupant -> !(occupant instanceof Hunter))
                     .sorted()
                     .collect(Collectors.toList());
             if (!describableOccupants.isEmpty()) {

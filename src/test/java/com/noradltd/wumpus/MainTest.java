@@ -135,7 +135,10 @@ public class MainTest {
     @ParameterizedTest
     @ValueSource(strings = {"t", "take"})
     public void huntersCanPickupUnbrokenArrows(String takeCommand) {
-        assertThat("You collect an unbroken arrow off the floor.", SHOOT_SHOOT + " 1", MOVE_MOVE + " 1", takeCommand, QUIT_QUIT);
+        assertThat("You collect an unbroken arrow off the floor.", SHOOT_SHOOT + " 1",
+                MOVE_MOVE + " 1",
+                takeCommand,
+                QUIT_QUIT);
     }
 
     @ParameterizedTest
@@ -151,8 +154,21 @@ public class MainTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {HELP_QMARK, HELP_H, HELP_HELP, LOOK_L, LOOK_LOOK, TAKE_T, TAKE_TAKE, MOVE_M, MOVE_MOVE, SHOOT_S, SHOOT_SHOOT, QUIT_Q, QUIT_QUIT, QUIT_EXIT, QUIT_X, INVENTORY_I, INVENTORY_INV, INVENTORY_INVENTORY})
+    @ValueSource(strings = {HELP_QMARK, HELP_H, HELP_HELP, LOOK_L, LOOK_LOOK, TAKE_T, TAKE_TAKE, MOVE_M, MOVE_MOVE,
+            SHOOT_S, SHOOT_SHOOT, QUIT_Q, QUIT_QUIT, QUIT_EXIT, QUIT_X, INVENTORY_I, INVENTORY_INV, INVENTORY_INVENTORY})
     public void upperCaseCommandsWorkToo(String command) {
         assertThat("[^What]", command, QUIT_QUIT);
     }
+
+    @Test
+    public void reportsScoreAtTheEnd() {
+        assertThat("Score: Hunter \\d+ Wumpus \\d+", QUIT_QUIT);
+    }
+
+//    @Test  //TODO needs help!
+//    public void reportsWumpusPointsBasedOnHunterKills() {
+//        String move1 = MOVE_MOVE + " 1";
+//        String move2 = MOVE_MOVE + " 2";
+//        assertThat("Score: Hunter \\d+ Wumpus 1", move1, move2,move1,move1,move1,move1,move1,move1,move1,move1,move1,QUIT_QUIT);
+//    }
 }

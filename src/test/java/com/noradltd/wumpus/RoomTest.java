@@ -119,13 +119,13 @@ public class RoomTest {
         assertThat(room.toString(), matchesPattern("You are in room #\\d+\\nThis room has 2 exits.\\n"));
     }
 
-    @Test
-    public void huntersDontShowInTheDescription() {
+    @Test  // TODO reconsider
+    public void huntersShowInTheDescription() {
         Room room = new Room();
         Hunter hunter = new Hunter();
         hunter.moveTo(room);
 
-        assertThat(room.toString(), matchesPattern("You are in room #\\d+\\nThis room has 0 exits.\\n"));
+        assertThat(room.toString(), matchesPattern("You are in room #\\d+\\nThis room has 0 exits.\\nContains A genuine specimen of Wumpus murdering prowess\\n"));
     }
 
     @Test

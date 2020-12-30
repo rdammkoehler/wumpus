@@ -48,8 +48,11 @@ public class WumpusTest {
 
     @Test
     public void wumpusEatsHunterWhenGivenAChance() {
+        Room room = new Room();
         Wumpus wumpus = new Wumpus();
+        wumpus.moveTo(room);
         Hunter hunter = new Hunter();
+        hunter.moveTo(room);
         programRandomizer(true);
 
         wumpus.respondTo(hunter);
@@ -64,6 +67,7 @@ public class WumpusTest {
         Wumpus wumpus = new Wumpus();
         wumpus.moveTo(room);
         Hunter hunter = new Hunter();
+        hunter.moveTo(room);
         programRandomizer(false);
 
         wumpus.respondTo(hunter);

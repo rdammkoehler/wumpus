@@ -3,6 +3,7 @@ package com.noradltd.wumpus;
 import java.util.stream.Collectors;
 
 class Hunter extends Room.Occupant {
+
     interface Quiver {
         boolean isEmpty();
 
@@ -13,36 +14,39 @@ class Hunter extends Room.Occupant {
         void add(Arrow arrow);
     }
 
+    private static final Quiver NULL_QUIVER = new Quiver() {
+        @Override
+        public boolean isEmpty() {
+            return true;
+        }
+
+        @Override
+        public Arrow next() {
+            return Arrow.NULL_ARROW;
+        }
+
+        @Override
+        public String arrowsRemaining() {
+            return "0";
+        }
+
+        @Override
+        public void add(Arrow arrow) {
+        }
+    };
+
     private Integer kills = 0;
     private Quiver quiver;
 
     Hunter() {
-        this.quiver = new Quiver() {
-            @Override
-            public boolean isEmpty() {
-                return true;
-            }
-
-            @Override
-            public Arrow next() {
-                return Arrow.NULL_ARROW;
-            }
-
-            @Override
-            public String arrowsRemaining() {
-                return "0";
-            }
-
-            @Override
-            public void add(Arrow arrow) {
-            }
-        };
+        this.quiver = NULL_QUIVER;
     }
 
     Hunter(Quiver quiver) {
         this.quiver = quiver;
     }
 
+    // TODO only used in testing, can we drop this?
     public boolean canShoot() {
         return !quiver.isEmpty();
     }
@@ -132,6 +136,9 @@ class Hunter extends Room.Occupant {
 
     @Override
     public String describe() {
+        if (isDead()) {  // TODO test
+            return "You smell the mouldering of a corpse";
+        }
         return "You sense the presence of death";
     }
 

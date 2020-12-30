@@ -115,7 +115,7 @@ public class MazeTest {
     public void testToStringReturnsDOTFormatWhenRequested() {
         String[] options = {"--format", "dot", "--rooms", "2"};
         String dotOutput = "^digraph G \\{\n" +
-                "\t\\d+ -> \\d+;\n" +
+                "\t\\d+ -> \\d+ \\[label=\"1\"\\];\n" +
                 "}\n$";
 
         assertThat(MazeBuilder.build(options).toString(), matchesPattern(dotOutput));
@@ -125,7 +125,7 @@ public class MazeTest {
     public void testToStringReturnsNEATOFormatWhenRequested() {
         String[] options = {"--format", "neato", "--rooms", "2"};
         String neatoOutput = "^graph G \\{\n" +
-                "\t\\d+ -- \\d+;\n" +
+                "\t\\d+ -- \\d+ \\[label=\"1\"\\];\n" +
                 "}\n$";
 
         assertThat(MazeBuilder.build(options).toString(), matchesPattern(neatoOutput));

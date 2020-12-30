@@ -10,7 +10,6 @@ import java.util.stream.Stream;
 interface Maze {
     Room entrance();
 
-    @SuppressWarnings("FieldMayBeFinal")
     class Options {
         private static final Map<String, String> optionNameAttrMap = new HashMap<>() {{
             put("rooms", "roomCount");
@@ -157,10 +156,24 @@ class MazeBuilder {
                 sb.append("digraph G {\n");
                 Set<Integer> bookKeeper = new HashSet<>();
                 for (Room room : rooms) {
+                    int exitIdx = 1;
                     for (Room exit : room.exits()) {
                         if (!bookKeeper.contains(room.number())) {
-                            sb.append("\t").append(room.number()).append(" -> ").append(exit.hashCode()).append(";\n");
-                            bookKeeper.add(exit.hashCode());
+                            sb.append("\t").append(room.number()).append(" -> ").append(exit.number());
+                            sb.append(" [label=\"").append(exitIdx++).append("\"]");
+                            sb.append(";\n");
+                            if (room.occupants().size() > 0) {
+                                StringBuilder occupantsSb = new StringBuilder();
+                                occupantsSb.append("\t").append(room.number());
+                                occupantsSb.append(" [label=\"");
+                                occupantsSb.append(room.number()).append(" ");
+                                occupantsSb.append(room.occupants().stream()
+                                        .map(occupant -> occupant.getClass().getSimpleName())
+                                        .collect(Collectors.joining(" ")));
+                                occupantsSb.append("\"];\n");
+                                sb.append(occupantsSb.toString());
+                            }
+                            bookKeeper.add(exit.number());
                         }
                     }
                 }
@@ -176,10 +189,24 @@ class MazeBuilder {
                 sb.append("graph G {\n");
                 Set<Integer> bookKeeper = new HashSet<>();
                 for (Room room : rooms) {
+                    int exitIdx = 1;
                     for (Room exit : room.exits()) {
                         if (!bookKeeper.contains(room.number())) {
-                            sb.append("\t").append(room.number()).append(" -- ").append(exit.hashCode()).append(";\n");
-                            bookKeeper.add(exit.hashCode());
+                            sb.append("\t").append(room.number()).append(" -- ").append(exit.number());
+                            sb.append(" [label=\"").append(exitIdx++).append("\"]");
+                            sb.append(";\n");
+                            if (room.occupants().size() > 0) {
+                                StringBuilder occupantsSb = new StringBuilder();
+                                occupantsSb.append("\t").append(room.number());
+                                occupantsSb.append(" [label=\"");
+                                occupantsSb.append(room.number()).append(" ");
+                                occupantsSb.append(room.occupants().stream()
+                                        .map(occupant -> occupant.getClass().getSimpleName())
+                                        .collect(Collectors.joining(" ")));
+                                occupantsSb.append("\"];\n");
+                                sb.append(occupantsSb.toString());
+                            }
+                            bookKeeper.add(exit.number());
                         }
                     }
                 }

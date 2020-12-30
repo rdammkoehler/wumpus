@@ -1,7 +1,7 @@
 package com.noradltd.wumpus;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 class Game {
     private final Hunter hunter;
@@ -9,8 +9,9 @@ class Game {
 
     Game(String[] options) {
         // TODO we construct options 3 times, once for builder, once for loader, and once for hunter; do this only once
+        //  Maze.Options should probably be Game.Options
         Maze maze = MazeLoader.populate(MazeBuilder.build(options), options);
-        hunter = new Hunter(new ArrowQuiver(new Maze.Options(options).getInitialArrowCount()));  // default to 5 arrows for the moment
+        hunter = new Hunter(new ArrowQuiver(new Maze.Options(options).getInitialArrowCount()));
         hunter.moveTo(maze.entrance());
     }
 
@@ -26,7 +27,9 @@ class Game {
         return hunter.inventory();
     }
 
-    public void takeArrow() { hunter.takeArrow(); }
+    public void takeArrow() {
+        hunter.takeArrow();
+    }
 
     @Override
     public String toString() {
@@ -39,6 +42,47 @@ class Game {
 
     public void quit() {
         playing = false;
+    }
+
+    public String getScore() {
+        class MazeOccupantCounter {
+            private Set<Room> rooms = null;
+
+            Long count(Class<? extends Room.Occupant> occupantType) {
+                return getRooms().stream()
+                        .map(Room::occupants)
+                        .flatMap(Collection::stream)
+                        .filter(occupantType::isInstance)
+                        .filter(Room.Occupant::isDead)
+                        .count();
+            }
+
+            private List<Room> getRooms() {
+                if (rooms == null) {
+                    rooms = collectRoom(hunter.getRoom(), new HashSet<>());
+                    // TODO remove diagnostic
+//                    rooms.stream().map(room -> new Room.RoomDescriber(room).description()).forEach(System.err::println);
+                }
+                return rooms.stream().collect(Collectors.toUnmodifiableList());
+            }
+
+            private Set<Room> collectRoom(Room room, Set<Room> rooms) {
+                if (!rooms.contains(room)) {
+                    rooms.add(room);
+                    for (Room exit : room.exits()) {
+                        if (!rooms.contains(exit)) {
+                            collectRoom(exit, rooms);
+                        }
+                    }
+                }
+                return rooms;
+            }
+
+        }
+        MazeOccupantCounter counter = new MazeOccupantCounter();
+        Long huntersKilled = counter.count(Hunter.class);
+        Long wumpiKilled = counter.count(Wumpus.class);
+        return "Score: Hunter " + wumpiKilled + " Wumpus " + huntersKilled;
     }
 
     private static final ThreadLocal<Map<String, Object>> threadLocalBag = ThreadLocal.withInitial(() -> new HashMap<>() {{
