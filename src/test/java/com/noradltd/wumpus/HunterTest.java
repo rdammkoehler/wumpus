@@ -52,6 +52,7 @@ public class HunterTest {
 
     @Test
     public void inventroyTellsUsHowMuchWeKill() {
+        Helpers.programRandomizer(true, true, true);
         Room room = new Room();
         Hunter killer = new Hunter();
         Wumpus wumpus = new Wumpus();
@@ -112,7 +113,7 @@ public class HunterTest {
 
         hunter.shoot(0);
 
-        long arrowCount = exit.occupants().stream().filter(occupant -> Arrow.class.isInstance(occupant)).count();
+        long arrowCount = exit.occupants().stream().filter(Arrow.class::isInstance).count();
         assertThat(arrowCount, is(equalTo(1L)));
     }
 

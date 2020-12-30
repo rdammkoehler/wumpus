@@ -81,9 +81,14 @@ class Hunter extends Room.Occupant {
 
     protected void kill(Wumpus wumpus) {
         if (getRoom().equals(wumpus.getRoom())) {
-            Logger.info("With a slash of your knife you eviscerate a Wumpus; it's corpse slides to the floor");
-            wumpus.die();
-            kills += 1;
+            if (Random.getRandomizer().nextBoolean()) {
+                Logger.info("With a slash of your knife you eviscerate a Wumpus; it's corpse slides to the floor");
+                wumpus.die();
+                kills += 1;
+            } else {
+                Logger.info("You slash you knife at the Wumpus as it's slimy tenticales wrap around you, crushing the life out of your body");
+                wumpus.respondTo(this);
+            }
         } else {
             Logger.info("The Wumpus escapes your violent assault");  // TODO this means the wumpus fled from you!
         }

@@ -64,7 +64,7 @@ public class RoomTest {
 
     @Test
     public void roomOccupantsInteractWithNewComersWumpusEatsHunter() {
-        Helpers.programRandomizer(true, true);
+        Helpers.programRandomizer(true, true, true, true);
         Room room = new Room();
         Wumpus wumpus = new Wumpus();
         wumpus.moveTo(room);
@@ -80,7 +80,7 @@ public class RoomTest {
 
     @Test
     public void roomOccupantsInteractWithNewComersWumpusFleesHunter() {
-        Helpers.programRandomizer(false);
+        Helpers.programRandomizer(false, true);
         Room room = new Room();
         room.add(new Room());
         room.add(new Room());
