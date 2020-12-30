@@ -19,15 +19,20 @@ public class Arrow extends Room.Occupant {
 
     @Override
     public void respondTo(Room.Occupant interloper) {
-        if (interloper instanceof Wumpus) {
+        if (!isBroken() && interloper instanceof Wumpus) {
             Wumpus wumpus = (Wumpus) interloper;
             wumpus.die();
             killedAWumpus = true;
-            Logger.info("Your arrow drives itself deep into the hideous beast; it's life force escaping from the hole");
+            Logger.info("Your arrow drives itself deep into the hideous beast; it's life force escaping from the hole in it's leathery hide");
             shatter();
-        } else {
+        }
+    }
+
+    @Override
+    public void moveTo(Room newRoom) {
+        super.moveTo(newRoom);
+        if (!isBroken()) {
             if (Random.getRandomizer().nextBoolean()) {
-                Logger.info("You hear the sharp crack of your arrow as it splitters against the cave wall");
                 shatter();
             } else {
                 Logger.info("You hear a clattering sound in the distance");
@@ -40,6 +45,9 @@ public class Arrow extends Room.Occupant {
     }
 
     private void shatter() {
+        if (!killedAWumpus()) {
+            Logger.info("You hear the sharp crack of your arrow as it splitters against the cave wall");
+        }
         die();
     }
 
@@ -55,9 +63,9 @@ public class Arrow extends Room.Occupant {
     @Override
     public String toString() {
         if (isDead()) {
-            return "A shattered arrow lies here";
+            return "a shattered arrow";
         }
-        return "A nasty looking arrow with a viciously barbed point lies here";
+        return "a nasty looking arrow with a viciously barbed point lies here";
     }
 }
 
@@ -87,6 +95,13 @@ class ArrowQuiver implements Hunter.Quiver {
     @Override
     public String arrowsRemaining() {
         return Integer.toString(arrowCount);
+    }
+
+    @Override
+    public void add(Arrow arrow) {
+        if (!arrow.isBroken()) {
+            arrowCount++;
+        }
     }
 
 }

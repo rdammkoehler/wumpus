@@ -42,7 +42,7 @@ public class MainTest {
         InputStream originalStdin = System.in;
         try {
             System.setIn(new ByteArrayInputStream(instructions.getBytes()));
-            Main.main(new String[]{});
+            Main.main(new String[]{"--seed", "0", "--arrows", "20"});
             return stdout.toString();
         } finally {
             System.setIn(originalStdin);
@@ -51,7 +51,8 @@ public class MainTest {
     }
 
     private void assertThat(String reOutput, String... instructions) {
-        Pattern pattern = Pattern.compile(reOutput, Pattern.DOTALL);
+        final String regex = preProcessRegularExpression(reOutput);
+        Pattern pattern = Pattern.compile(regex, Pattern.DOTALL);
         String allInstructions = String.join("\n", instructions) + "\n";
 
         String actual = playInstructions(allInstructions);
@@ -59,59 +60,91 @@ public class MainTest {
         org.hamcrest.MatcherAssert.assertThat(actual, matchesRegex(pattern));
     }
 
+    private String preProcessRegularExpression(String reOutput) {
+        final String regex;
+        if (reOutput.startsWith("^") && reOutput.endsWith("$")) {
+            regex = reOutput;
+        } else if (reOutput.startsWith("^") && !reOutput.endsWith("$")) {
+            regex = reOutput + ".*";
+        } else if (!reOutput.startsWith("^") && reOutput.endsWith("$")) {
+            regex = ".*" + reOutput;
+        } else {
+            regex = ".*" + reOutput + ".*";
+        }
+        return regex;
+    }
+
     @Test
     public void theGameWelcomesThePlayer() {
-        assertThat("^- Welcome to Hunt The Wumpus.*", QUIT_QUIT);
+        assertThat("^- Welcome to Hunt The Wumpus", QUIT_QUIT);
     }
 
     @Test
     public void theGameStartsInRoomTwelve() {
-        assertThat(".*You are in room #12.*", QUIT_QUIT);
+        assertThat("You are in room #12", QUIT_QUIT);
     }
 
     @ParameterizedTest
     @ValueSource(strings = {QUIT_Q, QUIT_X, QUIT_QUIT, QUIT_EXIT})
     public void quitingShowsAGoodbyeMessage(String quitCommand) {
-        assertThat(".*Goodbye\\n$", quitCommand);
+        assertThat("Goodbye\\n$", quitCommand);
     }
 
     @ParameterizedTest
     @ValueSource(strings = {MOVE_M, MOVE_MOVE})
     public void theHunterCanMoveAround(String moveCommand) {
-        assertThat(".*You are in room #10.*", moveCommand + " 1", QUIT_QUIT);
+        assertThat("You are in room #10", moveCommand + " 1", QUIT_QUIT);
     }
 
     @ParameterizedTest
     @ValueSource(strings = {SHOOT_S, SHOOT_SHOOT})
     public void theHunterCanShootArrows(String shootCommand) {
-        assertThat(".*- Your arrow hurtles down tunnel 1.*", shootCommand + " 1", QUIT_QUIT);
+        assertThat("- Your arrow hurtles down tunnel 1", shootCommand + " 1", QUIT_QUIT);
     }
 
     @ParameterizedTest
     @ValueSource(strings = {INVENTORY_I, INVENTORY_INV, INVENTORY_INVENTORY})
     public void thePlayerCanInspectTheHuntersInventory(String inventoryCommand) {
-        assertThat(".*Inventory.*", inventoryCommand, QUIT_QUIT);
+        assertThat("Inventory", inventoryCommand, QUIT_QUIT);
     }
 
     @ParameterizedTest
     @ValueSource(strings = {HELP_QMARK, HELP_H, HELP_HELP})
     public void thePlayerCanAskForHelp(String helpCommand) {
-        assertThat(".*Instructions:.*", helpCommand, QUIT_QUIT);
+        assertThat("Instructions:", helpCommand, QUIT_QUIT);
     }
 
     @ParameterizedTest
     @ValueSource(strings = {LOOK_L, LOOK_LOOK})
     public void thePlayerCanRepeatTheRoomDescription(String lookCommand) {
-        assertThat(".*You are in room #12.*You are in room #12.*", lookCommand, QUIT_QUIT);
+        assertThat("You are in room #12.*You are in room #12", lookCommand, QUIT_QUIT);
     }
 
     @Test
     public void badCommandsGetAWhatPrompt() {
-        assertThat(".*- What?.*", "bad command", QUIT_QUIT);
+        assertThat("- What?", "bad command", QUIT_QUIT);
     }
 
     @Test
     public void nonNumericArgumentsGetAWhatPrompt() {
-        assertThat(".*- What?.*", "move faraway", QUIT_QUIT);
+        assertThat("- What?", "move faraway", QUIT_QUIT);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"t", "take"})
+    public void huntersCanPickupUnbrokenArrows(String takeCommand) {
+        assertThat("You collect an unbroken arrow off the floor.", SHOOT_SHOOT + " 1", MOVE_MOVE + " 1", takeCommand, QUIT_QUIT);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"t", "take"})
+    public void huntersCannotPickupBrokenArrows(String takeCommand) {
+        // TODO the excessive number of shots is because we can't controll the randomizer!
+        assertThat("The broken arrow crumbles in your hand.", SHOOT_SHOOT + " 1",
+                SHOOT_SHOOT + " 1", SHOOT_SHOOT + " 1", SHOOT_SHOOT + " 1", SHOOT_SHOOT + " 1", SHOOT_SHOOT + " 1",
+                SHOOT_SHOOT + " 1", SHOOT_SHOOT + " 1", SHOOT_SHOOT + " 1", SHOOT_SHOOT + " 1", SHOOT_SHOOT + " 1",
+                SHOOT_SHOOT + " 1", SHOOT_SHOOT + " 1", SHOOT_SHOOT + " 1", SHOOT_SHOOT + " 1", SHOOT_SHOOT + " 1",
+                SHOOT_SHOOT + " 1", SHOOT_SHOOT + " 1", SHOOT_SHOOT + " 1", SHOOT_SHOOT + " 1", MOVE_MOVE + " 1",
+                takeCommand, QUIT_QUIT);
     }
 }

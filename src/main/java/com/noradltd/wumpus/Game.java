@@ -8,8 +8,9 @@ class Game {
     private boolean playing = true;
 
     Game(String[] options) {
+        // TODO we construct options 3 times, once for builder, once for loader, and once for hunter; do this only once
         Maze maze = MazeLoader.populate(MazeBuilder.build(options), options);
-        hunter = new Hunter(new ArrowQuiver(5));  // default to 5 arrows for the moment
+        hunter = new Hunter(new ArrowQuiver(new Maze.Options(options).getInitialArrowCount()));  // default to 5 arrows for the moment
         hunter.moveTo(maze.entrance());
     }
 
@@ -24,6 +25,8 @@ class Game {
     public String inventory() {
         return hunter.inventory();
     }
+
+    public void take(String item) { hunter.take(item); }
 
     @Override
     public String toString() {

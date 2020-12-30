@@ -85,12 +85,12 @@ public class ArrowTest {
         Arrow arrow = new Arrow();
         arrow.die();
 
-        assertThat(arrow.toString(), is(equalTo("A shattered arrow lies here")));
+        assertThat(arrow.toString(), is(equalTo("a shattered arrow")));
     }
 
     @Test
     public void unBrokenArrowsAreViciouslyBarbed() {
-        assertThat(new Arrow().toString(), is(equalTo("A nasty looking arrow with a viciously barbed point lies here")));
+        assertThat(new Arrow().toString(), is(equalTo("a nasty looking arrow with a viciously barbed point lies here")));
     }
 
     @Test

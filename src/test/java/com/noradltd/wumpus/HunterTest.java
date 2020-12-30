@@ -213,4 +213,37 @@ public class HunterTest {
         assertThat(wumpus.getRoom(), is(equalTo(escapePath)));
         assertThat(hunter.kills(), is(0));
     }
+
+
+    @ExtendWith(ResetRandomizerExtension.class)
+    @Test
+    public void huntersCanPickupUnbrokenArrows() {
+        Helpers.programRandomizer(false);
+        final int initialArrowCount = 1;
+        Room room = new Room();
+        Arrow arrow = new Arrow();
+        arrow.moveTo(room);  // Programmed Randomizer ensures an unbroken arrow
+        Hunter hunter = new Hunter(new ArrowQuiver(initialArrowCount));
+        hunter.moveTo(room);
+
+        hunter.take(arrow);
+
+        assertThat(hunter.inventory(), is(equalTo("Inventory:\n\tArrows: " + (initialArrowCount + 1) + "\n\tWumpus Scalps: 0\n")));
+    }
+
+    @ExtendWith(ResetRandomizerExtension.class)
+    @Test
+    public void huntersCannotPickupBrokenArrows() {
+        Helpers.programRandomizer(true);
+        final int initialArrowCount = 1;
+        Room room = new Room();
+        Arrow arrow = new Arrow();
+        arrow.moveTo(room);  // Programmed Randomizer ensures a broken arrow
+        Hunter hunter = new Hunter(new ArrowQuiver(initialArrowCount));
+        hunter.moveTo(room);
+
+        hunter.take(arrow);
+
+        assertThat(hunter.inventory(), is(equalTo("Inventory:\n\tArrows: " + initialArrowCount + "\n\tWumpus Scalps: 0\n")));
+    }
 }

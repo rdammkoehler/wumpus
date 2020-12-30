@@ -19,12 +19,14 @@ interface Maze {
             put("wumpi", "wumpiCount");
             put("pits", "pitCount");
             put("bats", "batCount");
+            put("arrows", "initialArrowCount");
         }};
         public static final Options DEFAULT = new Options();
         public static final int DEFAULT_BAT_COUNT = 0;
         public static final int DEFAULT_PIT_COUNT = 0;
         public static final int DEFAULT_WUMPUS_COUNT = 1;
         public static final int DEFAULT_ROOM_COUNT = 20;
+        public static final int DEFAULT_INITIAL_ARROW_COUNT = 5;
         @SuppressWarnings("FieldCanBeLocal")
         private Integer roomCount = DEFAULT_ROOM_COUNT;
         private Long randomSeed = null;
@@ -32,6 +34,7 @@ interface Maze {
         private Integer wumpiCount = DEFAULT_WUMPUS_COUNT;
         private Integer pitCount = DEFAULT_PIT_COUNT;
         private Integer batCount = DEFAULT_BAT_COUNT;
+        private Integer initialArrowCount = DEFAULT_INITIAL_ARROW_COUNT;
 
         private Options() {
         }
@@ -65,6 +68,7 @@ interface Maze {
             }
         }
 
+        // TODO incomplete
         private void printHelp() {
             Logger.info("\t--rooms #\t\tLimit the number or rooms\n" +
                     "\t--seed  #\t\tSet the Randomizer seed\n" +
@@ -101,6 +105,10 @@ interface Maze {
 
         public Integer getBatCount() {
             return batCount;
+        }
+
+        public Integer getInitialArrowCount() {
+            return initialArrowCount;
         }
     }
 }
@@ -363,9 +371,7 @@ class MazeLoader {
             int occupantIdx = Random.getRandomizer().nextInt(rooms.size());
             while (maze.entrance().equals(rooms.get(occupantIdx))
                     ||
-                    rooms.get(occupantIdx).occupants().stream()
-                            .filter(occ -> occupant.getClass().isInstance(occ))
-                            .count() > 0) {
+                    rooms.get(occupantIdx).occupants().stream().anyMatch(occ -> occupant.getClass().isInstance(occ))) {
                 occupantIdx = Random.getRandomizer().nextInt(allRooms.size());
             }
             occupant.moveTo(rooms.get(occupantIdx));
@@ -376,7 +382,7 @@ class MazeLoader {
         Collection<Room.Occupant> occupants = new ArrayList<>();
         for (int idx = 0; idx < requiredCount; idx++) {
             try {
-                occupants.add(occupantClass.getDeclaredConstructor(null).newInstance(null));
+                occupants.add(occupantClass.getDeclaredConstructor((Class<?>[]) null).newInstance((Object[]) null));
             } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException ex) {
                 throw new RuntimeException(ex);
             }

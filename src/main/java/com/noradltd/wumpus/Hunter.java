@@ -1,5 +1,7 @@
 package com.noradltd.wumpus;
 
+import java.util.stream.Collectors;
+
 class Hunter extends Room.Occupant {
     interface Quiver {
         boolean isEmpty();
@@ -7,6 +9,8 @@ class Hunter extends Room.Occupant {
         Arrow next();
 
         String arrowsRemaining();
+
+        void add(Arrow arrow);
     }
 
     private Integer kills = 0;
@@ -27,6 +31,10 @@ class Hunter extends Room.Occupant {
             @Override
             public String arrowsRemaining() {
                 return "0";
+            }
+
+            @Override
+            public void add(Arrow arrow) {
             }
         };
     }
@@ -93,6 +101,25 @@ class Hunter extends Room.Occupant {
             Logger.info("The Wumpus escapes your violent assault");  // TODO this means the wumpus fled from you!
         }
 
+    }
+
+    void take(String item) {
+        // yuk!
+        getRoom().occupants().stream()
+                .filter(occupant -> occupant.getClass().getSimpleName().contains(item)).collect(Collectors.toList())
+                .forEach(occupant -> {
+                    if (occupant instanceof Arrow && !((Arrow)occupant).isBroken()) {
+                        Logger.info("You collect an unbroken arrow off the floor.");
+                        take((Arrow) occupant);
+                    }
+                    if (occupant instanceof Arrow && ((Arrow)occupant).isBroken()) {
+                        Logger.info("The broken arrow crumbles in your hand.");
+                    }
+                });
+    }
+
+    void take(Arrow arrow) {
+        quiver.add(arrow);
     }
 
     @Override
