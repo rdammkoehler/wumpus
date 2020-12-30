@@ -1,115 +1,12 @@
 package com.noradltd.wumpus;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 interface Maze {
     Room entrance();
-
-    class Options {
-        private static final Map<String, String> optionNameAttrMap = new HashMap<>() {{
-            put("rooms", "roomCount");
-            put("seed", "randomSeed");
-            put("format", "displayFormat");
-            put("wumpi", "wumpiCount");
-            put("pits", "pitCount");
-            put("bats", "batCount");
-            put("arrows", "initialArrowCount");
-        }};
-        public static final Options DEFAULT = new Options();
-        public static final int DEFAULT_BAT_COUNT = 0;
-        public static final int DEFAULT_PIT_COUNT = 0;
-        public static final int DEFAULT_WUMPUS_COUNT = 1;
-        public static final int DEFAULT_ROOM_COUNT = 20;
-        public static final int DEFAULT_INITIAL_ARROW_COUNT = 5;
-        @SuppressWarnings("FieldCanBeLocal")
-        private Integer roomCount = DEFAULT_ROOM_COUNT;
-        private Long randomSeed = null;
-        private MazeBuilder.Stringifier displayFormat = MazeBuilder.Stringifier.HUMAN;
-        private Integer wumpiCount = DEFAULT_WUMPUS_COUNT;
-        private Integer pitCount = DEFAULT_PIT_COUNT;
-        private Integer batCount = DEFAULT_BAT_COUNT;
-        private Integer initialArrowCount = DEFAULT_INITIAL_ARROW_COUNT;
-
-        private Options() {
-        }
-
-        protected Options(String[] options) {
-            if (isHelpRequested(options)) {
-                printHelp();
-            } else {
-                processOptions(options);
-            }
-        }
-
-        private void processOptions(String[] options) {
-            for (int optionIdx = 0; optionIdx < options.length - 1; optionIdx += 2) {
-                String optionName = options[optionIdx].substring(2);
-                String attrName = optionNameAttrMap.getOrDefault(optionName, null);
-                if (attrName != null) {
-                    String optionValue = options[optionIdx + 1].toUpperCase();
-                    setOptionValue(attrName, optionValue);
-                }
-            }
-        }
-
-        private void setOptionValue(String attrName, String optionValue) {
-            try {
-                Field field = this.getClass().getDeclaredField(attrName);
-                Method valueOf = field.getType().getMethod("valueOf", String.class);
-                field.set(this, valueOf.invoke(null, optionValue));
-            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | NoSuchFieldException ex) {
-                throw new RuntimeException(ex);
-            }
-        }
-
-        // TODO incomplete
-        private void printHelp() {
-            Logger.info("\t--rooms #\t\tLimit the number or rooms\n" +
-                    "\t--seed  #\t\tSet the Randomizer seed\n" +
-                    "\t--format $\t\tSet the output format (human, dot, neato)");
-        }
-
-        private boolean isHelpRequested(String[] options) {
-            return Arrays.asList(options).contains("--help");
-        }
-
-        public Integer getRoomCount() {
-            return roomCount;
-        }
-
-        public boolean hasRandomSeed() {
-            return randomSeed != null;
-        }
-
-        public Long getRandomSeed() {
-            return randomSeed;
-        }
-
-        public MazeBuilder.Stringifier getDisplayFormat() {
-            return displayFormat;
-        }
-
-        public Integer getWumpiCount() {
-            return wumpiCount;
-        }
-
-        public Integer getPitCount() {
-            return pitCount;
-        }
-
-        public Integer getBatCount() {
-            return batCount;
-        }
-
-        public Integer getInitialArrowCount() {
-            return initialArrowCount;
-        }
-    }
 }
 
 class MazeBuilder {
@@ -234,9 +131,9 @@ class MazeBuilder {
     }
 
     private final Set<Room> rooms = new HashSet<>();
-    private final Maze.Options options;
+    private final Game.Options options;
 
-    private MazeBuilder(Maze.Options options) {
+    private MazeBuilder(Game.Options options) {
         this.options = options;
         if (options.hasRandomSeed()) {
             Random.getRandomizer().setSeed(options.getRandomSeed());
@@ -317,11 +214,11 @@ class MazeBuilder {
     }
 
     static Maze build() {
-        return new MazeBuilder(Maze.Options.DEFAULT).buildMaze();
+        return new MazeBuilder(Game.Options.DEFAULT).buildMaze();
     }
 
-    static Maze build(String... options) {
-        return new MazeBuilder(new Maze.Options(options)).buildMaze();
+    static Maze build(Game.Options options) {
+        return new MazeBuilder(options).buildMaze();
     }
 }
 
@@ -329,10 +226,10 @@ class MazeLoader {
     public static final int MINIMUM_PIT_COUNT = 1;
     public static final int MINIMUM_WUMPUS_COUNT = 1;
     public static final int MINIMUM_BAT_COUNT = 1;
-    private final Maze.Options options;
+    private final Game.Options options;
     private Collection<Room> allRooms;
 
-    MazeLoader(Maze.Options options) {
+    MazeLoader(Game.Options options) {
         this.options = options;
     }
 
@@ -417,7 +314,7 @@ class MazeLoader {
         return occupants;
     }
 
-    static Maze populate(Maze maze, String[] options) {
-        return new MazeLoader(new Maze.Options(options)).populateMaze(maze);
+    static Maze populate(Maze maze, Game.Options options) {
+        return new MazeLoader(options).populateMaze(maze);
     }
 }

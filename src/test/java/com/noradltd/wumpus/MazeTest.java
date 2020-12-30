@@ -20,7 +20,7 @@ public class MazeTest {
     @Test
     public void testMazeRoomsCanBeLimitedWithOptions() {
         Integer roomLimit = 5;
-        String[] options = {"--rooms", roomLimit.toString()};
+        Game.Options options = new Game.Options("--rooms", roomLimit.toString());
         Maze maze = MazeBuilder.build(options);
 
         assertThat(countRooms(maze), is(equalTo(roomLimit)));
@@ -36,7 +36,7 @@ public class MazeTest {
                 seedSetDetected[0] = true;
             }
         });
-        String[] options = {"--seed", Integer.toString(0)};
+        Game.Options options = new Game.Options("--seed", Integer.toString(0));
 
         MazeBuilder.build(options);
 
@@ -45,28 +45,28 @@ public class MazeTest {
 
     @Test
     public void testMazeBuilderIgnoresSingleOptionWithNoValue() {
-        String[] options = {"--blarg"};
+        Game.Options options = new Game.Options("--blarg");
 
         MazeBuilder.build(options);
     }
 
     @Test
     public void testMazeBuilderIgnoresOptionsItDoesntRecognize() {
-        String[] options = {"--blarg", "hack"};
+        Game.Options options = new Game.Options("--blarg", "hack");
 
         MazeBuilder.build(options);
     }
 
     @Test
     public void testMazeBuilderIgnoresTheLastOddOption() {
-        String[] options = {"--rooms", "2", "--blarg"};
+        Game.Options options = new Game.Options("--rooms", "2", "--blarg");
 
         MazeBuilder.build(options);
     }
 
     @Test
     public void testMazeBuilderIgnoresExtraOptions() {
-        String[] options = {"--rooms", "2", "--blarg", "100"};
+        Game.Options options = new Game.Options("--rooms", "2", "--blarg", "100");
 
         MazeBuilder.build(options);
     }
@@ -74,11 +74,14 @@ public class MazeTest {
     @Ignore("come back and update this when you finalize the output")
     public void testMazeBuilderPrintsHelpWhenAsked() {
         ByteArrayOutputStream stdout = captureStdout();
-        String[] options = {"--help"};
-        String helpStatement = "\t--rooms #\t\tLimit the number or rooms\n" +
-                "\t--seed  #\t\tSet the Randomizer seed\n" +
+        Game.Options options = new Game.Options("--help");
+        String helpStatement = "\t--arrows #\t\tLimit the number of arrows\n" +
+                "\t--bats #\t\tLimit the number of colonies of bats\n" +
                 "\t--format $\t\tSet the output format (human, dot, neato)" +
-                "\n";
+                "\t--pits #\t\tLimit the number of bottomless pits\n" +
+                "\t--rooms #\t\tLimit the number of rooms\n" +
+                "\t--seed  #\t\tSet the Randomizer seed\n" +
+                "\t--wumpi  #\t\tLimit the number of wumpi\n";
 
         MazeBuilder.build(options);
 
@@ -90,7 +93,7 @@ public class MazeTest {
     //    @Test
     @Ignore("come back and update this when you finalize the output")
     public void testToStringReturnsOutputFormattedForHumansByDefault() {
-        String[] options = {"--rooms", "2"};
+        Game.Options options = new Game.Options("--rooms", "2");
         String humanReadableOutput = "^Room #\\d+\\nHas \\d+ exits.\n" +
                 "\\*\\*\\*\\*\\*\n" +
                 "Room #\\d+\\nHas \\d+ exits.\n" +
@@ -102,7 +105,7 @@ public class MazeTest {
     //    @Test
     @Ignore("come back and update this when you finalize the output")
     public void testToStringReturnsOutputFormattedForHumansByWhenRequested() {
-        String[] options = {"--format", "human", "--rooms", "2"};
+        Game.Options options = new Game.Options("--format", "human", "--rooms", "2");
         String humanReadableOutput = "^Room #\\d+\\nHas \\d+ exits.\n" +
                 "\\*\\*\\*\\*\\*\n" +
                 "Room #\\d+\\nHas \\d+ exits.\n" +
@@ -113,7 +116,7 @@ public class MazeTest {
 
     @Test
     public void testToStringReturnsDOTFormatWhenRequested() {
-        String[] options = {"--format", "dot", "--rooms", "2"};
+        Game.Options options = new Game.Options("--format", "dot", "--rooms", "2");
         String dotOutput = "^digraph G \\{\n" +
                 "\t\\d+ -> \\d+ \\[label=\"1\"\\];\n" +
                 "}\n$";
@@ -123,7 +126,7 @@ public class MazeTest {
 
     @Test
     public void testToStringReturnsNEATOFormatWhenRequested() {
-        String[] options = {"--format", "neato", "--rooms", "2"};
+        Game.Options options = new Game.Options("--format", "neato", "--rooms", "2");
         String neatoOutput = "^graph G \\{\n" +
                 "\t\\d+ -- \\d+ \\[label=\"1\"\\];\n" +
                 "}\n$";
@@ -133,7 +136,7 @@ public class MazeTest {
 
     @Test
     public void aMazeMustHaveTwoRooms() {
-        String[] options = {"--rooms", "0"};
+        Game.Options options = new Game.Options("--rooms", "0");
 
         assertThat(countRooms(MazeBuilder.build(options)), is(equalTo(2)));
     }

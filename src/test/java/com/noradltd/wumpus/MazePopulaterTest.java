@@ -3,7 +3,10 @@ package com.noradltd.wumpus;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -22,7 +25,7 @@ public class MazePopulaterTest {
     }};
 
     private void checkWumpusPopulation(int roomCount) {
-        String[] options = {"--rooms", Integer.toString(roomCount)};
+        Game.Options options = new Game.Options("--rooms", Integer.toString(roomCount));
         Maze maze = MazeLoader.populate(MazeBuilder.build(options), options);
 
         assertThat(countMazeOccupantsByType(maze, Wumpus.class), is(Math.max(1, roomCount / 7)));
@@ -51,7 +54,7 @@ public class MazePopulaterTest {
     // TODO there is probably some edge case around 1 room
 
     private void checkPitPopulation(int roomCount) {
-        String[] options = {"--rooms", Integer.toString(roomCount)};
+        Game.Options options = new Game.Options("--rooms", Integer.toString(roomCount));
         Maze maze = MazeLoader.populate(MazeBuilder.build(options), options);
 
         assertThat(countMazeOccupantsByType(maze, BottomlessPit.class), is(Math.max(1, roomCount / 5)));
@@ -81,10 +84,10 @@ public class MazePopulaterTest {
         int roomCount = 5;
         int occupantCount = roomCount - 1;
         String optionKey = OPTION_KEY_LOOKUP_BY_OCCUPANT_TYPE.get(occupantType);
-        String[] options = {
+        Game.Options options = new Game.Options(
                 "--rooms", Integer.toString(roomCount),
                 optionKey, Integer.toString(occupantCount)
-        };
+        );
         Maze maze = MazeLoader.populate(MazeBuilder.build(options), options);
 
         List<Integer> occupantRoomIds = getRoomIdsContainingOccupantsOfType(occupantType, maze);
@@ -111,7 +114,7 @@ public class MazePopulaterTest {
 
     @Test
     public void noMoreThanOneOfEachHazardPerRoomButAllInOneRoom() {
-        String[] options = {"--rooms", "1"};
+        Game.Options options = new Game.Options("--rooms", "1");
 
         Maze maze = MazeLoader.populate(MazeBuilder.build(options), options);
 

@@ -23,6 +23,6 @@ public class MazeSteps {
 
     @Given("the smallest maze possible")
     public void theSmallestMazePossible() {
-        maze = MazeBuilder.build("--rooms", "1");
+        maze = MazeBuilder.build(new Game.Options("--rooms", "1"));
     }
 }
