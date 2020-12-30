@@ -99,7 +99,7 @@ class Hunter extends Room.Occupant {
             }
         } else {
             if (!wumpus.isDead()) {
-                Logger.info("The Wumpus escapes your violent assault");  // TODO this means the wumpus fled from you!
+                Logger.info("The Wumpus escapes your violent assault");
             }
         }
 
