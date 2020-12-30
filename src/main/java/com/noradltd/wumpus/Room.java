@@ -8,16 +8,17 @@ class Room {
         private Room room;
         private Boolean dead = Boolean.FALSE;
 
-        public Room getRoom() {
+        Room getRoom() {
             return room;
         }
 
-        public void moveTo(Room newRoom) {
+        void moveTo(Room newRoom) {
             if (room != null) {
-                Logger.debug("Moving " + this.getClass().getSimpleName() + " from " + room.number() + " to " + newRoom.number());
+                Logger.debug("Moving " + getClass().getSimpleName() + " from " + room.number() + " to " + newRoom.number());
                 room.remove(this);
+                Logger.info(newRoom.toString());  // TODO sneaky and confusing, report only if we were previously in a room suppresses startup noise BUT this code now doesn't make sense
             } else {
-                Logger.debug("Moving " + this.getClass().getSimpleName() + " to " + newRoom.number());
+                Logger.debug("Moving " + getClass().getSimpleName() + " to " + newRoom.number());
             }
             room = newRoom;
             newRoom.add(this);
@@ -25,12 +26,12 @@ class Room {
 
         abstract void respondTo(Occupant actioned);
 
-        public Boolean isDead() {
+        Boolean isDead() {
             return dead;
         }
 
-        protected void die() {
-            Logger.debug(this.getClass().getSimpleName() + " has died!");
+        void die() {
+            Logger.debug(getClass().getSimpleName() + " has died!");
             dead = Boolean.TRUE;
         }
 
@@ -38,7 +39,7 @@ class Room {
 
         @Override
         public int compareTo(Occupant other) {
-            return this.getClass().getSimpleName().compareTo(other.getClass().getSimpleName());
+            return getClass().getSimpleName().compareTo(other.getClass().getSimpleName());
         }
 
     }
@@ -47,7 +48,7 @@ class Room {
         Integer nextRoomNumber();
     }
 
-    public static final RoomNumberer DEFAULT_ROOM_NUMBERER = new RoomNumberer() {
+    private static final RoomNumberer DEFAULT_ROOM_NUMBERER = new RoomNumberer() {
         private int instanceCounter = 1;
 
         @Override
@@ -56,12 +57,13 @@ class Room {
         }
     };
 
+    // TODO how do we get this to be NOT package protected?
     static RoomNumberer roomNumberer = DEFAULT_ROOM_NUMBERER;
     private final int instanceNumber = roomNumberer.nextRoomNumber();
     private final Set<Room> exits = new HashSet<>();
     private List<Occupant> occupants = new ArrayList<>();
 
-    public List<Room> exits() {
+    List<Room> exits() {
         return new ArrayList<>(exits);
     }
 
@@ -100,7 +102,7 @@ class Room {
         occupants.remove(occupant);
     }
 
-    public Set<Occupant> occupants() {
+    Set<Occupant> occupants() {
         return occupants.stream().collect(Collectors.toUnmodifiableSet());
     }
 
@@ -109,12 +111,12 @@ class Room {
         two.exits.add(one);
     }
 
-    public Room add(Room exit) {
+    Room add(Room exit) {
         connectRooms(this, exit);
         return this;
     }
 
-    public Integer number() {
+    Integer number() {
         return hashCode();
     }
 
@@ -128,14 +130,14 @@ class Room {
         return new RoomDescriber(this).description();
     }
 
-    static class RoomDescriber {
+    private class RoomDescriber {
         private final Room room;
 
-        RoomDescriber(Room room) {
+        private RoomDescriber(Room room) {
             this.room = room;
         }
 
-        public String description() {
+        private String description() {
             StringBuilder sb = new StringBuilder();
             sb.append("You are in room #").append(room.number()).append("\n");
             describeExits(sb);
@@ -156,7 +158,7 @@ class Room {
         }
 
         private void describeOccupants(StringBuilder sb) {
-            final Collection<Occupant> describableOccupants = room.occupants().stream()
+            Collection<Occupant> describableOccupants = room.occupants().stream()
                     .filter(occupant -> !(occupant instanceof Hunter && !occupant.isDead()))
                     .sorted()
                     .collect(Collectors.toList());

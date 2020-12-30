@@ -20,6 +20,7 @@ class MazeBuilder {
             entrance = getRandomRoom(rooms);
         }
 
+        @Override
         public Room entrance() {
             return entrance;
         }
@@ -78,9 +79,10 @@ class MazeBuilder {
     }
 
     private void linkExit(Room room) {
-        Room exit;
-        //noinspection StatementWithEmptyBody
-        for (exit = room; exit == room; exit = getRandomRoom(rooms)) ;
+        Room exit = room;
+        while (exit == room) {
+            exit = getRandomRoom(rooms);
+        }
         room.add(exit);
     }
 
@@ -118,14 +120,17 @@ class MazeBuilder {
 }
 
 class MazeLoader {
-    public static final int MINIMUM_PIT_COUNT = 1;
-    public static final int MINIMUM_WUMPUS_COUNT = 1;
-    public static final int MINIMUM_BAT_COUNT = 1;
+    private static final int MINIMUM_PIT_COUNT = 1;
+    private static final int MINIMUM_WUMPUS_COUNT = 1;
+    private static final int MINIMUM_BAT_COUNT = 1;
     private final Game.Options options;
-    private Collection<Room> allRooms;
+    private final List<Room> rooms;
+    private final Maze maze;
 
-    MazeLoader(Game.Options options) {
+    MazeLoader(Game.Options options, Maze maze) {
         this.options = options;
+        this.maze = maze;
+        rooms = collectAllRooms();
     }
 
     private int getPitCount() {
@@ -140,23 +145,22 @@ class MazeLoader {
         return Math.max(Math.max(MINIMUM_BAT_COUNT, options.getRoomCount() / 5), options.getBatCount());
     }
 
-    private Maze populateMaze(Maze maze) {
-        allRooms = collectAllRooms(maze);
-        addWumpi(maze);
-        addPits(maze);
-        addBats(maze);
+    private Maze populateMaze() {
+        addWumpi();
+        addPits();
+        addBats();
         return maze;
     }
 
-    private Collection<Room> collectAllRooms(Maze maze) {
+    private List<Room> collectAllRooms() {
         class RoomCollector {
-            private final Collection<Room> allRooms;
+            private final List<Room> allRooms;
 
             RoomCollector(Maze maze) {
                 allRooms = collectRoom(maze.entrance(), new HashSet<>());
             }
 
-            private Collection<Room> collectRoom(Room room, Set<Room> rooms) {
+            private List<Room> collectRoom(Room room, Set<Room> rooms) {
                 if (!rooms.contains(room)) {
                     rooms.add(room);
                     room.exits().stream().filter(exit -> !rooms.contains(exit)).forEach(exit -> collectRoom(exit, rooms));
@@ -164,7 +168,7 @@ class MazeLoader {
                 return rooms.stream().collect(Collectors.toUnmodifiableList());
             }
 
-            public Collection<Room> getAllRooms() {
+            public List<Room> getAllRooms() {
                 return allRooms;
             }
         }
@@ -172,26 +176,25 @@ class MazeLoader {
     }
 
 
-    private void addPits(Maze maze) {
-        addOccupants(maze, createOccupantsByType(getPitCount(), BottomlessPit.class));
+    private void addPits() {
+        addOccupants(createOccupantsByType(getPitCount(), BottomlessPit.class));
     }
 
-    private void addWumpi(Maze maze) {
-        addOccupants(maze, createOccupantsByType(getWumpiCount(), Wumpus.class));
+    private void addWumpi() {
+        addOccupants(createOccupantsByType(getWumpiCount(), Wumpus.class));
     }
 
-    private void addBats(Maze maze) {
-        addOccupants(maze, createOccupantsByType(getBatCount(), ColonyOfBats.class));
+    private void addBats() {
+        addOccupants(createOccupantsByType(getBatCount(), ColonyOfBats.class));
     }
 
-    private void addOccupants(Maze maze, Collection<? extends Room.Occupant> occupants) {
-        List<Room> rooms = Arrays.asList(allRooms.toArray(new Room[]{}));
+    private void addOccupants(Collection<? extends Room.Occupant> occupants) {
         for (Room.Occupant occupant : occupants) {
             int occupantIdx = Random.getRandomizer().nextInt(rooms.size());
             while (maze.entrance().equals(rooms.get(occupantIdx))
                     ||
                     rooms.get(occupantIdx).occupants().stream().anyMatch(occ -> occupant.getClass().isInstance(occ))) {
-                occupantIdx = Random.getRandomizer().nextInt(allRooms.size());
+                occupantIdx = Random.getRandomizer().nextInt(rooms.size());
             }
             occupant.moveTo(rooms.get(occupantIdx));
         }
@@ -210,6 +213,6 @@ class MazeLoader {
     }
 
     static Maze populate(Maze maze, Game.Options options) {
-        return new MazeLoader(options).populateMaze(maze);
+        return new MazeLoader(options, maze).populateMaze();
     }
 }

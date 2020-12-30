@@ -13,7 +13,7 @@ import static java.util.Collections.unmodifiableMap;
 
 public class Main {
 
-    public static final Pattern USER_COMMAND = Pattern.compile("\\s*(\\S+)\\s*?(\\d*)?\\s*");
+    private static final Pattern USER_COMMAND = Pattern.compile("\\s*(\\S+)\\s*?(\\d*)?\\s*");
     private Game game;
     private final BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
 
@@ -28,7 +28,7 @@ public class Main {
         }
 
         private void addCommands(Command command, String... inputStrings) {
-            Arrays.asList(inputStrings).forEach(inputString -> this.put(inputString, command));
+            Arrays.asList(inputStrings).forEach(inputString -> put(inputString, command));
         }
 
         {
@@ -37,7 +37,7 @@ public class Main {
             addCommands(arg -> game.shoot(exitNumber(arg)), "s", "shoot");
             addCommands(arg -> Logger.info(game.inventory()), "i", "inv", "inventory");
             addCommands(arg -> showHelp(), "?", "h", "help");
-            addCommands(arg -> game.isPlaying(), "l", "look");
+            addCommands(arg -> Logger.info(game.toString()), "l", "look");
             addCommands(arg -> game.takeArrow(), "t", "take");
         }
 
@@ -49,6 +49,7 @@ public class Main {
             }
         }
     });
+    private final Command ASK_USER_WHAT = COMMANDS.get("what");
 
     private void play(String... options) {
         try {
@@ -67,18 +68,16 @@ public class Main {
     }
 
     private void executeUserCommand() {
-        try {
-            Matcher matcher = USER_COMMAND.matcher(nextCommand());
-            //noinspection ResultOfMethodCallIgnored
-            matcher.matches();
+        Matcher matcher = USER_COMMAND.matcher(nextCommand());
+        if (matcher.matches()) {
             COMMANDS.get(matcher.group(1).toLowerCase()).execute(matcher.group(2).toLowerCase());
-        } catch (IllegalStateException ise) {
-            COMMANDS.get("what").execute(null);
+        } else {
+            ASK_USER_WHAT.execute(null);
         }
     }
 
     private void promptUser() {
-        Logger.info(game.toString() + "\n" + "i|l|m|s|t?");
+        Logger.info("i|l|m|s|t?");
     }
 
     private String nextCommand() {

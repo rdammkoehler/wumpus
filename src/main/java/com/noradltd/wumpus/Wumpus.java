@@ -39,6 +39,7 @@ class Wumpus extends Room.Occupant {
         return "You smell something foul";
     }
 
+    @Override
     public String toString() {
         if (isDead()) {
             return "the rotting corpse of a Wumpus that has made the floor slick with ichor";

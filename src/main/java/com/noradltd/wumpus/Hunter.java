@@ -39,23 +39,18 @@ class Hunter extends Room.Occupant {
     private Quiver quiver;
 
     Hunter() {
-        this.quiver = NULL_QUIVER;
+        quiver = NULL_QUIVER;
     }
 
     Hunter(Quiver quiver) {
         this.quiver = quiver;
     }
 
-    // TODO only used in testing, can we drop this?
-    public boolean canShoot() {
-        return !quiver.isEmpty();
-    }
-
-    public Integer kills() {
+    Integer kills() {
         return kills;
     }
 
-    public void shoot(Integer exitNumber) {
+    void shoot(Integer exitNumber) {
         if (validExitNumber(exitNumber)) {
             Room target = getRoom().exits().get(exitNumber);
             Arrow arrow = quiver.next();
@@ -74,7 +69,7 @@ class Hunter extends Room.Occupant {
         }
     }
 
-    public void moveTo(Integer exitNumber) {
+    void moveTo(Integer exitNumber) {
         if (validExitNumber(exitNumber)) {
             super.moveTo(getRoom().exits().get(exitNumber));
         } else {
@@ -83,7 +78,7 @@ class Hunter extends Room.Occupant {
     }
 
     private boolean validExitNumber(int exitNumber) {
-        final int limit = getRoom().exits().size() - 1;
+        int limit = getRoom().exits().size() - 1;
         if (exitNumber < 0 || exitNumber > limit) {
             Logger.error("Invalid Choice: Pick from 1 to " + (limit + 1));
             return false;
@@ -91,7 +86,7 @@ class Hunter extends Room.Occupant {
         return true;
     }
 
-    protected void kill(Wumpus wumpus) {
+    void kill(Wumpus wumpus) {
         if (!isDead() && !wumpus.isDead() && getRoom().equals(wumpus.getRoom())) {
             if (Random.getRandomizer().nextBoolean()) {
                 Logger.info("With a slash of your knife you eviscerate a Wumpus; it's corpse slides to the floor");
@@ -118,9 +113,7 @@ class Hunter extends Room.Occupant {
                         if (arrow.isBroken()) {
                             Logger.info("The broken arrow crumbles in your hand.");
                         } else {
-                            arrow.getRoom().remove(arrow);
-                            Logger.info("You collect an unbroken arrow off the floor.");
-                            quiver.add(arrow);
+                            arrow.addToQuiver(quiver);
                         }
                     }
                 });
@@ -142,18 +135,19 @@ class Hunter extends Room.Occupant {
         return "You sense the presence of death";
     }
 
-    public String inventory() {
+    String inventory() {
         return "Inventory:\n\tArrows: " +
                 quiver.arrowsRemaining() +
                 "\n\tWumpus Scalps: " + kills() +
                 "\n";
     }
 
+    @Override
     public String toString() {
         if (isDead()) {
             return "the corpse of an unfortunate soul";
         }
         return "a genuine specimen of Wumpus murdering prowess";
     }
-    
+
 }

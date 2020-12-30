@@ -66,16 +66,6 @@ public class HunterTest {
     }
 
     @Test
-    public void huntersKnowIfTheyCanNotShoot() {
-        assertThat(new Hunter().canShoot(), is(false));
-    }
-
-    @Test
-    public void huntersKnowIfTheyCanShoot() {
-        assertThat(new Hunter(new ArrowQuiver(1)).canShoot(), is(true));
-    }
-
-    @Test
     public void huntersKnowHowManyKillsTheyHave() {
         assertThat(new Hunter().kills(), is(equalTo(0)));
     }
@@ -151,19 +141,6 @@ public class HunterTest {
 
         assertThat(wumpus.isDead(), is(false));
         assertThat(hunter.kills(), is(equalTo(0)));
-    }
-
-    @Test
-    public void shootingArrowsToInvalidExistDoesNotWasteArrows() {
-        Room room = new Room();
-        Room exit = new Room();
-        room.add(exit);
-        Hunter hunter = new Hunter(new ArrowQuiver(1));
-        hunter.moveTo(room);
-
-        hunter.shoot(1);
-
-        assertThat(hunter.canShoot(), is(true));
     }
 
     @Test

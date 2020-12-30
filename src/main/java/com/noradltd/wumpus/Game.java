@@ -15,6 +15,7 @@ class Game {
         Maze maze = MazeLoader.populate(MazeBuilder.build(gameOptions), gameOptions);
         hunter = new Hunter(new ArrowQuiver(gameOptions.getInitialArrowCount()));
         hunter.moveTo(maze.entrance());
+        Logger.info(toString());
     }
 
     public void move(Integer exitIndex) {
@@ -62,8 +63,6 @@ class Game {
             private List<Room> getRooms() {
                 if (rooms == null) {
                     rooms = collectRoom(hunter.getRoom(), new HashSet<>());
-                    // TODO remove diagnostic
-//                    rooms.stream().map(room -> new Room.RoomDescriber(room).description()).forEach(System.err::println);
                 }
                 return rooms.stream().collect(Collectors.toUnmodifiableList());
             }
@@ -111,17 +110,11 @@ class Game {
         public static final int DEFAULT_WUMPUS_COUNT = 1;
         public static final int DEFAULT_ROOM_COUNT = 20;
         public static final int DEFAULT_INITIAL_ARROW_COUNT = 5;
-        @SuppressWarnings({"FieldCanBeLocal", "FieldMayBeFinal"})
         private Integer roomCount = DEFAULT_ROOM_COUNT;
-        @SuppressWarnings({"FieldCanBeLocal", "FieldMayBeFinal"})
         private Long randomSeed = null;
-        @SuppressWarnings({"FieldCanBeLocal", "FieldMayBeFinal"})
         private Integer wumpiCount = DEFAULT_WUMPUS_COUNT;
-        @SuppressWarnings({"FieldCanBeLocal", "FieldMayBeFinal"})
         private Integer pitCount = DEFAULT_PIT_COUNT;
-        @SuppressWarnings({"FieldCanBeLocal", "FieldMayBeFinal"})
         private Integer batCount = DEFAULT_BAT_COUNT;
-        @SuppressWarnings({"FieldCanBeLocal", "FieldMayBeFinal"})
         private Integer initialArrowCount = DEFAULT_INITIAL_ARROW_COUNT;
 
         protected Options(String... options) {
@@ -145,7 +138,7 @@ class Game {
 
         private void setOptionValue(String attrName, String optionValue) {
             try {
-                Field field = this.getClass().getDeclaredField(attrName);
+                Field field = getClass().getDeclaredField(attrName);
                 Method valueOf = field.getType().getMethod("valueOf", String.class);
                 field.set(this, valueOf.invoke(null, optionValue));
             } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | NoSuchFieldException ex) {
@@ -156,11 +149,11 @@ class Game {
         private void printHelp() {
             Logger.info(
                     "\t--arrows #\t\tLimit the number of arrows\n" +
-                    "\t--bats #\t\tLimit the number of colonies of bats\n" +
-                    "\t--pits #\t\tLimit the number of bottomless pits\n" +
-                    "\t--rooms #\t\tLimit the number of rooms\n" +
-                    "\t--seed  #\t\tSet the Randomizer seed\n" +
-                    "\t--wumpi  #\t\tLimit the number of wumpi\n"
+                            "\t--bats #\t\tLimit the number of colonies of bats\n" +
+                            "\t--pits #\t\tLimit the number of bottomless pits\n" +
+                            "\t--rooms #\t\tLimit the number of rooms\n" +
+                            "\t--seed  #\t\tSet the Randomizer seed\n" +
+                            "\t--wumpi  #\t\tLimit the number of wumpi\n"
             );
         }
 
@@ -197,4 +190,3 @@ class Game {
         }
     }
 }
-

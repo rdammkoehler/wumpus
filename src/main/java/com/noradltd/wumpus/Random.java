@@ -15,8 +15,7 @@ public class Random {
         randomizer.setSeed(seed);
     }
 
-    public static Random getRandomizer() {
+    static Random getRandomizer() {
         return (Random) Game.getThreadLocalBag().get("randomizer");
     }
 }
-

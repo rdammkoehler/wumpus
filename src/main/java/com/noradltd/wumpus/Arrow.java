@@ -20,8 +20,7 @@ public class Arrow extends Room.Occupant {
     @Override
     public void respondTo(Room.Occupant interloper) {
         if (!isBroken() && interloper instanceof Wumpus) {
-            Wumpus wumpus = (Wumpus) interloper;
-            wumpus.die();
+            interloper.die();
             killedAWumpus = true;
             Logger.info("Your arrow drives itself deep into the hideous beast; it's life force escaping from the hole in it's leathery hide");
             shatter();
@@ -66,6 +65,12 @@ public class Arrow extends Room.Occupant {
             return "a shattered arrow";
         }
         return "a nasty looking arrow with a viciously barbed point lies here";
+    }
+
+    public void addToQuiver(Hunter.Quiver quiver) {
+        getRoom().remove(this);
+        Logger.info("You collect an unbroken arrow off the floor.");
+        quiver.add(this);
     }
 }
 
