@@ -1,9 +1,6 @@
 package com.noradltd.wumpus;
 
-import java.io.ByteArrayOutputStream;
-import java.io.FileDescriptor;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
+import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 

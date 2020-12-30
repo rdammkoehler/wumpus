@@ -1,15 +1,13 @@
 package com.noradltd.wumpus;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.*;
+import java.io.InputStream;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
-
-// TODO all untested speculative shit
 public class Main {
 
     interface Command {
@@ -39,24 +37,19 @@ public class Main {
         }
     };
 
-    private void play(String... options) {
-        Game game = null;
-        final List<String> record = new ArrayList<>();
+    // TODO FML vis
+    void play(InputStream inputStream, String... options) {
         try {
             Logger.info("Welcome to Hunt The Wumpus!");
-            showHelp();
             final Pattern pattern = Pattern.compile("\\s*(\\S+)\\s*?(\\d*)?\\s*");
-            BufferedReader terminal = new BufferedReader(new InputStreamReader(System.in));
-            game = new Game(options);
+            Game game = new Game(options);
             while (game.isPlaying()) {
                 Command command = COMMANDS.get("what");
                 String arg = null;
                 Logger.info(game.toString());
                 Logger.info("move/shoot?");
                 try {
-                    final String input = terminal.readLine();
-                    record.add(input);
-                    Matcher matcher = pattern.matcher(input);
+                    Matcher matcher = pattern.matcher(nextCommand(inputStream));
                     if (matcher.matches()) {
                         String action = matcher.group(1);
                         arg = matcher.group(2);
@@ -69,11 +62,21 @@ public class Main {
                 }
             }
         } catch (Throwable thrown) {
+            thrown.printStackTrace(System.err);
             Logger.info("something went terribly wrong.");
         } finally {
             // TODO display score!
-            Logger.info("Game Play Record: \n" + record.stream().collect(Collectors.joining("\n")));
         }
+    }
+
+    private String nextCommand(InputStream inputStream) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        int data = inputStream.read();
+        while (data != 10) {
+            sb.append((char) data);
+            data = inputStream.read();
+        }
+        return sb.toString();
     }
 
     private void showHelp() {
@@ -95,7 +98,8 @@ public class Main {
 
 
     public static void main(String[] args) {
-        new Main().play(args);
+        new Main().play(System.in, args);
+        // TODO play again?
         Logger.info("Goodbye");
     }
 }
