@@ -41,7 +41,11 @@ public class Main {
         }
 
         private Integer exitNumber(String arg) {
-            return Integer.parseInt(arg) - 1;
+            try {
+                return Integer.parseInt(arg) - 1;
+            } catch (Exception ex) {
+                return -1;
+            }
         }
     });
 
@@ -55,22 +59,20 @@ public class Main {
             }
         } catch (Throwable thrown) {
             Logger.error("something went terribly wrong.");
-            thrown.printStackTrace(System.err);
         } finally {
             Logger.info(game.inventory());
         }
     }
 
     private void executeUserCommand() {
-        Command command = COMMANDS.get("what");
-        String arg = null;
-        Matcher matcher = USER_COMMAND.matcher(nextCommand());
-        if (matcher.matches()) {
-            String action = matcher.group(1);
-            arg = matcher.group(2);
-            command = COMMANDS.get(action);
+        try {
+            Matcher matcher = USER_COMMAND.matcher(nextCommand());
+            //noinspection ResultOfMethodCallIgnored
+            matcher.matches();
+            COMMANDS.get(matcher.group(1)).execute(game, matcher.group(2));
+        } catch (IllegalStateException ise) {
+            COMMANDS.get("what").execute(game, null);
         }
-        command.execute(game, arg);
     }
 
     private void promptUser() {
