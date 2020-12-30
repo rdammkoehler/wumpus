@@ -18,13 +18,13 @@ public class Main {
     private BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
 
     interface Command {
-        void execute(Game game, String arg);
+        void execute(String arg);
     }
 
     private final Map<String, Command> COMMANDS = unmodifiableMap(new HashMap<>() {
         @Override
         public Command get(Object key) {
-            return super.getOrDefault(key, (game, arg) -> Logger.info("What?"));
+            return super.getOrDefault(key, arg -> Logger.info("What?"));
         }
 
         private void addCommands(Command command, String... inputStrings) {
@@ -32,12 +32,12 @@ public class Main {
         }
 
         {
-            addCommands((game, arg) -> game.quit(), "q", "x", "quit", "exit");
-            addCommands((game, arg) -> game.move(exitNumber(arg)), "m", "move");
-            addCommands((game, arg) -> game.shoot(exitNumber(arg)), "s", "shoot");
-            addCommands((game, arg) -> Logger.info(game.inventory()), "i", "inv", "inventory");
-            addCommands((game, arg) -> showHelp(), "?", "h", "help");
-            addCommands((game, arg) -> game.isPlaying(), "l", "look");
+            addCommands(arg -> game.quit(), "q", "x", "quit", "exit");
+            addCommands(arg -> game.move(exitNumber(arg)), "m", "move");
+            addCommands(arg -> game.shoot(exitNumber(arg)), "s", "shoot");
+            addCommands(arg -> Logger.info(game.inventory()), "i", "inv", "inventory");
+            addCommands(arg -> showHelp(), "?", "h", "help");
+            addCommands(arg -> game.isPlaying(), "l", "look");
         }
 
         private Integer exitNumber(String arg) {
@@ -69,9 +69,9 @@ public class Main {
             Matcher matcher = USER_COMMAND.matcher(nextCommand());
             //noinspection ResultOfMethodCallIgnored
             matcher.matches();
-            COMMANDS.get(matcher.group(1)).execute(game, matcher.group(2));
+            COMMANDS.get(matcher.group(1)).execute(matcher.group(2));
         } catch (IllegalStateException ise) {
-            COMMANDS.get("what").execute(game, null);
+            COMMANDS.get("what").execute(null);
         }
     }
 
