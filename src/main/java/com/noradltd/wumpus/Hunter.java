@@ -74,7 +74,7 @@ class Hunter extends Room.Occupant {
         if (validExitNumber(exitNumber)) {
             super.moveTo(getRoom().exits().get(exitNumber));
         } else {
-            Logger.error("invalid exitNumber (" + exitNumber + ") in Hunter.moveTo()");
+            Logger.debug("invalid exitNumber (" + exitNumber + ") in Hunter.moveTo()");
         }
     }
 
@@ -98,7 +98,7 @@ class Hunter extends Room.Occupant {
                 wumpus.respondTo(this);
             }
         } else {
-            if (!wumpus.isDead()) {
+            if (isDead() && !wumpus.isDead()) {
                 Logger.info("The Wumpus escapes your violent assault");
             }
         }

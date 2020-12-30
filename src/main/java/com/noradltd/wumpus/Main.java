@@ -73,7 +73,6 @@ public class Main {
             matcher.matches();
             COMMANDS.get(matcher.group(1).toLowerCase()).execute(matcher.group(2).toLowerCase());
         } catch (IllegalStateException ise) {
-            ise.printStackTrace(System.err);
             COMMANDS.get("what").execute(null);
         }
     }

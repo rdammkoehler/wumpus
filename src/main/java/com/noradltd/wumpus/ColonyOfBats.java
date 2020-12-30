@@ -14,10 +14,12 @@ public class ColonyOfBats extends Room.Occupant {
     private Room findRandomRoom() {
         Room currentRoom = getRoom();
         if (currentRoom.exits().size() > 1) {
-            int moves = Random.getRandomizer().nextInt(10) + 1;
-            for (int moveCount = 0; moveCount < moves; moveCount++) {
-                int exitNumber = Random.getRandomizer().nextInt(currentRoom.exits().size());
-                currentRoom = currentRoom.exits().get(exitNumber);
+            while(getRoom().equals(currentRoom)) {  // TODO humm?
+                int moves = Random.getRandomizer().nextInt(10) + 1;
+                for (int moveCount = 0; moveCount < moves; moveCount++) {
+                    int exitNumber = Random.getRandomizer().nextInt(currentRoom.exits().size());
+                    currentRoom = currentRoom.exits().get(exitNumber);
+                }
             }
         } else {
             currentRoom = currentRoom.exits().get(0);
