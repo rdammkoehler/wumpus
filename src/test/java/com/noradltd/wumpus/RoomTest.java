@@ -1,6 +1,7 @@
 package com.noradltd.wumpus;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,6 +63,7 @@ public class RoomTest {
         assertThat(two.number() - one.number(), is(1));
     }
 
+    @ExtendWith(ResetRandomizerExtension.class)
     @Test
     public void roomOccupantsInteractWithNewComersWumpusEatsHunter() {
         Helpers.programRandomizer(true, true, true, true);
@@ -72,12 +74,10 @@ public class RoomTest {
 
         hunter.moveTo(room);
 
-        Helpers.resetRandomizer();
-
         assertThat(hunter.isDead(), is(0 == room.exits().size()));
     }
 
-
+    @ExtendWith(ResetRandomizerExtension.class)
     @Test
     public void roomOccupantsInteractWithNewComersWumpusFleesHunter() {
         Helpers.programRandomizer(false, true);
@@ -90,8 +90,6 @@ public class RoomTest {
         wumpus.moveTo(room);
 
         hunter.moveTo(room);
-
-        Helpers.resetRandomizer();
 
         assertThat(hunter.isDead(), is(false));
     }

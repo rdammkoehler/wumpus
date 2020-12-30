@@ -42,11 +42,12 @@ public class ArrowTest {
 
         arrow.moveTo(emptyRoom);
 
-        assertThat(arrow.killedAWumpus(),is(false));
+        assertThat(arrow.killedAWumpus(), is(false));
     }
 
     @Test
     public void brokenArrowsCannotBeReused() {
+        Helpers.programRandomizer(true, true);
         Room batRoom = new Room();
         ColonyOfBats bats = new ColonyOfBats();
         bats.moveTo(batRoom);
@@ -68,7 +69,6 @@ public class ArrowTest {
         arrow.moveTo(batRoom);
 
         assertThat(arrow.isBroken(), is(false));
-        Helpers.resetRandomizer();
     }
 
     @Test

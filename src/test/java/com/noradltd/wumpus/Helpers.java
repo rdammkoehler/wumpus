@@ -24,12 +24,12 @@ public class Helpers {
         return collectRoom(maze.entrance(), new HashSet<>()).stream().collect(Collectors.toUnmodifiableList());
     }
 
-    static Integer countMazeOccupantsByType(Maze maze, Class occupantType) {
+    static Integer countMazeOccupantsByType(Maze maze, Class<? extends Room.Occupant> occupantType) {
         int count = 0;
         List<Room> rooms = getAllRooms(maze);
         for (Room room : rooms) {
             for (Room.Occupant occupant : room.occupants()) {
-                if (occupantType.isAssignableFrom(occupant.getClass())) {
+                if (occupant.getClass().isAssignableFrom(occupantType)) {
                     count++;
                 }
             }
@@ -68,7 +68,9 @@ public class Helpers {
     }
 
     public static void resetRandomizer() {
-        Game.getThreadLocalBag().replace(RANDOMIZER_THREADLOCALBAGKEY, new Random());
+        final Random random = new Random();
+        random.setSeed(0L);
+        Game.getThreadLocalBag().replace(RANDOMIZER_THREADLOCALBAGKEY, random);
     }
 
     static void restartRoomNumberer() {
@@ -100,7 +102,7 @@ public class Helpers {
 
         @Override
         boolean nextBoolean() {
-            if (bools.length > 0) {
+            if (bools.length > 0 && boolIdx < bools.length) {
                 return bools[boolIdx++];
             }
             return super.nextBoolean();
@@ -108,7 +110,7 @@ public class Helpers {
 
         @Override
         int nextInt(int bound) {
-            if (ints.length > 0) {
+            if (ints.length > 0 && intIdx < ints.length) {
                 return ints[intIdx++];
             }
             return super.nextInt(bound);
@@ -116,13 +118,11 @@ public class Helpers {
 
         @Override
         public String toString() {
-            final StringBuilder sb = new StringBuilder("ProgrammableRandom{");
-            sb.append("bools=").append(Arrays.toString(bools));
-            sb.append(", boolIdx=").append(boolIdx);
-            sb.append(", ints=").append(Arrays.toString(ints));
-            sb.append(", intIdx=").append(intIdx);
-            sb.append('}');
-            return sb.toString();
+            return "ProgrammableRandom{" + "bools=" + Arrays.toString(bools) +
+                    ", boolIdx=" + boolIdx +
+                    ", ints=" + Arrays.toString(ints) +
+                    ", intIdx=" + intIdx +
+                    '}';
         }
     }
 

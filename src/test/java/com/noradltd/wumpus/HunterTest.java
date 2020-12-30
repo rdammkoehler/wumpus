@@ -1,12 +1,13 @@
 package com.noradltd.wumpus;
 
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
 public class HunterTest {
+
     @Test
     public void aHunterWillKillAWumpusOnSite() {
         Room room = new Room();
@@ -50,6 +51,7 @@ public class HunterTest {
         assertThat(new Hunter().inventory(), is(equalTo("Inventory:\n\tArrows: 0\n\tWumpus Scalps: 0\n")));
     }
 
+    @ExtendWith(ResetRandomizerExtension.class)
     @Test
     public void inventroyTellsUsHowMuchWeKill() {
         Helpers.programRandomizer(true, true, true);
@@ -195,6 +197,7 @@ public class HunterTest {
         assertThat(new Hunter().describe(), is(equalTo("You sense the presence of death")));
     }
 
+    @ExtendWith(ResetRandomizerExtension.class)
     @Test
     public void wumpiCanEscapeAHunterByFleeingBeforeTheHunterStrikesWithHisKnife() {
         Room deathChamber = new Room();
@@ -209,7 +212,5 @@ public class HunterTest {
 
         assertThat(wumpus.getRoom(), is(equalTo(escapePath)));
         assertThat(hunter.kills(), is(0));
-
-        Helpers.resetRandomizer();
     }
 }
