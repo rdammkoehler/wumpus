@@ -4,7 +4,7 @@ Inspired by Vivian Conrad's homework assignment.
 
 Thanks to Gregory Yob for the years of entertainment.
 
-Guided by Gregory Brown's [article](https://practicingruby.com/articles/wumpus) 
+Guided by Gregory Brown's [article](https://practicingruby.com/articles/wumpus)
 
 ## Playing
 
@@ -15,6 +15,7 @@ export PATH=$JAVA_HOME/bin:$PATH
 ```
 
 Start the Game
+
 ```shell script
 wump
 ```
@@ -74,8 +75,9 @@ Bottomless Pit: You die in a tragic fall
 
 * emits a cool drafy breeze into adjacent rooms
 
-Superbat: Moves you a random number of moves up to room-count minus one rooms away; the Superbat then moves itself a random number of rooms.
- 
+Superbat: Moves you a random number of moves up to room-count minus one rooms away; the Superbat then moves itself a
+random number of rooms.
+
 * emits a rustling sound into adjacent rooms
 
 Hunter: The player
@@ -99,10 +101,11 @@ Rules:
 * Hunter has limited arrows
 
     * command line: --arrows #; 0 == unlimited, default 5
-    
+
 * (opt) Crooked Arrow: Allows an arrow to travel up-to five rooms
 
-    * If the arrow fails to kill the Wumpus the arrow continues to a random room; if that room is the room where the Hunter stands, they die
-    
+    * If the arrow fails to kill the Wumpus the arrow continues to a random room; if that room is the room where the
+      Hunter stands, they die
+
     * (opt) keep track of lost arrows, tell the Hunter when they find them
   

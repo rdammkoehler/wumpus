@@ -1,272 +1,218 @@
 package com.noradltd.wumpus;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+
+interface Maze {
+    Room entrance();
+}
 
 class MazeBuilder {
-    static class Maze {
-        static class Options {
+    private static final Integer MIN_ROOM_COUNT = 2;
 
-            private static final HashMap<String, String> ARGUMENT_TO_FIELD_NAME_MAPPING = new HashMap<>() {{
-                put("rooms", "roomCount");
-                put("reporting", "reportingType");
-                put("wumpi", "wumpusCount");
-                put("bats", "batCount");
-                put("pits", "pitCount");
-            }};
+    static class MazeStruct implements Maze {
+        private final Room entrance;
 
-            enum ReportType {
-                HUMAN {
-                    @Override
-                    public String stringify(Maze maze) {
-                        StringBuilder sb = new StringBuilder();
-                        for (Room room : maze.rooms) {
-                            sb.append("Room ").append(room.hashCode()).append(": ");
-                            sb.append(new Game.RoomDescriber(room).description()).append("\n*****\n");
-                        }
-                        return sb.toString();
-                    }
-                },
-                DOT {
-                    @Override
-                    public String stringify(Maze maze) {
-                        StringBuilder sb = new StringBuilder();
-                        sb.append("digraph G {\n");
-                        for (Room room : maze.rooms) {
-                            sb.append("\t").append(room.hashCode());
-                            for (Room exit : room.exits()) {
-                                sb.append(" -> ").append(exit.hashCode());
-                            }
-                            sb.append(";\n");
-                        }
-                        sb.append("}");
-                        return sb.toString();
-                    }
-                },
-                NEATO {
-                    @Override
-                    public String stringify(Maze maze) {
-                        StringBuilder sb = new StringBuilder();
-                        sb.append("graph G {\n");
-                        Set<Room> bookkeeper = new HashSet<Room>();
-                        for (Room room : maze.rooms) {
-                            for (Room exit : room.exits()) {
-                                if (!(bookkeeper.contains(exit))) {
-                                    sb.append("\t").append(room.hashCode()).append(" -- ").append(exit.hashCode()).append(";\n");
-                                    bookkeeper.add(exit);
-                                }
-                            }
-                            bookkeeper.add(room);
-                        }
-                        sb.append("}");
-                        return sb.toString();
-                    }
-                };
-
-                public abstract String stringify(Maze maze);
-            }
-
-            enum Arguments {
-                rooms(Integer.class), reporting(Maze.Options.ReportType.class), wumpi(Integer.class), bats(Integer.class), pits(Integer.class);
-                private Class valueParser;
-
-                Arguments(Class valueParser) {
-                    this.valueParser = valueParser;
-                }
-
-                Object parse(String value) {
-                    try {
-                        return valueParser.getMethod("valueOf", String.class).invoke(null, value);
-                    } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            }
-
-            private static final Options DEFAULTS = new Options();
-            private Integer roomCount = 20;
-            private ReportType reportingType = ReportType.HUMAN;
-            private Integer wumpusCount = 3;
-            private Integer batCount = 3;
-            private Integer pitCount = 3;
-
-            private static String fieldForArgument(String argument) {
-                return ARGUMENT_TO_FIELD_NAME_MAPPING.getOrDefault(argument, null);
-            }
-
-            private Options() {
-            }
-
-            Options(String[] argv) {
-                for (int argIdx = 0; argIdx < argv.length; argIdx += 2) {
-                    String argName = argv[argIdx].substring(2);
-                    int argValueIdx = argIdx + 1;
-                    if (argValueIdx < argv.length) {
-                        String argValue = argv[argValueIdx];
-                        String fieldName = fieldForArgument(argName);
-                        if (fieldName != null) {
-                            try {
-                                Object value = Arguments.valueOf(argName).parse(argValue);
-                                this.getClass().getDeclaredField(fieldName).set(this, value);
-                            } catch (IllegalAccessException | NoSuchFieldException e) {
-                                throw new RuntimeException(e);
-                            }
-                        }
-                    }
-                }
-            }
-
-            public Integer getRoomCount() {
-                return roomCount;
-            }
-
-            public ReportType getReportingType() {
-                return reportingType;
-            }
-
-            public Integer getWumpusCount() {
-                return wumpusCount;
-            }
-
-            public Integer getBatCount() {
-                return batCount;
-            }
-
-            public Integer getPitCount() {
-                return pitCount;
-            }
-        }
-
-        private final Options options;
-        private final Random random = new Random(0);
-        private final Room firstRoom;
-        private final Set<Room> rooms = new HashSet<Room>();
-
-        Maze() {
-            this(Options.DEFAULTS);
-        }
-
-        Maze(Options options) {
-            this.options = options;
-            addRooms();
-            makeHazzardous();
-            firstRoom = selectEmptyRoom();
-            firstRoom.add(new Hunter());
-        }
-
-        private Room selectEmptyRoom() {
-            Room room;
-            do {
-                room = randomRoom();
-            } while (room.occupants().size() != 0);
-            return room;
-        }
-
-        private Room randomRoom() {
-            return rooms.toArray(new Room[] {})[random.nextInt(rooms.size())];
-        }
-
-        private void makeHazzardous() {
-            for(int wumpiCount = 0; wumpiCount < options.getWumpusCount(); wumpiCount++) {
-                selectEmptyRoom().add(new Wumpus());
-            }
-            for(int batsCount = 0; batsCount < options.getBatCount(); batsCount++) {
-                selectEmptyRoom().add(new Bats());
-            }
-            for(int pitCount = 0; pitCount < options.getPitCount(); pitCount++) {
-                selectEmptyRoom().add(new Pit());
-            }
-        }
-
-        private void addRooms() {
-            boolean forceLinking = false;
-            while (needMoreRooms()) {
-                Room room = new Room();
-                rooms.add(room);
-                addExits(room, forceLinking || !needMoreRooms());
-                forceLinking = true;
-            }
-        }
-
-        private boolean needMoreRooms() {
-            return rooms.size() < options.getRoomCount();
-        }
-
-        private void addExits(Room room, boolean forceLinking) {
-            if (mazeIsIncomplete() && needsExits(room)) {
-                forceLinking = addExitsToRoom(room, forceLinking);
-                addExitsToExitsOf(room, forceLinking);
-            }
-        }
-
-        private void addExitsToExitsOf(Room room, boolean forceLinking) {
-            for (Room exit : room.exits()) {
-                if (wantsMoreExists()) {
-                    addExits(exit, forceLinking);
-                }
-            }
-        }
-
-        private boolean needsExits(Room room) {
-            return room.exits().size() < 2;
-        }
-
-        private boolean wantsMoreExists() {
-            return random.nextBoolean();
-        }
-
-        private boolean mazeIsIncomplete() {
-            return rooms.size() <= options.getRoomCount();
-        }
-
-        private boolean addExitsToRoom(Room room, boolean forceLinking) {
-            int numberOfExitsToAdd = random.nextInt(2) + 1;
-            while (room.exits().size() < numberOfExitsToAdd) {
-                if (!forceLinking && needMoreRooms()) {
-                    addAnExitRoom(room);
-                    forceLinking = false;
-                } else {
-                    attachAnExit(room);
-                }
-            }
-            return forceLinking;
-        }
-
-        private void addAnExitRoom(Room room) {
-            Room exit = new Room();
-            room.add(exit);
-            rooms.add(exit);
-        }
-
-        private void attachAnExit(Room room) {
-            Room exit = room;
-            while (room == exit) {
-                exit = (Room) rooms.toArray()[random.nextInt(rooms.size())];
-                if (room != exit) {
-                    room.add(exit);
-                }
-            }
-        }
-
-        public Room firstRoom() {
-            return firstRoom;
+        private MazeStruct(Set<Room> rooms) {
+            entrance = getRandomRoom(rooms);
         }
 
         @Override
-        public String toString() {
-            return options.getReportingType().stringify(this);
+        public Room entrance() {
+            return entrance;
         }
     }
 
-    static Maze build() {
-        return build(new String[]{});
+    private final Set<Room> rooms = new HashSet<>();
+    private final Game.Options options;
+
+    private MazeBuilder(Game.Options options) {
+        this.options = options;
+        if (options.hasRandomSeed()) {
+            Random.getRandomizer().setSeed(options.getRandomSeed());
+        }
     }
 
-    static Maze build(String[] options) {
-        return new Maze(new Maze.Options(options));
+    private Set<Room> createRooms() {
+        boolean forceLinking = false;
+        while (needsMoreRooms()) {
+            addRoom(forceLinking);
+            forceLinking = needsMoreRooms();
+        }
+        return rooms;
+    }
+
+    private void addRoom(boolean forceLinking) {
+        Room room = new Room();
+        rooms.add(room);
+        addExits(room, forceLinking || hasEnoughRooms());
+    }
+
+    private void addExits(Room room, boolean forceLinking) {
+        if (needsMoreExits(room)) {
+            randomLengthIntegerStream(3)
+                    .forEach(integer -> addExit(room, forceLinking));
+            room.exits().stream()
+                    .filter(exit -> Random.getRandomizer().nextBoolean())
+                    .forEach(exit -> addExits(exit, hasEnoughRooms()));
+        }
+    }
+
+    private Stream<Integer> randomLengthIntegerStream(Integer upperBound) {
+        int number = Random.getRandomizer().nextInt(upperBound - 1) + 1;
+        return Arrays.stream(new Integer[number]);
+    }
+
+    private void addExit(Room room, boolean forceLinking) {
+        if (!forceLinking && needsMoreRooms()) {
+            addExit(room);
+        } else {
+            linkExit(room);
+        }
+    }
+
+    private void addExit(Room room) {
+        rooms.add(new Room().add(room));
+    }
+
+    private void linkExit(Room room) {
+        Room exit = room;
+        while (exit == room) {
+            exit = getRandomRoom(rooms);
+        }
+        room.add(exit);
+    }
+
+    private static Room getRandomRoom(Collection<Room> rooms) {
+        return rooms.toArray(new Room[]{})[Random.getRandomizer().nextInt(rooms.size())];
+    }
+
+    private boolean needsMoreRooms() {
+        return !hasEnoughRooms();
+    }
+
+    private boolean hasEnoughRooms() {
+        return rooms.size() > getRoomCount() - 1;
+    }
+
+    private Integer getRoomCount() {
+        return Math.max(MIN_ROOM_COUNT, options.getRoomCount());
+    }
+
+    private boolean needsMoreExits(Room room) {
+        return room.exits().size() < 2;
+    }
+
+    private Maze buildMaze() {
+        return new MazeStruct(createRooms());
+    }
+
+    static Maze build() {
+        return new MazeBuilder(Game.Options.DEFAULT).buildMaze();
+    }
+
+    static Maze build(Game.Options options) {
+        return new MazeBuilder(options).buildMaze();
+    }
+}
+
+class MazeLoader {
+    private static final int MINIMUM_PIT_COUNT = 1;
+    private static final int MINIMUM_WUMPUS_COUNT = 1;
+    private static final int MINIMUM_BAT_COUNT = 1;
+    private final Game.Options options;
+    private final List<Room> rooms;
+    private final Maze maze;
+
+    MazeLoader(Game.Options options, Maze maze) {
+        this.options = options;
+        this.maze = maze;
+        rooms = collectAllRooms();
+    }
+
+    private int getPitCount() {
+        return Math.max(Math.max(MINIMUM_PIT_COUNT, options.getRoomCount() / 5), options.getPitCount());
+    }
+
+    private int getWumpiCount() {
+        return Math.max(Math.max(MINIMUM_WUMPUS_COUNT, options.getRoomCount() / 7), options.getWumpiCount());
+    }
+
+    private int getBatCount() {
+        return Math.max(Math.max(MINIMUM_BAT_COUNT, options.getRoomCount() / 5), options.getBatCount());
+    }
+
+    private Maze populateMaze() {
+        addWumpi();
+        addPits();
+        addBats();
+        return maze;
+    }
+
+    private List<Room> collectAllRooms() {
+        class RoomCollector {
+            private final List<Room> allRooms;
+
+            RoomCollector(Maze maze) {
+                allRooms = collectRoom(maze.entrance(), new HashSet<>());
+            }
+
+            private List<Room> collectRoom(Room room, Set<Room> rooms) {
+                if (!rooms.contains(room)) {
+                    rooms.add(room);
+                    room.exits().stream().filter(exit -> !rooms.contains(exit)).forEach(exit -> collectRoom(exit, rooms));
+                }
+                return rooms.stream().collect(Collectors.toUnmodifiableList());
+            }
+
+            public List<Room> getAllRooms() {
+                return allRooms;
+            }
+        }
+        return new RoomCollector(maze).getAllRooms();
+    }
+
+
+    private void addPits() {
+        addOccupants(createOccupantsByType(getPitCount(), BottomlessPit.class));
+    }
+
+    private void addWumpi() {
+        addOccupants(createOccupantsByType(getWumpiCount(), Wumpus.class));
+    }
+
+    private void addBats() {
+        addOccupants(createOccupantsByType(getBatCount(), ColonyOfBats.class));
+    }
+
+    private void addOccupants(Collection<? extends Room.Occupant> occupants) {
+        for (Room.Occupant occupant : occupants) {
+            int occupantIdx = Random.getRandomizer().nextInt(rooms.size());
+            while (maze.entrance().equals(rooms.get(occupantIdx))
+                    ||
+                    rooms.get(occupantIdx).occupants().stream().anyMatch(occ -> occupant.getClass().isInstance(occ))) {
+                occupantIdx = Random.getRandomizer().nextInt(rooms.size());
+            }
+            occupant.moveTo(rooms.get(occupantIdx));
+        }
+    }
+
+    private Collection<Room.Occupant> createOccupantsByType(int requiredCount, Class<? extends Room.Occupant> occupantClass) {
+        Collection<Room.Occupant> occupants = new ArrayList<>();
+        for (int idx = 0; idx < requiredCount; idx++) {
+            try {
+                occupants.add(occupantClass.getDeclaredConstructor((Class<?>[]) null).newInstance((Object[]) null));
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+        return occupants;
+    }
+
+    static Maze populate(Maze maze, Game.Options options) {
+        return new MazeLoader(options, maze).populateMaze();
     }
 }
