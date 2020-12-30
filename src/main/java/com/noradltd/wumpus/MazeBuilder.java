@@ -16,7 +16,6 @@ class MazeBuilder {
         private final Room entrance;
 
         private MazeStruct(Set<Room> rooms) {
-            // todo make sure the room is empty!
             entrance = getRandomRoom(rooms);
         }
 
@@ -86,7 +85,7 @@ class MazeBuilder {
         room.add(exit);
     }
 
-    public static Room getRandomRoom(Collection<Room> rooms) {
+    private static Room getRandomRoom(Collection<Room> rooms) {
         return rooms.toArray(new Room[]{})[Random.getRandomizer().nextInt(rooms.size())];
     }
 
