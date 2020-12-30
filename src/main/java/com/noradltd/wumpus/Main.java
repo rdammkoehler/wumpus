@@ -17,7 +17,7 @@ public class Main {
     private Game game;
     private BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
 
-    interface Command {
+    private interface Command {
         void execute(String arg);
     }
 
@@ -102,14 +102,20 @@ public class Main {
         boolean playAgain = true;
         while (playAgain) {
             new Main().play(args);
-            Logger.info("Play again? (yes/[no])");
-            try {
-                String yesOrNo = new BufferedReader(new InputStreamReader(System.in)).readLine();
-                playAgain = yesOrNo.toLowerCase().charAt(0) == 'y';
-            } catch (Exception e) {
-                playAgain = false;
-            }
+            playAgain = promptToPlayAgain();
         }
         Logger.info("Goodbye");
+    }
+
+    private static boolean promptToPlayAgain() {
+        boolean playAgain;
+        Logger.info("Play again? (yes/[no])");
+        try {
+            String yesOrNo = new BufferedReader(new InputStreamReader(System.in)).readLine();
+            playAgain = yesOrNo.toLowerCase().charAt(0) == 'y';
+        } catch (Exception e) {
+            playAgain = false;
+        }
+        return playAgain;
     }
 }
