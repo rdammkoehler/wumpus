@@ -82,7 +82,7 @@ class Room {
         } else {
             Logger.debug("this room is empty");
         }
-        if (!interloper.isDead() && interloper.getRoom().equals(this)) { // bad casting, please fix
+        if (!interloper.isDead() && interloper.getRoom().equals(this)) {
             occupants.add(interloper);
         }
     }
