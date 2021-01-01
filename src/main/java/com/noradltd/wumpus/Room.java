@@ -89,9 +89,7 @@ class Room {
 
     private void interact(Occupant cohabitant, Occupant interloper) {
         if (!interloper.isDead()) {
-            Logger.debug(interloper.getClass().getSimpleName() + "(" + ((interloper.isDead()) ? "DEAD" : "ALIVE") + ")"
-                    + " is interacting with " +
-                    cohabitant.getClass().getSimpleName() + "(" + ((cohabitant.isDead()) ? "DEAD" : "ALIVE") + ")");
+            Logger.debug(debugDescriptionOfOccupant(interloper) + " is interacting with " + debugDescriptionOfOccupant(cohabitant));
             Occupant[] participants = Random.getRandomizer().shuffle(cohabitant, interloper);
             Arrays.stream(participants)
                     .forEach(participant ->
@@ -102,6 +100,9 @@ class Room {
         }
     }
 
+    private String debugDescriptionOfOccupant(Occupant occupant) {
+        return occupant.getClass().getSimpleName() + "(" + ((occupant.isDead()) ? "DEAD" : "ALIVE") + ")";
+    }
 
     void remove(Occupant occupant) {
         Logger.debug("removing " + occupant.getClass().getSimpleName() + " from " + number());
