@@ -108,8 +108,7 @@ class Hunter extends Room.Occupant {
         getRoom().occupants().stream()
                 .filter(occupant -> occupant instanceof Arrow).collect(Collectors.toList())
                 .forEach(occupant -> {
-                    if (occupant instanceof Arrow) {
-                        Arrow arrow = (Arrow) occupant;
+                    if (occupant instanceof Arrow arrow) {
                         if (arrow.isBroken()) {
                             Logger.info("The broken arrow crumbles in your hand.");
                         } else {
@@ -121,8 +120,7 @@ class Hunter extends Room.Occupant {
 
     @Override
     public void respondTo(Room.Occupant interloper) {
-        if (interloper instanceof Wumpus) {
-            Wumpus wumpus = (Wumpus) interloper;
+        if (interloper instanceof Wumpus wumpus) {
             kill(wumpus);
         }
     }

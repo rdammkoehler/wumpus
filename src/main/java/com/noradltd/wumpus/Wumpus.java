@@ -22,14 +22,11 @@ class Wumpus extends Room.Occupant {
 
     @Override
     public void respondTo(Room.Occupant interloper) {
-        if (!isDead() && !interloper.isDead()) {
-            if (interloper instanceof Hunter) {
-                Hunter hunter = (Hunter) interloper;
-                if (Random.getRandomizer().nextBoolean()) {
-                    eat(hunter);
-                } else {
-                    flee(hunter);
-                }
+        if (!isDead() && !interloper.isDead() && interloper instanceof Hunter hunter) {
+            if (Random.getRandomizer().nextBoolean()) {
+                eat(hunter);
+            } else {
+                flee(hunter);
             }
         }
     }

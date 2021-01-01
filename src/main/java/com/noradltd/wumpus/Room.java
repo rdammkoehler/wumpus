@@ -1,7 +1,12 @@
 package com.noradltd.wumpus;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
+
+import static java.util.function.Predicate.not;
 
 class Room {
     static abstract class Occupant implements Comparable<Occupant> {
@@ -132,49 +137,51 @@ class Room {
 
     private class RoomDescriber {
         private final Room room;
+        private StringBuilder sb = new StringBuilder();
 
         private RoomDescriber(Room room) {
             this.room = room;
         }
 
         private String description() {
-            StringBuilder sb = new StringBuilder();
             sb.append("You are in room #").append(room.number()).append("\n");
-            describeExits(sb);
-            describeOccupants(sb);
-            describeNeighbors(sb);
+            describeExits();
+            describeOccupants();
+            describeNeighbors();
             return sb.toString();
         }
 
-        private void describeNeighbors(StringBuilder sb) {
+        private void describeNeighbors() {
             sb.append("\n");
             room.exits().stream()
                     .flatMap(exit -> exit.occupants().stream())
-                    .filter(occupant -> !(occupant instanceof Arrow))
+                    .filter(not(Arrow.class::isInstance))
                     .map(Occupant::describe)
                     .distinct()
                     .sorted()
                     .forEach(description -> sb.append(description).append("\n"));
         }
 
-        private void describeOccupants(StringBuilder sb) {
-            Collection<Occupant> describableOccupants = room.occupants().stream()
-                    .filter(occupant -> !(occupant instanceof Hunter && !occupant.isDead()))
+        private void describeOccupants() {
+            String contents = room.occupants().stream()
+                    .filter(this::notADeadHunter)
                     .sorted()
-                    .collect(Collectors.toList());
-            if (!describableOccupants.isEmpty()) {
-                sb.append("\nContains ")
-                        .append(describableOccupants.stream()
-                                .map(this::describe)
-                                .collect(Collectors.joining(" and ")));
+                    .map(Occupant::toString)
+                    .collect(Collectors.joining(" and "));
+            if (contents.length() > 0) {
+                sb.append("\nContains ").append(contents);
             }
         }
 
-        private String describe(Occupant occupant) {
-            return occupant.toString();
+        private boolean notADeadHunter(Occupant occupant) {
+            return !(occupant instanceof Hunter && !occupant.isDead());
         }
 
-        private void describeExits(StringBuilder sb) {
+        private void describe(Occupant occupant) {
+            sb.append(occupant.toString());
+        }
+
+        private void describeExits() {
             sb.append("This room has ").append(room.exits().size()).append(" exits.");
         }
     }

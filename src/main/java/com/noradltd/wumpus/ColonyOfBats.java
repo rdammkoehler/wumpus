@@ -3,8 +3,7 @@ package com.noradltd.wumpus;
 public class ColonyOfBats extends Room.Occupant {
     @Override
     public void respondTo(Room.Occupant interloper) {
-        if (interloper instanceof Hunter) {
-            Hunter hunter = (Hunter) interloper;
+        if (interloper instanceof Hunter hunter) {
             Room randomRoom = findRandomRoom();
             Logger.info("A swarm of bats lift you from the ground in a blinding flurry of leathery wings. They drop you in room " + randomRoom.number());
             hunter.moveTo(randomRoom);
