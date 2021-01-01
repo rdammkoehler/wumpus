@@ -54,7 +54,9 @@ public class HunterTest {
     @ExtendWith(ResetRandomizerExtension.class)
     @Test
     public void inventroyTellsUsHowMuchWeKill() {
-        Helpers.programRandomizer(true, true, true);
+        // TODO this programming of the randomizer is NOT intuitive!
+        Helpers.programRandomizer(new boolean[]{true}, new int[]{1});
+        Logger.debug(Random.getRandomizer().toString());
         Room room = new Room();
         Hunter killer = new Hunter();
         Wumpus wumpus = new Wumpus();
@@ -183,7 +185,7 @@ public class HunterTest {
         Hunter hunter = new Hunter();
         Wumpus wumpus = new Wumpus();
         wumpus.moveTo(deathChamber);
-        Helpers.programRandomizer(true, false);
+//        Helpers.programRandomizer(0, 0);
 
         hunter.moveTo(deathChamber);
 

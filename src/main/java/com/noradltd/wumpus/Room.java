@@ -1,9 +1,6 @@
 package com.noradltd.wumpus;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.function.Predicate.not;
@@ -62,7 +59,7 @@ class Room {
         }
     };
 
-    // TODO how do we get this to be NOT package protected?
+    // TODO how do we get this to be NOT package protected? DI?
     static RoomNumberer roomNumberer = DEFAULT_ROOM_NUMBERER;
     private final int instanceNumber = roomNumberer.nextRoomNumber();
     private final Set<Room> exits = new HashSet<>();
@@ -79,21 +76,9 @@ class Room {
 
     private void executeOccupantInteractions(Occupant interloper) {
         if (occupants.size() > 0) {
-            Logger.debug(interloper.getClass().getSimpleName() + " is interacting with " + occupants.stream()
-                    .map(occupant -> occupant.getClass().getSimpleName() + "(" + ((occupant.isDead()) ? "DEAD" : "ALIVE") + ")")
-                    .collect(Collectors.joining(", ")));
-            for (Occupant cohabitant : new ArrayList<>(occupants)) {
-                if (!interloper.isDead()) {
-                    // TODO this could potentially be cleaner
-                    if (Random.getRandomizer().nextBoolean()) {
-                        cohabitant.respondTo(interloper);
-                        interloper.respondTo(cohabitant);
-                    } else {
-                        interloper.respondTo(cohabitant);
-                        cohabitant.respondTo(interloper);
-                    }
-                }
-            }
+            new ArrayList<>(occupants).stream()
+                    .filter(not(Occupant::isDead))
+                    .forEach(cohabitant -> interact(cohabitant, interloper));
         } else {
             Logger.debug("this room is empty");
         }
@@ -101,6 +86,22 @@ class Room {
             occupants.add(interloper);
         }
     }
+
+    private void interact(Occupant cohabitant, Occupant interloper) {
+        if (!interloper.isDead()) {
+            Logger.debug(interloper.getClass().getSimpleName() + "(" + ((interloper.isDead()) ? "DEAD" : "ALIVE") + ")"
+                    + " is interacting with " +
+                    cohabitant.getClass().getSimpleName() + "(" + ((cohabitant.isDead()) ? "DEAD" : "ALIVE") + ")");
+            Occupant[] participants = Random.getRandomizer().shuffle(cohabitant, interloper);
+            Arrays.stream(participants)
+                    .forEach(participant ->
+                            Arrays.stream(participants)
+                                    .filter(x -> !x.equals(participant))
+                                    .forEach(participant::respondTo)
+                    );
+        }
+    }
+
 
     void remove(Occupant occupant) {
         Logger.debug("removing " + occupant.getClass().getSimpleName() + " from " + number());

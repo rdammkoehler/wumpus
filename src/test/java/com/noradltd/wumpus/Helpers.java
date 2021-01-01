@@ -4,16 +4,15 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileDescriptor;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class Helpers {
 
     public static final String RANDOMIZER_THREADLOCALBAGKEY = "randomizer";
-
-    public static String reInterpolateEscapedCharacters(String input) {
-        return input.replaceAll("\\\\n", "\n");
-    }
 
     static Integer countRooms(Maze maze) {
         return collectRoom(maze.entrance(), new HashSet<>()).size();
@@ -66,8 +65,12 @@ public class Helpers {
         Game.getThreadLocalBag().replace(RANDOMIZER_THREADLOCALBAGKEY, new Helpers.ProgrammableRandom(ints));
     }
 
+    public static void programRandomizer(boolean[] bools, int[] ints) {
+        Game.getThreadLocalBag().replace(RANDOMIZER_THREADLOCALBAGKEY, new Helpers.ProgrammableRandom(bools, ints));
+    }
+
     public static void resetRandomizer() {
-        final Random random = new Random();
+        Random random = new Random();
         random.setSeed(0L);
         Game.getThreadLocalBag().replace(RANDOMIZER_THREADLOCALBAGKEY, random);
     }
@@ -91,16 +94,22 @@ public class Helpers {
 
         ProgrammableRandom(boolean... bools) {
             this.bools = bools;
-            this.ints = new int[0];
+            ints = new int[0];
         }
 
         ProgrammableRandom(int... ints) {
             this.ints = ints;
-            this.bools = new boolean[0];
+            bools = new boolean[0];
+        }
+
+        ProgrammableRandom(boolean[] bools, int[] ints) {
+            this.bools = bools;
+            this.ints = ints;
         }
 
         @Override
-        boolean nextBoolean() {
+        public boolean nextBoolean() {
+            Logger.debug("nextBoolean (" + ((bools.length == 0 || boolIdx >= bools.length) ? "X" : bools[boolIdx]) + ")");
             if (bools.length > 0 && boolIdx < bools.length) {
                 return bools[boolIdx++];
             }
@@ -108,7 +117,8 @@ public class Helpers {
         }
 
         @Override
-        int nextInt(int bound) {
+        public int nextInt(int bound) {
+            Logger.debug("nextInt (" + ((ints.length == 0 || intIdx >= ints.length) ? 0 : ints[intIdx]) + ")");
             if (ints.length > 0 && intIdx < ints.length) {
                 return ints[intIdx++];
             }

@@ -120,6 +120,7 @@ class Hunter extends Room.Occupant {
     @Override
     public void respondTo(Room.Occupant interloper) {
         if (interloper instanceof Wumpus wumpus) {
+            Logger.debug("Hunter is responding to Wumpus");
             kill(wumpus);
         }
     }

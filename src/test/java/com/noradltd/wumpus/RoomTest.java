@@ -66,7 +66,7 @@ public class RoomTest {
     @ExtendWith(ResetRandomizerExtension.class)
     @Test
     public void roomOccupantsInteractWithNewComersWumpusEatsHunter() {
-        Helpers.programRandomizer(true, true, true, true);
+        Helpers.programRandomizer(new boolean[]{false}, new int[]{0});
         Room room = new Room();
         Wumpus wumpus = new Wumpus();
         wumpus.moveTo(room);
@@ -80,7 +80,7 @@ public class RoomTest {
     @ExtendWith(ResetRandomizerExtension.class)
     @Test
     public void roomOccupantsInteractWithNewComersWumpusFleesHunter() {
-        Helpers.programRandomizer(false, true);
+        Helpers.programRandomizer(new boolean[]{true}, new int[]{0});
         Room room = new Room();
         room.add(new Room());
         room.add(new Room());

@@ -56,7 +56,7 @@ public class ColonyOfBatsTest {
                 rooms[idx - 1].add(rooms[idx]);
             }
         }
-        Helpers.programRandomizer(10, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
+        Helpers.programRandomizer(0, 10, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
         ColonyOfBats bats = new ColonyOfBats();
         bats.moveTo(rooms[starting_room_idx]);
         Hunter hunter = new Hunter();

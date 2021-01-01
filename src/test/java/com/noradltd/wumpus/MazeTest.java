@@ -32,7 +32,7 @@ public class MazeTest {
         boolean[] seedSetDetected = {false};
         Game.getThreadLocalBag().replace("randomizer", new Random() {
             @Override
-            void setSeed(long seed) {
+            public void setSeed(long seed) {
                 super.setSeed(seed);
                 seedSetDetected[0] = true;
             }
