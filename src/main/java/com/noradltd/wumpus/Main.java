@@ -89,14 +89,16 @@ public class Main {
     }
 
     private void showHelp() {
-        Logger.info("Instructions:\n" +
-                "(i|inv|inventory)\tShow inventory\n" +
-                "(l|look)\t\t\tLook around\n" +
-                "(m|move) #\t\t\tMove through tunnel #\n" +
-                "(s|shoot) #\t\t\tShoot through tunnel #\n" +
-                "(t|take)\t\t\tTake (an unbroken arrow)\n" +
-                "(?|h|help)\t\t\tShow help\n" +
-                "(q|x|quit|exit)\t\tQuit the game\n");
+        Logger.info("""
+                Instructions:
+                (i|inv|inventory)\tShow inventory
+                (l|look)\t\t\tLook around
+                (m|move) #\t\t\tMove through tunnel #
+                (s|shoot) #\t\t\tShoot through tunnel #
+                (t|take)\t\t\tTake (an unbroken arrow)
+                (?|h|help)\t\t\tShow help
+                (q|x|quit|exit)\t\tQuit the game
+                """);
     }
 
     public static void main(String[] args) {
