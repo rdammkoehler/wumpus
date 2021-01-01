@@ -1,7 +1,5 @@
 package com.noradltd.wumpus;
 
-import java.util.stream.Collectors;
-
 class Hunter extends Room.Occupant {
 
     interface Quiver {
@@ -104,18 +102,19 @@ class Hunter extends Room.Occupant {
 
     }
 
-    void takeArrow() {
+    void takeArrows() {
         getRoom().occupants().stream()
-                .filter(occupant -> occupant instanceof Arrow).collect(Collectors.toList())
-                .forEach(occupant -> {
-                    if (occupant instanceof Arrow arrow) {
-                        if (arrow.isBroken()) {
-                            Logger.info("The broken arrow crumbles in your hand.");
-                        } else {
-                            arrow.addToQuiver(quiver);
-                        }
-                    }
-                });
+                .filter(Arrow.class::isInstance)
+                .map(Arrow.class::cast)
+                .forEach(this::takeArrow);
+    }
+
+    private void takeArrow(Arrow arrow) {
+        if (arrow.isBroken()) {
+            Logger.info("The broken arrow crumbles in your hand.");
+        } else {
+            arrow.addToQuiver(quiver);
+        }
     }
 
     @Override

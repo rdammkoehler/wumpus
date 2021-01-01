@@ -30,8 +30,8 @@ class Game {
         return hunter.inventory();
     }
 
-    public void takeArrow() {
-        hunter.takeArrow();
+    public void takeArrows() {
+        hunter.takeArrows();
     }
 
     @Override
@@ -148,12 +148,14 @@ class Game {
 
         private void printHelp() {
             Logger.info(
-                    "\t--arrows #\t\tLimit the number of arrows\n" +
-                            "\t--bats #\t\tLimit the number of colonies of bats\n" +
-                            "\t--pits #\t\tLimit the number of bottomless pits\n" +
-                            "\t--rooms #\t\tLimit the number of rooms\n" +
-                            "\t--seed  #\t\tSet the Randomizer seed\n" +
-                            "\t--wumpi  #\t\tLimit the number of wumpi\n"
+                    """
+                            \t--arrows #\t\tLimit the number of arrows
+                            \t--bats #\t\tLimit the number of colonies of bats
+                            \t--pits #\t\tLimit the number of bottomless pits
+                            \t--rooms #\t\tLimit the number of rooms
+                            \t--seed  #\t\tSet the Randomizer seed
+                            \t--wumpi  #\t\tLimit the number of wumpi
+                            """
             );
         }
 

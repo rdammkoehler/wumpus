@@ -38,7 +38,7 @@ public class Main {
             addCommands(arg -> Logger.info(game.inventory()), "i", "inv", "inventory");
             addCommands(arg -> showHelp(), "?", "h", "help");
             addCommands(arg -> Logger.info(game.toString()), "l", "look");
-            addCommands(arg -> game.takeArrow(), "t", "take");
+            addCommands(arg -> game.takeArrows(), "t", "take");
         }
 
         private Integer exitNumber(String arg) {

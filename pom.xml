@@ -27,7 +27,6 @@
                     <encoding>UTF-8</encoding>
                     <source>14</source>
                     <target>14</target>
-                    <compilerArgs>--enable-preview</compilerArgs>
                 </configuration>
             </plugin>
             <plugin>

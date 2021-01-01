@@ -203,7 +203,7 @@ public class HunterTest {
         Hunter hunter = new Hunter(new ArrowQuiver(initialArrowCount));
         hunter.moveTo(room);
 
-        hunter.takeArrow();
+        hunter.takeArrows();
 
         assertThat(hunter.inventory(), is(equalTo("Inventory:\n\tArrows: " + (initialArrowCount + 1) + "\n\tWumpus Scalps: 0\n")));
     }
@@ -219,7 +219,7 @@ public class HunterTest {
         Hunter hunter = new Hunter(new ArrowQuiver(initialArrowCount));
         hunter.moveTo(room);
 
-        hunter.takeArrow();
+        hunter.takeArrows();
 
         assertThat(hunter.inventory(), is(equalTo("Inventory:\n\tArrows: " + initialArrowCount + "\n\tWumpus Scalps: 0\n")));
     }
