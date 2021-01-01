@@ -76,13 +76,14 @@ public class MazeTest {
     public void testMazeBuilderPrintsHelpWhenAsked() {
         ByteArrayOutputStream stdout = captureStdout();
         Game.Options options = new Game.Options("--help");
-        String helpStatement = "\t--arrows #\t\tLimit the number of arrows\n" +
-                "\t--bats #\t\tLimit the number of colonies of bats\n" +
-                "\t--format $\t\tSet the output format (human, dot, neato)" +
-                "\t--pits #\t\tLimit the number of bottomless pits\n" +
-                "\t--rooms #\t\tLimit the number of rooms\n" +
-                "\t--seed  #\t\tSet the Randomizer seed\n" +
-                "\t--wumpi  #\t\tLimit the number of wumpi\n";
+        String helpStatement = """
+                \t--arrows #\t\tLimit the number of arrows
+                \t--bats #\t\tLimit the number of colonies of bats
+                \t--format $\t\tSet the output format (human, dot, neato)\t--pits #\t\tLimit the number of bottomless pits
+                \t--rooms #\t\tLimit the number of rooms
+                \t--seed  #\t\tSet the Randomizer seed
+                \t--wumpi  #\t\tLimit the number of wumpi
+                """;
 
         MazeBuilder.build(options);
 
