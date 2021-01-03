@@ -39,8 +39,20 @@ class Game {
         return hunter.getRoom().toString();
     }
 
+    // TODO check to see if any living wumpi exist, if not, game is over, hunter wins!
     public boolean isPlaying() {
+        if (allWumpiAreDead()) {
+            Logger.info("Game Over. You killed all the Wumpi.");
+            playing = false;
+        }
         return playing && !hunter.isDead();
+    }
+
+    private boolean allWumpiAreDead() {
+        return new RoomCollector(hunter.getRoom()).getAllRooms().stream()
+                .flatMap(room -> room.occupants().stream())
+                .filter(Wumpus.class::isInstance)
+                .allMatch(Room.Occupant::isDead);
     }
 
     public void quit() {

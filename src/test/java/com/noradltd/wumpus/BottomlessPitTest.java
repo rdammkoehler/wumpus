@@ -9,21 +9,24 @@ import static org.hamcrest.Matchers.is;
 public class BottomlessPitTest {
     @Test
     public void huntersDieInBottomlessPits() {
+        Room room = new Room();
         Hunter hunter = new Hunter();
         BottomlessPit pit = new BottomlessPit();
-        pit.moveTo(new Room());
+        pit.moveTo(room);
 
-        pit.respondTo(hunter);
+        hunter.moveTo(room);
 
         assertThat(hunter.isDead(), is(true));
     }
 
     @Test
     public void wumpusDoNotDieInBottomlessPits() {
-        Wumpus wumpus = new Wumpus();
+        Room room = new Room();
         BottomlessPit pit = new BottomlessPit();
+        pit.moveTo(room);
+        Wumpus wumpus = new Wumpus();
 
-        pit.respondTo(wumpus);
+        wumpus.moveTo(room);
 
         assertThat(wumpus.isDead(), is(false));
     }

@@ -62,6 +62,7 @@ class Hunter extends Room.Occupant {
             if (arrow.killedAWumpus()) {
                 kills++;
             }
+            // TODO all wumpus should move if they are not dead (or at least those in ear shot)
         } else {
             Logger.info("You can't shoot that way");
         }
@@ -85,21 +86,20 @@ class Hunter extends Room.Occupant {
     }
 
     void kill(Wumpus wumpus) {
-        if (!isDead() && !wumpus.isDead() && getRoom().equals(wumpus.getRoom())) {
-            if (Random.getRandomizer().nextBoolean()) {
-                Logger.info("With a slash of your knife you eviscerate a Wumpus; it's corpse slides to the floor");
-                wumpus.die();
-                kills += 1;
+        if (!isDead() && !wumpus.isDead()) {
+            if (isCohabitant(wumpus)) {
+                if (Random.getRandomizer().nextBoolean()) {
+                    Logger.info("With a slash of your knife you eviscerate a Wumpus; it's corpse slides to the floor");
+                    wumpus.die();
+                    kills += 1;
+                } else {
+                    Logger.info("You slash you knife at the Wumpus as it's slimy tentacles wrap around you, trying to crushing the life out of your body");
+                    wumpus.respondTo(this);
+                }
             } else {
-                Logger.info("You slash you knife at the Wumpus as it's slimy tentacles wrap around you, trying to crushing the life out of your body");
-                wumpus.respondTo(this);
-            }
-        } else {
-            if (isDead() && !wumpus.isDead()) {
                 Logger.info("The Wumpus escapes your violent assault");
             }
         }
-
     }
 
     void takeArrows() {

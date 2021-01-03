@@ -2,7 +2,6 @@ package com.noradltd.wumpus;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 
@@ -13,7 +12,7 @@ interface Maze {
 class MazeBuilder {
     private static final Integer MIN_ROOM_COUNT = 2;
 
-    static class MazeStruct implements Maze {
+    class MazeStruct implements Maze {
         private final Room entrance;
 
         private MazeStruct(Set<Room> rooms) {
@@ -153,26 +152,7 @@ class MazeLoader {
     }
 
     private List<Room> collectAllRooms() {
-        class RoomCollector {
-            private final List<Room> allRooms;
-
-            RoomCollector(Maze maze) {
-                allRooms = collectRoom(maze.entrance(), new HashSet<>());
-            }
-
-            private List<Room> collectRoom(Room room, Set<Room> rooms) {
-                if (!rooms.contains(room)) {
-                    rooms.add(room);
-                    room.exits().stream().filter(exit -> !rooms.contains(exit)).forEach(exit -> collectRoom(exit, rooms));
-                }
-                return rooms.stream().collect(Collectors.toUnmodifiableList());
-            }
-
-            public List<Room> getAllRooms() {
-                return allRooms;
-            }
-        }
-        return new RoomCollector(maze).getAllRooms();
+        return new RoomCollector(maze.entrance()).getAllRooms();
     }
 
 

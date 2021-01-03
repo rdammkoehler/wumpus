@@ -26,6 +26,10 @@ class Room {
             newRoom.add(this);
         }
 
+        protected boolean isCohabitant(Occupant otherOccupant) {
+            return getRoom().equals(otherOccupant.getRoom());
+        }
+
         abstract void respondTo(Occupant actioned);
 
         Boolean isDead() {
