@@ -3,7 +3,7 @@ package com.noradltd.wumpus;
 public class BottomlessPit extends Room.Occupant {
     @Override
     public void respondTo(Room.Occupant interloper) {
-        if (isCohabitant(interloper) && interloper instanceof Hunter hunter) {
+        if (interloper instanceof Hunter hunter) {
             Logger.info("You've stumbled into a bottomless pit and died!");
             hunter.die();
         }

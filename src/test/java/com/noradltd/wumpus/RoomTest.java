@@ -77,6 +77,7 @@ public class RoomTest {
         assertThat(hunter.isDead(), is(0 == room.exits().size()));
     }
 
+    // TODO flaky test dependent on randomizer
     @ExtendWith(ResetRandomizerExtension.class)
     @Test
     public void roomOccupantsInteractWithNewComersWumpusFleesHunter() {

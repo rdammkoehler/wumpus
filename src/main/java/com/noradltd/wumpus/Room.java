@@ -26,7 +26,8 @@ class Room {
             newRoom.add(this);
         }
 
-        protected boolean isCohabitant(Occupant otherOccupant) {
+        // TODO strongly consider moving this method outside of Occupant class as a helper in Room
+        private boolean isCohabitant(Occupant otherOccupant) {
             return getRoom().equals(otherOccupant.getRoom());
         }
 
@@ -96,10 +97,12 @@ class Room {
             Logger.debug(debugDescriptionOfOccupant(interloper) + " is interacting with " + debugDescriptionOfOccupant(cohabitant));
             Occupant[] participants = Random.getRandomizer().shuffle(cohabitant, interloper);
             Arrays.stream(participants)
-                    .forEach(participant ->
-                            Arrays.stream(participants)
-                                    .filter(x -> !x.equals(participant))
-                                    .forEach(participant::respondTo)
+                    .filter(not(Occupant::isDead))
+                    .forEach(participant -> Arrays.stream(participants)
+                            .filter(not(Occupant::isDead))
+                            .filter(not(participant::equals))
+                            .filter(participant::isCohabitant)
+                            .forEach(participant::respondTo)
                     );
         }
     }

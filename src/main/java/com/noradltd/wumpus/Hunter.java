@@ -86,19 +86,13 @@ class Hunter extends Room.Occupant {
     }
 
     void kill(Wumpus wumpus) {
-        if (!isDead() && !wumpus.isDead()) {
-            if (isCohabitant(wumpus)) {
-                if (Random.getRandomizer().nextBoolean()) {
-                    Logger.info("With a slash of your knife you eviscerate a Wumpus; it's corpse slides to the floor");
-                    wumpus.die();
-                    kills += 1;
-                } else {
-                    Logger.info("You slash you knife at the Wumpus as it's slimy tentacles wrap around you, trying to crushing the life out of your body");
-                    wumpus.respondTo(this);
-                }
-            } else {
-                Logger.info("The Wumpus escapes your violent assault");
-            }
+        if (Random.getRandomizer().nextBoolean()) {
+            Logger.info("With a slash of your knife you eviscerate a Wumpus; it's corpse slides to the floor");
+            wumpus.die();
+            kills += 1;
+        } else {
+            Logger.info("You slash you knife at the Wumpus as it's slimy tentacles wrap around you, trying to crushing the life out of your body");
+            wumpus.respondTo(this);
         }
     }
 

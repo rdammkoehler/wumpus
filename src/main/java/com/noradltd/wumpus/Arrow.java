@@ -19,8 +19,8 @@ public class Arrow extends Room.Occupant {
 
     @Override
     public void respondTo(Room.Occupant interloper) {
-        if (!isBroken() && interloper instanceof Wumpus) {
-            interloper.die();
+        if (!isBroken() && interloper instanceof Wumpus wumpus) {
+            wumpus.die();
             killedAWumpus = true;
             Logger.info("Your arrow drives itself deep into the hideous beast; it's life force escaping from the hole in it's leathery hide");
             shatter();

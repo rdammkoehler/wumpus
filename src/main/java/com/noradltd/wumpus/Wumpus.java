@@ -14,15 +14,13 @@ class Wumpus extends Room.Occupant {
     }
 
     private void eat(Hunter hunter) {
-        if (hunter.isCohabitant(Wumpus.this)) {
-            Logger.info("Nom Nom Nom, a Wumpus has eaten you.");
-            hunter.die();
-        }
+        Logger.info("Nom Nom Nom, a Wumpus has eaten you.");
+        hunter.die();
     }
 
     @Override
     public void respondTo(Room.Occupant interloper) {
-        if (!isDead() && !interloper.isDead() && interloper instanceof Hunter hunter) {
+        if (interloper instanceof Hunter hunter) {
             Logger.debug("Wumpus is responding to Hunter");
             if (Random.getRandomizer().nextBoolean()) {
                 eat(hunter);

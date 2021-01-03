@@ -4,7 +4,7 @@
             <pattern>- %msg%n</pattern>
         </encoder>
     </appender>
-    <logger name="HuntTheWumpusLogger" level="info" additivity="false">
+    <logger name="HuntTheWumpusLogger" level="debug" additivity="false">
         <appender-ref ref="CONSOLE"/>
     </logger>
     <root level="error">
