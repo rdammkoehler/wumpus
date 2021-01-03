@@ -82,7 +82,7 @@ class Room {
     private void executeOccupantInteractions(Occupant interloper) {
         if (occupants.size() > 0) {
             new ArrayList<>(occupants).stream()
-                    .filter(not(Occupant::isDead))
+                    .filter(not(Occupant::isDead))  // TODO how many times will we check for not-deadness
                     .forEach(cohabitant -> interact(cohabitant, interloper));
         } else {
             Logger.debug("this room is empty");
@@ -93,18 +93,16 @@ class Room {
     }
 
     private void interact(Occupant cohabitant, Occupant interloper) {
-        if (!interloper.isDead()) {
-            Logger.debug(debugDescriptionOfOccupant(interloper) + " is interacting with " + debugDescriptionOfOccupant(cohabitant));
-            Occupant[] participants = Random.getRandomizer().shuffle(cohabitant, interloper);
-            Arrays.stream(participants)
-                    .filter(not(Occupant::isDead))
-                    .forEach(participant -> Arrays.stream(participants)
-                            .filter(not(Occupant::isDead))
-                            .filter(not(participant::equals))
-                            .filter(participant::isCohabitant)
-                            .forEach(participant::respondTo)
-                    );
-        }
+        Logger.debug(debugDescriptionOfOccupant(interloper) + " is interacting with " + debugDescriptionOfOccupant(cohabitant));
+        Occupant[] participants = Random.getRandomizer().shuffle(cohabitant, interloper);
+        Arrays.stream(participants)
+                .filter(not(Occupant::isDead))  // TODO how many times will we check for not-deadness
+                .forEach(participant -> Arrays.stream(participants)
+                        .filter(not(Occupant::isDead))  // TODO how many times will we check for not-deadness
+                        .filter(not(participant::equals))
+                        .filter(participant::isCohabitant)
+                        .forEach(participant::respondTo)
+                );
     }
 
     private String debugDescriptionOfOccupant(Occupant occupant) {
