@@ -184,10 +184,6 @@ class Room {
             return !(occupant instanceof Hunter && !occupant.isDead());
         }
 
-        private void describe(Occupant occupant) {
-            sb.append(occupant.toString());
-        }
-
         private void describeExits() {
             sb.append("This room has ").append(room.exits().size()).append(" exits.");
         }
