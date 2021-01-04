@@ -8,8 +8,10 @@ import static org.hamcrest.Matchers.*;
 
 public class HunterTest {
 
+    @ExtendWith(ResetRandomizerExtension.class)
     @Test
-    public void aHunterWillKillAWumpusOnSite() {
+    public void aHunterMayKillAWumpusOnSite() {
+        Helpers.programRandomizer(new boolean[]{true}, new int[]{0});
         Room room = new Room();
         Hunter hunter = new Hunter();
         Wumpus wumpus = new Wumpus();
@@ -179,17 +181,18 @@ public class HunterTest {
     @ExtendWith(ResetRandomizerExtension.class)
     @Test
     public void wumpiCanEscapeAHunterByFleeingBeforeTheHunterStrikesWithHisKnife() {
+        Helpers.programRandomizer(new boolean[]{false, false}, new int[]{0});
         Room deathChamber = new Room();
         Room escapePath = new Room();
         deathChamber.add(escapePath);
         Hunter hunter = new Hunter();
         Wumpus wumpus = new Wumpus();
         wumpus.moveTo(deathChamber);
-//        Helpers.programRandomizer(0, 0);
 
         hunter.moveTo(deathChamber);
 
         assertThat(wumpus.getRoom(), is(equalTo(escapePath)));
+        assertThat(wumpus.isDead(), is(false));
         assertThat(hunter.kills(), is(0));
     }
 

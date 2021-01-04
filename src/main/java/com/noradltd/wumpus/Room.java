@@ -49,6 +49,19 @@ class Room {
             return getClass().getSimpleName().compareTo(other.getClass().getSimpleName());
         }
 
+        //TODO so is this interaction (which is filtering down the interloper etc better than on Room?)
+        void interact(Occupant interloper) {
+//            Logger.debug(debugDescriptionOfOccupant(interloper) + " is interacting with " + debugDescriptionOfOccupant(cohabitant));
+            Occupant[] participants = Random.getRandomizer().shuffle(this, interloper);
+            Arrays.stream(participants)
+                    .filter(not(Occupant::isDead))  // TODO how many times will we check for not-deadness
+                    .forEach(participant -> Arrays.stream(participants)
+                            .filter(not(Occupant::isDead))  // TODO how many times will we check for not-deadness
+                            .filter(not(participant::equals))
+                            .filter(participant::isCohabitant)
+                            .forEach(participant::respondTo)
+                    );
+        }
     }
 
     interface RoomNumberer {
@@ -83,7 +96,9 @@ class Room {
         if (occupants.size() > 0) {
             new ArrayList<>(occupants).stream()
                     .filter(not(Occupant::isDead))  // TODO how many times will we check for not-deadness
-                    .forEach(cohabitant -> interact(cohabitant, interloper));
+                    .forEach(occupant -> occupant.interact(interloper));
+//                    .forEach(interloper::interact); // note: this gets the inverted behavior we don't like
+//                    .forEach(cohabitant -> interact(cohabitant, interloper));
         } else {
             Logger.debug("this room is empty");
         }
@@ -92,6 +107,7 @@ class Room {
         }
     }
 
+    //TODO so is this interaction (which is filtering down the interloper etc better than on Occupant?)
     private void interact(Occupant cohabitant, Occupant interloper) {
         Logger.debug(debugDescriptionOfOccupant(interloper) + " is interacting with " + debugDescriptionOfOccupant(cohabitant));
         Occupant[] participants = Random.getRandomizer().shuffle(cohabitant, interloper);
