@@ -3,11 +3,6 @@ package com.noradltd.wumpus;
 public class Arrow extends Room.Occupant {
     static final Arrow NULL_ARROW = new Arrow() {
         @Override
-        public void respondTo(Room.Occupant occupant) {
-            // no-op
-        }
-
-        @Override
         public String toString() {
             return "this arrow does nothing";
         }
@@ -18,13 +13,11 @@ public class Arrow extends Room.Occupant {
     private boolean killedAWumpus = false;
 
     @Override
-    public void respondTo(Room.Occupant interloper) {
-        if (!isBroken() && interloper instanceof Wumpus wumpus) {
-            wumpus.die();
-            killedAWumpus = true;
-            Logger.info("Your arrow drives itself deep into the hideous beast; it's life force escaping from the hole in it's leathery hide");
-            shatter();
-        }
+    protected void respondTo(Wumpus wumpus) {
+        wumpus.die();
+        killedAWumpus = true;
+        Logger.info("Your arrow drives itself deep into the hideous beast; it's life force escaping from the hole in it's leathery hide");
+        shatter();
     }
 
     @Override

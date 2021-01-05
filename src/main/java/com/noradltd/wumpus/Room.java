@@ -1,5 +1,6 @@
 package com.noradltd.wumpus;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -31,7 +32,20 @@ class Room {
             return getRoom().equals(otherOccupant.getRoom());
         }
 
-        abstract void respondTo(Occupant actioned);
+        protected void respondTo(Arrow arrow) {
+        }
+
+        protected void respondTo(BottomlessPit pit) {
+        }
+
+        protected void respondTo(ColonyOfBats bats) {
+        }
+
+        protected void respondTo(Hunter hunter) {
+        }
+
+        protected void respondTo(Wumpus wumpus) {
+        }
 
         Boolean isDead() {
             return dead;
@@ -49,18 +63,13 @@ class Room {
             return getClass().getSimpleName().compareTo(other.getClass().getSimpleName());
         }
 
-        //TODO so is this interaction (which is filtering down the interloper etc better than on Room?)
-        void interact(Occupant interloper) {
-//            Logger.debug(debugDescriptionOfOccupant(interloper) + " is interacting with " + debugDescriptionOfOccupant(cohabitant));
-            Occupant[] participants = Random.getRandomizer().shuffle(this, interloper);
-            Arrays.stream(participants)
-                    .filter(not(Occupant::isDead))  // TODO how many times will we check for not-deadness
-                    .forEach(participant -> Arrays.stream(participants)
-                            .filter(not(Occupant::isDead))  // TODO how many times will we check for not-deadness
-                            .filter(not(participant::equals))
-                            .filter(participant::isCohabitant)
-                            .forEach(participant::respondTo)
-                    );
+        private void respondTo(Occupant interloper) {
+            // custom dynamic dispatcher!
+            try {
+                getClass().getDeclaredMethod("respondTo", interloper.getClass()).invoke(this, interloper);
+            } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                // no-op
+            }
         }
     }
 
@@ -93,12 +102,8 @@ class Room {
     }
 
     private void executeOccupantInteractions(Occupant interloper) {
-        if (occupants.size() > 0) {
-            new ArrayList<>(occupants).stream()
-                    .filter(not(Occupant::isDead))  // TODO how many times will we check for not-deadness
-                    .forEach(occupant -> occupant.interact(interloper));
-//                    .forEach(interloper::interact); // note: this gets the inverted behavior we don't like
-//                    .forEach(cohabitant -> interact(cohabitant, interloper));
+        if (occupants.size() > 0 && interloper != null) {
+            new ArrayList<>(occupants).forEach(cohabitant -> interact(cohabitant, interloper));
         } else {
             Logger.debug("this room is empty");
         }
@@ -107,14 +112,12 @@ class Room {
         }
     }
 
-    //TODO so is this interaction (which is filtering down the interloper etc better than on Occupant?)
     private void interact(Occupant cohabitant, Occupant interloper) {
         Logger.debug(debugDescriptionOfOccupant(interloper) + " is interacting with " + debugDescriptionOfOccupant(cohabitant));
         Occupant[] participants = Random.getRandomizer().shuffle(cohabitant, interloper);
         Arrays.stream(participants)
-                .filter(not(Occupant::isDead))  // TODO how many times will we check for not-deadness
                 .forEach(participant -> Arrays.stream(participants)
-                        .filter(not(Occupant::isDead))  // TODO how many times will we check for not-deadness
+                        .filter(not(Occupant::isDead))
                         .filter(not(participant::equals))
                         .filter(participant::isCohabitant)
                         .forEach(participant::respondTo)

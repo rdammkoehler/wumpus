@@ -19,14 +19,12 @@ class Wumpus extends Room.Occupant {
     }
 
     @Override
-    public void respondTo(Room.Occupant interloper) {
-        if (interloper instanceof Hunter hunter) {
-            Logger.debug("Wumpus is responding to Hunter");
-            if (Random.getRandomizer().nextBoolean()) {
-                eat(hunter);
-            } else {
-                flee(hunter);
-            }
+    protected void respondTo(Hunter hunter) {
+        Logger.debug("Wumpus is responding to Hunter");
+        if (Random.getRandomizer().nextBoolean()) {
+            eat(hunter);
+        } else {
+            flee(hunter);
         }
     }
 
