@@ -228,4 +228,41 @@ public class HunterTest {
 
         assertThat(hunter.inventory(), is(equalTo("Inventory:\n\tArrows: " + initialArrowCount + "\n\tWumpus Scalps: 0\n")));
     }
+
+    @Test
+    public void wumpiRunsFromArrows() {
+        Room hunterRoom = new Room();
+        Room emptyRoom = new Room();
+        hunterRoom.add(emptyRoom);
+        Room wumpusRoom = new Room();
+        emptyRoom.add(wumpusRoom);
+        Wumpus wumpus = new Wumpus();
+        wumpus.moveTo(wumpusRoom);
+        Hunter hunter = new Hunter(new ArrowQuiver(1));
+        hunter.moveTo(hunterRoom);
+
+        hunter.shoot(0);
+
+        assertThat(wumpus.getRoom(), is(equalTo(emptyRoom)));
+    }
+
+    @Test
+    public void wumpiRunsAwayFromArrows() {
+        Helpers.programRandomizer(new boolean[]{false}, new int[]{0});
+        Room hunterRoom = new Room();
+        Room emptyRoom = new Room();
+        hunterRoom.add(emptyRoom);
+        Room wumpusRoom = new Room();
+        emptyRoom.add(wumpusRoom);
+        Room farRoom = new Room();
+        wumpusRoom.add(farRoom);
+        Wumpus wumpus = new Wumpus();
+        wumpus.moveTo(wumpusRoom);
+        Hunter hunter = new Hunter(new ArrowQuiver(1));
+        hunter.moveTo(hunterRoom);
+
+        hunter.shoot(0);
+
+        assertThat(wumpus.getRoom(), is(equalTo(farRoom)));
+    }
 }

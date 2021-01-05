@@ -11,23 +11,27 @@ public class Arrow extends Room.Occupant {
     private static int nextArrowId = 0;
     private int arrowId = nextArrowId++;
     private boolean killedAWumpus = false;
+    private boolean justLayingAbout = false;
 
     @Override
     protected void respondTo(Wumpus wumpus) {
-        wumpus.die();
-        killedAWumpus = true;
-        Logger.info("Your arrow drives itself deep into the hideous beast; it's life force escaping from the hole in it's leathery hide");
-        shatter();
+        if (!justLayingAbout) {
+            wumpus.die();
+            killedAWumpus = true;
+            Logger.info("Your arrow drives itself deep into the hideous beast; it's life force escaping from the hole in it's leathery hide");
+            shatter();
+        }
     }
 
     @Override
     public void moveTo(Room newRoom) {
         super.moveTo(newRoom);
-        if (!isBroken()) {
+        if (!isBroken() && !justLayingAbout) {
             if (Random.getRandomizer().nextBoolean()) {
                 shatter();
             } else {
                 Logger.info("You hear a clattering sound in the distance");
+                justLayingAbout = true;
             }
         }
     }

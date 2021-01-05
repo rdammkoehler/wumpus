@@ -1,5 +1,8 @@
 package com.noradltd.wumpus;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 class Hunter extends Room.Occupant {
 
     interface Quiver {
@@ -62,10 +65,19 @@ class Hunter extends Room.Occupant {
             if (arrow.killedAWumpus()) {
                 kills++;
             }
-            // TODO all wumpus should move if they are not dead (or at least those in ear shot)
+            scareNearByWumpi(target);
         } else {
             Logger.info("You can't shoot that way");
         }
+    }
+
+    private void scareNearByWumpi(Room target) {
+        Arrays.stream(target.exits().stream()
+                .flatMap(room -> room.occupants().stream())
+                .filter(Wumpus.class::isInstance)
+                .collect(Collectors.toList())
+                .toArray(new Wumpus[0]))  // this is stupid
+                .forEach(wumpus -> wumpus.flee());
     }
 
     void moveTo(Integer exitNumber) {

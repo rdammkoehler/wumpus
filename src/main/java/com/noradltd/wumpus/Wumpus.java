@@ -1,5 +1,7 @@
 package com.noradltd.wumpus;
 
+import java.util.ArrayList;
+
 class Wumpus extends Room.Occupant {
 
     @Override
@@ -8,15 +10,17 @@ class Wumpus extends Room.Occupant {
         if (Random.getRandomizer().nextBoolean()) {
             eat(hunter);
         } else {
-            flee(hunter);
+            fleeLoudly();
         }
     }
 
-    private void flee(Hunter hunter) {
-        int exitCount = getRoom().exits().size();
-        Room exitRoom = getRoom().exits().get(Random.getRandomizer().nextInt(exitCount));
+    private void fleeLoudly() {
         Logger.info("The startled Wumpus runs away!");
-        moveTo(exitRoom);
+        flee();
+    }
+
+    void flee() {
+        moveTo(Random.getRandomizer().shuffle(new ArrayList<>(getRoom().exits())).get(0));
     }
 
     private void eat(Hunter hunter) {
