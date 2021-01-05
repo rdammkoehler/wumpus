@@ -53,7 +53,7 @@ public class MainTest {
     }
 
     private void assertThat(String reOutput, String... instructions) {
-        final String regex = preProcessRegularExpression(reOutput);
+        String regex = preProcessRegularExpression(reOutput);
         Pattern pattern = Pattern.compile(regex, Pattern.DOTALL);
         String allInstructions = String.join("\n", instructions) + "\n";
 
@@ -63,7 +63,7 @@ public class MainTest {
     }
 
     private String preProcessRegularExpression(String reOutput) {
-        final String regex;
+        String regex;
         if (reOutput.startsWith("^") && reOutput.endsWith("$")) {
             regex = reOutput;
         } else if (reOutput.startsWith("^") && !reOutput.endsWith("$")) {
@@ -164,11 +164,5 @@ public class MainTest {
     public void reportsScoreAtTheEnd() {
         assertThat("Score: Hunter \\d+ Wumpus \\d+", QUIT_QUIT);
     }
-
-//    @Test  //TODO needs help!
-//    public void reportsWumpusPointsBasedOnHunterKills() {
-//        String move1 = MOVE_MOVE + " 1";
-//        String move2 = MOVE_MOVE + " 2";
-//        assertThat("Score: Hunter \\d+ Wumpus 1", move1, move2,move1,move1,move1,move1,move1,move1,move1,move1,move1,QUIT_QUIT);
-//    }
+    
 }

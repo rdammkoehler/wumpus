@@ -27,11 +27,6 @@ class Room {
             newRoom.add(this);
         }
 
-        // TODO strongly consider moving this method outside of Occupant class as a helper in Room
-        private boolean isCohabitant(Occupant otherOccupant) {
-            return getRoom().equals(otherOccupant.getRoom());
-        }
-
         protected void respondTo(Arrow arrow) {
         }
 
@@ -63,14 +58,26 @@ class Room {
             return getClass().getSimpleName().compareTo(other.getClass().getSimpleName());
         }
 
-        private void respondTo(Occupant interloper) {
-            // custom dynamic dispatcher!
-            try {
-                getClass().getDeclaredMethod("respondTo", interloper.getClass()).invoke(this, interloper);
-            } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-                // no-op
+        protected void respondTo(Occupant interloper) {
+            if (isCohabitant(interloper)) {
+                /*
+                 * custom dynamic dispatcher!
+                 * Java can't do multi-dispatch. But, we can force it to do 'the right thing' with the following code
+                 * still looking for a better solution that doesn't propagate a ton of duplication around
+                 *
+                 */
+                try {
+                    getClass().getDeclaredMethod("respondTo", interloper.getClass()).invoke(this, interloper);
+                } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                    // no-op
+                }
             }
         }
+
+        private boolean isCohabitant(Occupant otherOccupant) {
+            return getRoom().equals(otherOccupant.getRoom());
+        }
+
     }
 
     interface RoomNumberer {
@@ -98,6 +105,9 @@ class Room {
 
     Room add(Occupant occupant) {
         executeOccupantInteractions(occupant);
+        if (!occupant.isDead() && equals(occupant.getRoom())) {
+            occupants.add(occupant);
+        }
         return this;
     }
 
@@ -107,9 +117,6 @@ class Room {
         } else {
             Logger.debug("this room is empty");
         }
-        if (!interloper.isDead() && equals(interloper.getRoom())) {
-            occupants.add(interloper);
-        }
     }
 
     private void interact(Occupant cohabitant, Occupant interloper) {
@@ -117,10 +124,10 @@ class Room {
         Occupant[] participants = Random.getRandomizer().shuffle(cohabitant, interloper);
         Logger.debug(debugDescriptionOfOccupant(participants[0]) + " goes first");
         Arrays.stream(participants)
+                .filter(not(Occupant::isDead))
                 .forEach(participant -> Arrays.stream(participants)
                         .filter(not(Occupant::isDead))
                         .filter(not(participant::equals))
-                        .filter(participant::isCohabitant)
                         .forEach(participant::respondTo)
                 );
     }
@@ -138,6 +145,7 @@ class Room {
         return occupants.stream().collect(Collectors.toUnmodifiableSet());
     }
 
+    // TODO does this _need_ to be static?
     private static void connectRooms(Room one, Room two) {
         one.exits.add(two);
         two.exits.add(one);

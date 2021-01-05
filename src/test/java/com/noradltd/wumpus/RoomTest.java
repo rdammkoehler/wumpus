@@ -66,7 +66,7 @@ public class RoomTest {
     @ExtendWith(ResetRandomizerExtension.class)
     @Test
     public void roomOccupantsInteractWithNewComersWumpusEatsHunter() {
-        Helpers.programRandomizer(new boolean[]{false}, new int[]{0});
+        Helpers.programRandomizer(new boolean[]{false, true}, new int[]{0});
         Room room = new Room();
         Wumpus wumpus = new Wumpus();
         wumpus.moveTo(room);
@@ -239,5 +239,59 @@ public class RoomTest {
         new Wumpus().moveTo(exit);
 
         assertThat(room.toString(), matchesPattern("You are in room #\\d+\\nThis room has 1 exits.\\nYou feel a cold draft\\nYou hear the rustling of leathery wings\\nYou smell something foul\\n"));
+    }
+
+    @ExtendWith(ResetRandomizerExtension.class)
+    @Test
+    public void hunterDiesIfHeCantKillWumpusHandToHandAndWumpusEats() {
+        Helpers.programRandomizer(new boolean[]{false, true}, new int[]{0});
+        Room startRoom = new Room();
+        Room wumpusRoom = new Room();
+        startRoom.add(wumpusRoom);
+        Wumpus wumpus = new Wumpus();
+        wumpus.moveTo(wumpusRoom);
+        Hunter hunter = new Hunter();
+        hunter.moveTo(startRoom);
+
+        hunter.moveTo(0);
+
+        assertThat(hunter.isDead(), is(true));
+        assertThat(hunter.getRoom(), is(equalTo(wumpusRoom)));
+    }
+
+    @ExtendWith(ResetRandomizerExtension.class)
+    @Test
+    public void hunterIsAloneIfHeCantKillWumpusHandToHandAndWumpusFlees() {
+        Helpers.programRandomizer(new boolean[]{false, false}, new int[]{0});
+        Room startRoom = new Room();
+        Room wumpusRoom = new Room();
+        startRoom.add(wumpusRoom);
+        Wumpus wumpus = new Wumpus();
+        wumpus.moveTo(wumpusRoom);
+        Hunter hunter = new Hunter();
+        hunter.moveTo(startRoom);
+
+        hunter.moveTo(0);
+
+        assertThat(hunter.isDead(), is(false));
+        assertThat(hunter.getRoom(), is(equalTo(wumpusRoom)));
+        assertThat(wumpus.getRoom(), is(equalTo(startRoom)));
+    }
+
+    @ExtendWith(ResetRandomizerExtension.class)
+    @Test
+    public void hunterGetsMovedAroundByBatsAndEndsUpWhereTheyDropHim() {
+        Helpers.programRandomizer(new boolean[]{}, new int[]{});
+        Room startRoom = new Room();
+        Room batRoom = new Room();
+        startRoom.add(batRoom);
+        ColonyOfBats bats = new ColonyOfBats();
+        bats.moveTo(batRoom);
+        Hunter hunter = new Hunter();
+        hunter.moveTo(startRoom);
+
+        hunter.moveTo(0);
+
+        assertThat(hunter.getRoom(), is(equalTo(startRoom)));
     }
 }

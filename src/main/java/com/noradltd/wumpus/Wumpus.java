@@ -2,22 +2,6 @@ package com.noradltd.wumpus;
 
 class Wumpus extends Room.Occupant {
 
-    private void flee(Hunter hunter) {
-        int exitCount = getRoom().exits().size();
-        if (exitCount > 0) {
-            Room exitRoom = getRoom().exits().get(Random.getRandomizer().nextInt(exitCount));
-            moveTo(exitRoom);
-            Logger.info("The startled Wumpus runs away!");
-        } else {
-            eat(hunter);
-        }
-    }
-
-    private void eat(Hunter hunter) {
-        Logger.info("Nom Nom Nom, a Wumpus has eaten you.");
-        hunter.die();
-    }
-
     @Override
     protected void respondTo(Hunter hunter) {
         Logger.debug("Wumpus is responding to Hunter");
@@ -28,6 +12,18 @@ class Wumpus extends Room.Occupant {
         }
     }
 
+    private void flee(Hunter hunter) {
+        int exitCount = getRoom().exits().size();
+        Room exitRoom = getRoom().exits().get(Random.getRandomizer().nextInt(exitCount));
+        Logger.info("The startled Wumpus runs away!");
+        moveTo(exitRoom);
+    }
+
+    private void eat(Hunter hunter) {
+        Logger.info("Nom Nom Nom, a Wumpus has eaten you.");
+        hunter.die();
+    }
+    
     @Override
     public String describe() {
         return "You smell something foul";

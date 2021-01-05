@@ -85,17 +85,6 @@ class Hunter extends Room.Occupant {
         return true;
     }
 
-    void kill(Wumpus wumpus) {
-        if (Random.getRandomizer().nextBoolean()) {
-            Logger.info("With a slash of your knife you eviscerate a Wumpus; it's corpse slides to the floor");
-            wumpus.die();
-            kills += 1;
-        } else {
-            Logger.info("You slash you knife at the Wumpus as it's slimy tentacles wrap around you, trying to crushing the life out of your body");
-            wumpus.respondTo(this);
-        }
-    }
-
     void takeArrows() {
         getRoom().occupants().stream()
                 .filter(Arrow.class::isInstance)
@@ -114,7 +103,14 @@ class Hunter extends Room.Occupant {
     @Override
     protected void respondTo(Wumpus wumpus) {
         Logger.debug("Hunter is responding to Wumpus");
-        kill(wumpus);
+        if (Random.getRandomizer().nextBoolean()) {
+            Logger.info("With a slash of your knife you eviscerate a Wumpus; it's corpse slides to the floor");
+            wumpus.die();
+            kills += 1;
+        } else {
+            Logger.info("You slash you knife at the Wumpus as it's slimy tentacles wrap around you, trying to crushing the life out of your body");
+            wumpus.respondTo(this);
+        }
     }
 
     @Override

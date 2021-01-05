@@ -39,7 +39,6 @@ class Game {
         return hunter.getRoom().toString();
     }
 
-    // TODO check to see if any living wumpi exist, if not, game is over, hunter wins!
     public boolean isPlaying() {
         if (allWumpiAreDead()) {
             Logger.info("Game Over. You killed all the Wumpi.");
