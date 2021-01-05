@@ -1,7 +1,6 @@
 package com.noradltd.wumpus;
 
 import java.util.Arrays;
-import java.util.stream.Collectors;
 
 class Hunter extends Room.Occupant {
 
@@ -75,9 +74,8 @@ class Hunter extends Room.Occupant {
         Arrays.stream(target.exits().stream()
                 .flatMap(room -> room.occupants().stream())
                 .filter(Wumpus.class::isInstance)
-                .collect(Collectors.toList())
-                .toArray(new Wumpus[0]))  // this is stupid
-                .forEach(wumpus -> wumpus.flee());
+                .toArray(Wumpus[]::new))  // this is stupid
+                .forEach(Wumpus::flee);
     }
 
     void moveTo(Integer exitNumber) {
