@@ -23,7 +23,7 @@ class Wumpus extends Room.Occupant {
         Logger.info("Nom Nom Nom, a Wumpus has eaten you.");
         hunter.die();
     }
-    
+
     @Override
     public String describe() {
         return "You smell something foul";
