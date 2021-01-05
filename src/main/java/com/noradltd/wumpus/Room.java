@@ -102,12 +102,12 @@ class Room {
     }
 
     private void executeOccupantInteractions(Occupant interloper) {
-        if (occupants.size() > 0 && interloper != null) {
+        if (occupants.size() > 0) {
             new ArrayList<>(occupants).forEach(cohabitant -> interact(cohabitant, interloper));
         } else {
             Logger.debug("this room is empty");
         }
-        if (!interloper.isDead() && interloper.getRoom().equals(this)) {
+        if (!interloper.isDead() && equals(interloper.getRoom())) {
             occupants.add(interloper);
         }
     }
@@ -115,6 +115,7 @@ class Room {
     private void interact(Occupant cohabitant, Occupant interloper) {
         Logger.debug(debugDescriptionOfOccupant(interloper) + " is interacting with " + debugDescriptionOfOccupant(cohabitant));
         Occupant[] participants = Random.getRandomizer().shuffle(cohabitant, interloper);
+        Logger.debug(debugDescriptionOfOccupant(participants[0]) + " goes first");
         Arrays.stream(participants)
                 .forEach(participant -> Arrays.stream(participants)
                         .filter(not(Occupant::isDead))

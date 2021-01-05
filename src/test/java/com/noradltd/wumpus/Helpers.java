@@ -118,7 +118,7 @@ public class Helpers {
 
         @Override
         public int nextInt(int bound) {
-            Logger.debug("nextInt (" + ((ints.length == 0 || intIdx >= ints.length) ? 0 : ints[intIdx]) + ")");
+            Logger.debug("nextInt (" + ((ints.length == 0 || intIdx >= ints.length) ? "X" : ints[intIdx]) + ")");
             if (ints.length > 0 && intIdx < ints.length) {
                 return ints[intIdx++];
             }

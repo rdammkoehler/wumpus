@@ -77,11 +77,10 @@ public class RoomTest {
         assertThat(hunter.isDead(), is(0 == room.exits().size()));
     }
 
-    // TODO flaky test dependent on randomizer
     @ExtendWith(ResetRandomizerExtension.class)
     @Test
     public void roomOccupantsInteractWithNewComersWumpusFleesHunter() {
-        Helpers.programRandomizer(new boolean[]{true}, new int[]{0});
+        Helpers.programRandomizer(new boolean[]{false, false}, new int[]{0, 1});
         Room room = new Room();
         room.add(new Room());
         room.add(new Room());
@@ -93,6 +92,7 @@ public class RoomTest {
         hunter.moveTo(room);
 
         assertThat(hunter.isDead(), is(false));
+        assertThat(wumpus.isDead(), is(false));
     }
 
     @Test
