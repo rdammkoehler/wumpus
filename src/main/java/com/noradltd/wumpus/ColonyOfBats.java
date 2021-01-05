@@ -10,7 +10,7 @@ public class ColonyOfBats extends Room.Occupant {
 
     private Room findRandomRoom() {
         Room currentRoom = getRoom();
-        if (currentRoom.exits().size() > 1) {  // TODO sholdn't this always be true?
+        if (currentRoom.exits().size() > 1) {
             while (getRoom().equals(currentRoom)) {  // TODO humm?
                 int moves = Random.getRandomizer().nextInt(10) + 1;
                 for (int moveCount = 0; moveCount < moves; moveCount++) {
@@ -21,6 +21,7 @@ public class ColonyOfBats extends Room.Occupant {
         } else {
             currentRoom = currentRoom.exits().get(0);
         }
+        // TODO bats should relocate from the random room when done
         return currentRoom;
     }
 

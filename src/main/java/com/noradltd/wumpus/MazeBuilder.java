@@ -74,7 +74,9 @@ class MazeBuilder {
     }
 
     private void addExit(Room room) {
-        rooms.add(new Room().add(room));
+        Room newRoom = new Room();
+        newRoom.add(room);
+        rooms.add(newRoom);
     }
 
     private void linkExit(Room room) {

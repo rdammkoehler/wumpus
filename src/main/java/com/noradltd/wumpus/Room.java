@@ -151,9 +151,8 @@ class Room {
         two.exits.add(one);
     }
 
-    Room add(Room exit) {
+    void add(Room exit) {
         connectRooms(this, exit);
-        return this;
     }
 
     Integer number() {
