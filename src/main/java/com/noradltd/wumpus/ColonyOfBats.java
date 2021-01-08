@@ -5,24 +5,37 @@ public class ColonyOfBats extends Room.Occupant {
     protected void respondTo(Hunter hunter) {
         Room randomRoom = findRandomRoom();
         Logger.info("A swarm of bats lift you from the ground in a blinding flurry of leathery wings. They drop you in room " + randomRoom.number());
+        Logger.debug("Moving hunter to " + randomRoom.number());
         hunter.moveTo(randomRoom);
+        Room nextBatRoom = findConnectedRoomARandomDistanceAway(randomRoom);
+        Logger.debug("Relocating bats to " + nextBatRoom.number());
+        moveTo(nextBatRoom);
     }
 
     private Room findRandomRoom() {
         Room currentRoom = getRoom();
+        Room nextRoom = currentRoom;
         if (currentRoom.exits().size() > 1) {
-            while (getRoom().equals(currentRoom)) {
-                int moves = Random.getRandomizer().nextInt(10) + 1;
-                for (int moveCount = 0; moveCount < moves; moveCount++) {
-                    int exitNumber = Random.getRandomizer().nextInt(currentRoom.exits().size());
-                    currentRoom = currentRoom.exits().get(exitNumber);
-                }
+            while (getRoom().equals(nextRoom)) {
+                nextRoom = findConnectedRoomARandomDistanceAway(nextRoom);
             }
         } else {
-            currentRoom = currentRoom.exits().get(0);
+            nextRoom = currentRoom.exits().get(0);
         }
-        // TODO bats should relocate from the random room when done
-        return currentRoom;
+        return nextRoom;
+    }
+
+    private Room findConnectedRoomARandomDistanceAway(Room currentRoom) {
+        Room targetRoom = currentRoom;
+        int moves = Random.getRandomizer().nextInt(10);
+        try {
+            for (int moveCount = 0; moveCount < moves; moveCount++) {
+                targetRoom = targetRoom.getRandomExit();
+            }
+        } catch (Throwable t) {
+            t.printStackTrace(System.err);
+        }
+        return targetRoom;
     }
 
     @Override

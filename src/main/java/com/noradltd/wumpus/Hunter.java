@@ -1,17 +1,20 @@
 package com.noradltd.wumpus;
 
-import java.util.Arrays;
+import static java.util.function.Predicate.not;
 
 class Hunter extends Room.Occupant {
 
-    interface Quiver {
-        boolean isEmpty();
+    // TODO what if Quiver was a Room too?
+    //  leads to the question, should Room be 'Container' or something, since Quivers aren't something others can be in.
+    //   lets apply humor
+    abstract static class Quiver extends Room {
+        abstract boolean isEmpty();
 
-        Arrow next();
+        abstract Arrow next();
 
-        String arrowsRemaining();
+        abstract String arrowsRemaining();
 
-        void add(Arrow arrow);
+        abstract void add(Arrow arrow);
     }
 
     private static final Quiver NULL_QUIVER = new Quiver() {
@@ -52,35 +55,23 @@ class Hunter extends Room.Occupant {
 
     void shoot(Integer exitNumber) {
         if (validExitNumber(exitNumber)) {
-            Room target = getRoom().exits().get(exitNumber);
-            Arrow arrow = quiver.next();
             Logger.info("Your arrow hurtles down tunnel " + (exitNumber + 1));
+            Room target = getRoom().exits().get(exitNumber);
             if (target.occupants().stream().anyMatch(Wumpus.class::isInstance)) {
                 Logger.info("There is a Wumpus in the room!");
+                kills++;  // arrows ALWAYS kill the wumpus
             } else {
                 Logger.info("There is no Wumpus there");
             }
-            arrow.moveTo(target);
-            if (arrow.killedAWumpus()) {
-                kills++;
-            }
-            scareNearByWumpi(target);
+            quiver.next().moveTo(target); // a little dubious re: kills++
         } else {
             Logger.info("You can't shoot that way");
         }
     }
 
-    private void scareNearByWumpi(Room target) {
-        Arrays.stream(target.exits().stream()
-                .flatMap(room -> room.occupants().stream())
-                .filter(Wumpus.class::isInstance)
-                .toArray(Wumpus[]::new))  // this is stupid
-                .forEach(Wumpus::flee);
-    }
-
     void moveTo(Integer exitNumber) {
         if (validExitNumber(exitNumber)) {
-            super.moveTo(getRoom().exits().get(exitNumber));
+            super.moveTo(getRoom().exits(exitNumber));
         } else {
             Logger.debug("invalid exitNumber (" + exitNumber + ") in Hunter.moveTo()");
         }
@@ -99,6 +90,7 @@ class Hunter extends Room.Occupant {
         getRoom().occupants().stream()
                 .filter(Arrow.class::isInstance)
                 .map(Arrow.class::cast)
+                .filter(not(Arrow::isBroken))
                 .forEach(this::takeArrow);
     }
 
@@ -106,7 +98,8 @@ class Hunter extends Room.Occupant {
         if (arrow.isBroken()) {
             Logger.info("The broken arrow crumbles in your hand.");
         } else {
-            arrow.addToQuiver(quiver);
+            Logger.info("You collect an unbroken arrow off the floor.");
+            arrow.moveTo(quiver);
         }
     }
 

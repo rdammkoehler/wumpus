@@ -47,7 +47,7 @@ public class ColonyOfBatsTest {
     @Test
     public void aColonyOfBatsMovesAHunterToARandomRoomFarFarAway() {
         final int room_count = 13;
-        final int starting_room_idx = 1;
+        final int a_room_with_more_than_one_exit = 1;
         Room[] rooms = new Room[room_count];
         Helpers.restartRoomNumberer();
         for (int idx = 0; idx < rooms.length; idx++) {
@@ -56,16 +56,37 @@ public class ColonyOfBatsTest {
                 rooms[idx - 1].add(rooms[idx]);
             }
         }
-        Helpers.programRandomizer(0, 10, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
+        final int batsFirst = 1;
+        final int roomsToMove = 10;
+        final int exitToRoom3 = 0;
+        final int roomsToMoveBatsRelativeToHunter = 1;
+        final int exitNumber = 0;
+        Helpers.programRandomizer(batsFirst,
+                roomsToMove,
+                exitToRoom3,
+                exitNumber,
+                exitNumber,
+                exitNumber,
+                exitNumber,
+                exitNumber,
+                exitNumber,
+                exitNumber,
+                exitNumber,
+                exitNumber,
+                roomsToMoveBatsRelativeToHunter,
+                exitNumber);
         ColonyOfBats bats = new ColonyOfBats();
-        bats.moveTo(rooms[starting_room_idx]);
+        bats.moveTo(rooms[a_room_with_more_than_one_exit]);
         Hunter hunter = new Hunter();
 
-        hunter.moveTo(rooms[starting_room_idx]);
+        Logger.debug(rooms[a_room_with_more_than_one_exit].number().toString());
+        hunter.moveTo(rooms[a_room_with_more_than_one_exit]);
 
-        assertThat(hunter.getRoom(), is(equalTo(rooms[room_count - 1])));
+        assertThat(hunter.getRoom(), is(equalTo(rooms[11])));
+        assertThat(bats.getRoom(), is(equalTo(rooms[12])));
     }
 
+    //    @ExtendWith(ResetRandomizerExtension.class)
     @Test
     public void aColonyOfBatsUsesTheOnlyExitIfTHereIsOnlyOneExit() {
         Room startingRoom = new Room();
@@ -78,5 +99,24 @@ public class ColonyOfBatsTest {
         hunter.moveTo(startingRoom);
 
         assertThat(hunter.getRoom(), is(equalTo(finishingRoom)));
+    }
+
+    @ExtendWith(ResetRandomizerExtension.class)
+    @Test
+    public void batsMoveToAnotherRoomAfterDroppingHunter() {
+        Helpers.programRandomizer(1, 1, 1);
+        Room startingRoom = new Room();
+        Room finishingRoom = new Room();
+        startingRoom.add(finishingRoom);
+        Room additionalRoom = new Room();
+        finishingRoom.add(additionalRoom);
+        ColonyOfBats bats = new ColonyOfBats();
+        bats.moveTo(startingRoom);
+        Hunter hunter = new Hunter();
+
+        hunter.moveTo(startingRoom);
+
+        assertThat(hunter.getRoom(), is(equalTo(finishingRoom)));
+        assertThat(bats.getRoom(), is(equalTo(additionalRoom)));
     }
 }

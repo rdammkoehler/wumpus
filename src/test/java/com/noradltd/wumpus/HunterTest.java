@@ -122,7 +122,7 @@ public class HunterTest {
         hunter.moveTo(room);
         Wumpus wumpus = new Wumpus();
         wumpus.moveTo(exit);
-
+        Logger.info("START HERE");
         hunter.shoot(0);
 
         assertThat(wumpus.isDead(), is(true));
@@ -201,7 +201,7 @@ public class HunterTest {
     @Test
     public void huntersCanPickupUnbrokenArrows() {
         Helpers.programRandomizer(false);
-        final int initialArrowCount = 1;
+        int initialArrowCount = 1;
         Room room = new Room();
         Arrow arrow = new Arrow();
         arrow.moveTo(room);  // Programmed Randomizer ensures an unbroken arrow
@@ -217,7 +217,7 @@ public class HunterTest {
     @Test
     public void huntersCannotPickupBrokenArrows() {
         Helpers.programRandomizer(true);
-        final int initialArrowCount = 1;
+        int initialArrowCount = 1;
         Room room = new Room();
         Arrow arrow = new Arrow();
         arrow.moveTo(room);  // Programmed Randomizer ensures a broken arrow
@@ -246,6 +246,7 @@ public class HunterTest {
         assertThat(wumpus.getRoom(), is(equalTo(emptyRoom)));
     }
 
+    @ExtendWith(ResetRandomizerExtension.class)
     @Test
     public void wumpiRunsAwayFromArrows() {
         Helpers.programRandomizer(new boolean[]{false}, new int[]{0});

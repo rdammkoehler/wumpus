@@ -75,7 +75,7 @@ public class ArrowTest {
     public void arrowQuiversRunOutOfArrows() {
         Hunter.Quiver quiver = new ArrowQuiver(1);
 
-        quiver.next();
+        quiver.next().moveTo(new Room());
 
         assertThat(quiver.isEmpty(), is(true));
     }

@@ -278,10 +278,14 @@ public class RoomTest {
         assertThat(wumpus.getRoom(), is(equalTo(startRoom)));
     }
 
+    // TODO FUUUUUUCK
+    //  what I think is happening is, bats move hunter (OK), then
+    //  bats relocate, but the only place they can move is where
+    //  the hunter is now (startRoom)
     @ExtendWith(ResetRandomizerExtension.class)
     @Test
     public void hunterGetsMovedAroundByBatsAndEndsUpWhereTheyDropHim() {
-        Helpers.programRandomizer(new boolean[]{}, new int[]{});
+        Helpers.programRandomizer(new boolean[]{}, new int[]{1, 1, 1, 1});
         Room startRoom = new Room();
         Room batRoom = new Room();
         startRoom.add(batRoom);
@@ -292,6 +296,10 @@ public class RoomTest {
 
         hunter.moveTo(0);
 
+        System.out.println("occupants (startRoom)");
+        startRoom.occupants().stream().forEach(System.out::println);
+        System.out.println("occupants (batRoom)");
+        batRoom.occupants().stream().forEach(System.out::println);
         assertThat(hunter.getRoom(), is(equalTo(startRoom)));
     }
 }

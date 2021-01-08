@@ -8,7 +8,7 @@ import static java.util.function.Predicate.not;
 
 class Room {
     static abstract class Occupant implements Comparable<Occupant> {
-        private Room room;
+        protected Room room;
         private Boolean dead = Boolean.FALSE;
 
         Room getRoom() {
@@ -21,7 +21,11 @@ class Room {
                 room.remove(this);
                 Logger.info(newRoom.toString());  // TODO sneaky and confusing, report only if we were previously in a room suppresses startup noise BUT this code now doesn't make sense
             } else {
-                Logger.debug("Moving " + getClass().getSimpleName() + " to " + newRoom.number());
+                if (newRoom instanceof Hunter.Quiver quiver) {
+                    Logger.debug("Adding " + getClass().getSimpleName() + " to a Quiver");
+                } else {
+                    Logger.debug("Moving " + getClass().getSimpleName() + " to " + newRoom.number());
+                }
             }
             room = newRoom;
             newRoom.add(this);
@@ -97,18 +101,31 @@ class Room {
     static RoomNumberer roomNumberer = DEFAULT_ROOM_NUMBERER;
     private final int instanceNumber = roomNumberer.nextRoomNumber();
     private final Set<Room> exits = new HashSet<>();
-    private List<Occupant> occupants = new ArrayList<>();
+    protected List<Occupant> occupants = new ArrayList<>();
 
     List<Room> exits() {
         return new ArrayList<>(exits);
     }
 
-    Room add(Occupant occupant) {
+    Room exits(Integer idx) {
+        return exits().get(idx);
+    }
+
+    void add(Occupant occupant) {
         executeOccupantInteractions(occupant);
-        if (!occupant.isDead() && equals(occupant.getRoom())) {
-            occupants.add(occupant);
+        // TODO fml, we want to add things that aren't dead to the room
+        //  but for some reason we check that the occupants room IS this room
+        //  but how does that make sense?
+        //  and we aren't checking to see if the occupant is already in the room!
+        //  and in some cases we see the occupant 100+ times
+        //  WTF?
+//        if (!occupant.isDead() && !equals(occupant.getRoom())) {
+//            occupants.add(occupant); //a room can't contain the same occupant more than once this should be a set or set like
+//        }
+        // ?? the equals is to see if the intraction changed the occupant room to elsewhere ??
+        if (!occupant.isDead() && equals(occupant.getRoom()) && !occupants.contains(occupant)) {
+            occupants.add(occupant); //a room can't contain the same occupant more than once this should be a set or set like
         }
-        return this;
     }
 
     private void executeOccupantInteractions(Occupant interloper) {
@@ -127,7 +144,7 @@ class Room {
                 .filter(not(Occupant::isDead))
                 .forEach(participant -> Arrays.stream(participants)
                         .filter(not(Occupant::isDead))
-                        .filter(not(participant::equals))
+                        .filter(not(participant::equals)) // the interloper shouldn't be here yet...but might be because of side-effects
                         .forEach(participant::respondTo)
                 );
     }
@@ -136,7 +153,7 @@ class Room {
         return occupant.getClass().getSimpleName() + "(" + ((occupant.isDead()) ? "DEAD" : "ALIVE") + ")";
     }
 
-    void remove(Occupant occupant) {
+    private void remove(Occupant occupant) {
         Logger.debug("removing " + occupant.getClass().getSimpleName() + " from " + number());
         occupants.remove(occupant);
     }
@@ -145,14 +162,17 @@ class Room {
         return occupants.stream().collect(Collectors.toUnmodifiableSet());
     }
 
-    // TODO does this _need_ to be static?
-    private static void connectRooms(Room one, Room two) {
+    private void connectRooms(Room one, Room two) {
         one.exits.add(two);
         two.exits.add(one);
     }
 
     void add(Room exit) {
         connectRooms(this, exit);
+    }
+
+    Room getRandomExit() {
+        return Random.getRandomizer().shuffle(new ArrayList<>(exits())).get(0);
     }
 
     Integer number() {
