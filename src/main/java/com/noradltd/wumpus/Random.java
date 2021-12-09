@@ -12,7 +12,7 @@ public class Random extends java.util.Random {
     }
 
     <T> List<T> shuffle(List<T> list) {
-        java.util.Collections.shuffle(list, this);
+        java.util.Collections.shuffle(list, getRandomizer());
         return list;
     }
 

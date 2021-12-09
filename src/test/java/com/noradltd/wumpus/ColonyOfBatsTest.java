@@ -86,7 +86,7 @@ public class ColonyOfBatsTest {
         assertThat(bats.getRoom(), is(equalTo(rooms[12])));
     }
 
-    //    @ExtendWith(ResetRandomizerExtension.class)
+    @ExtendWith(ResetRandomizerExtension.class)
     @Test
     public void aColonyOfBatsUsesTheOnlyExitIfTHereIsOnlyOneExit() {
         Room startingRoom = new Room();
@@ -104,15 +104,15 @@ public class ColonyOfBatsTest {
     @ExtendWith(ResetRandomizerExtension.class)
     @Test
     public void batsMoveToAnotherRoomAfterDroppingHunter() {
-        Helpers.programRandomizer(1, 1, 1);
+        Helpers.programRandomizer(1, 1, 0);
         Room startingRoom = new Room();
         Room finishingRoom = new Room();
-        startingRoom.add(finishingRoom);
         Room additionalRoom = new Room();
+        startingRoom.add(finishingRoom);
         finishingRoom.add(additionalRoom);
+        Hunter hunter = new Hunter();
         ColonyOfBats bats = new ColonyOfBats();
         bats.moveTo(startingRoom);
-        Hunter hunter = new Hunter();
 
         hunter.moveTo(startingRoom);
 

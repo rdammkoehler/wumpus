@@ -8,6 +8,8 @@ import static java.util.function.Predicate.not;
 
 class Room {
     static abstract class Occupant implements Comparable<Occupant> {
+        private static int occupantIdSequence = 0;
+        protected int occupantId = occupantIdSequence++;
         protected Room room;
         private Boolean dead = Boolean.FALSE;
 
@@ -82,6 +84,18 @@ class Room {
             return getRoom().equals(otherOccupant.getRoom());
         }
 
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof Occupant)) return false;
+            Occupant occupant = (Occupant) o;
+            return occupantId == occupant.occupantId;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(occupantId);
+        }
     }
 
     interface RoomNumberer {
@@ -104,7 +118,9 @@ class Room {
     protected List<Occupant> occupants = new ArrayList<>();
 
     List<Room> exits() {
-        return new ArrayList<>(exits);
+        final ArrayList<Room> rooms = new ArrayList<>(exits);
+        rooms.sort(Comparator.comparingInt(Room::number));
+        return rooms;
     }
 
     Room exits(Integer idx) {
@@ -172,7 +188,7 @@ class Room {
     }
 
     Room getRandomExit() {
-        return Random.getRandomizer().shuffle(new ArrayList<>(exits())).get(0);
+        return Random.getRandomizer().shuffle(exits()).get(0);
     }
 
     Integer number() {
@@ -182,6 +198,14 @@ class Room {
     @Override
     public int hashCode() {
         return instanceNumber;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Room)) return false;
+        Room room = (Room) o;
+        return instanceNumber == room.instanceNumber;
     }
 
     @Override

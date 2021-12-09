@@ -7,9 +7,16 @@ public class ColonyOfBats extends Room.Occupant {
         Logger.info("A swarm of bats lift you from the ground in a blinding flurry of leathery wings. They drop you in room " + randomRoom.number());
         Logger.debug("Moving hunter to " + randomRoom.number());
         hunter.moveTo(randomRoom);
-        Room nextBatRoom = findConnectedRoomARandomDistanceAway(randomRoom);
+        Room nextBatRoom = findNewRoomForBats(randomRoom);
         Logger.debug("Relocating bats to " + nextBatRoom.number());
         moveTo(nextBatRoom);
+    }
+
+    private Room findNewRoomForBats(Room startingRoom) {
+        Room nextBatRoom = startingRoom;
+        while(nextBatRoom.equals(startingRoom))
+            nextBatRoom = findConnectedRoomARandomDistanceAway(startingRoom);
+        return nextBatRoom;
     }
 
     private Room findRandomRoom() {

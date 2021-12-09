@@ -25,6 +25,8 @@ public class Arrow extends Room.Occupant {
             killedAWumpus = true;
             Logger.info("Your arrow drives itself deep into the hideous beast; it's life force escaping from the hole in it's leathery hide");
             die();
+        } else {
+            Logger.debug("This arrow is just laying about and cannot hurt the wumpus");
         }
     }
 

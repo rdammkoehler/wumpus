@@ -231,15 +231,15 @@ public class HunterTest {
 
     @Test
     public void wumpiRunsFromArrows() {
+        Hunter hunter = new Hunter(new ArrowQuiver(1));
+        Wumpus wumpus = new Wumpus();
         Room hunterRoom = new Room();
         Room emptyRoom = new Room();
-        hunterRoom.add(emptyRoom);
         Room wumpusRoom = new Room();
+        hunterRoom.add(emptyRoom);
         emptyRoom.add(wumpusRoom);
-        Wumpus wumpus = new Wumpus();
-        wumpus.moveTo(wumpusRoom);
-        Hunter hunter = new Hunter(new ArrowQuiver(1));
         hunter.moveTo(hunterRoom);
+        wumpus.moveTo(wumpusRoom);
 
         hunter.shoot(0);
 
@@ -249,21 +249,21 @@ public class HunterTest {
     @ExtendWith(ResetRandomizerExtension.class)
     @Test
     public void wumpiRunsAwayFromArrows() {
-        Helpers.programRandomizer(new boolean[]{false}, new int[]{0});
+        Helpers.programRandomizer(new boolean[]{false}, new int[]{0});  // there is disagreement about 0 or 1
+        Hunter hunter = new Hunter(new ArrowQuiver(1));
+        Wumpus wumpus = new Wumpus();
         Room hunterRoom = new Room();
         Room emptyRoom = new Room();
-        hunterRoom.add(emptyRoom);
         Room wumpusRoom = new Room();
-        emptyRoom.add(wumpusRoom);
         Room farRoom = new Room();
+        hunterRoom.add(emptyRoom);
+        emptyRoom.add(wumpusRoom);
         wumpusRoom.add(farRoom);
-        Wumpus wumpus = new Wumpus();
-        wumpus.moveTo(wumpusRoom);
-        Hunter hunter = new Hunter(new ArrowQuiver(1));
         hunter.moveTo(hunterRoom);
+        wumpus.moveTo(wumpusRoom);
 
         hunter.shoot(0);
 
-        assertThat(wumpus.getRoom(), is(equalTo(farRoom)));
+        assertThat("Wumpus is in the farRoom " + AsciiMapper.map(hunterRoom), wumpus.getRoom(), is(equalTo(farRoom)));
     }
 }
