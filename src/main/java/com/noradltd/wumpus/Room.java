@@ -21,7 +21,6 @@ class Room {
             if (room != null) {
                 Logger.debug("Moving " + getClass().getSimpleName() + " from " + room.number() + " to " + newRoom.number());
                 room.remove(this);
-                Logger.info(newRoom.toString());  // TODO sneaky and confusing, report only if we were previously in a room suppresses startup noise BUT this code now doesn't make sense
             } else {
                 if (newRoom instanceof Hunter.Quiver quiver) {
                     Logger.debug("Adding " + getClass().getSimpleName() + " to a Quiver");
@@ -129,16 +128,6 @@ class Room {
 
     void add(Occupant occupant) {
         executeOccupantInteractions(occupant);
-        // TODO fml, we want to add things that aren't dead to the room
-        //  but for some reason we check that the occupants room IS this room
-        //  but how does that make sense?
-        //  and we aren't checking to see if the occupant is already in the room!
-        //  and in some cases we see the occupant 100+ times
-        //  WTF?
-//        if (!occupant.isDead() && !equals(occupant.getRoom())) {
-//            occupants.add(occupant); //a room can't contain the same occupant more than once this should be a set or set like
-//        }
-        // ?? the equals is to see if the intraction changed the occupant room to elsewhere ??
         if (!occupant.isDead() && equals(occupant.getRoom()) && !occupants.contains(occupant)) {
             occupants.add(occupant); //a room can't contain the same occupant more than once this should be a set or set like
         }
@@ -215,7 +204,7 @@ class Room {
 
     private class RoomDescriber {
         private final Room room;
-        private StringBuilder sb = new StringBuilder();
+        private final StringBuilder sb = new StringBuilder();
 
         private RoomDescriber(Room room) {
             this.room = room;
@@ -226,7 +215,22 @@ class Room {
             describeExits();
             describeOccupants();
             describeNeighbors();
+            if (Logger.isDebugging()) {
+                revealNeighbors();
+            }
             return sb.toString();
+        }
+
+        private void revealNeighbors() {
+            sb.append("\n[");
+
+            // TODO there is probably some ultra sexy way to do this with streams but I can't think of it now
+            int idx = 1;
+            for (Room exit : room.exits()) {
+                sb.append("{").append(idx).append("} Room: ").append(exit.number()).append(" (").append(exit.occupants().stream().map(occupant -> occupant.getClass().getSimpleName()).collect(Collectors.joining(", "))).append(") ");
+                idx++;
+            }
+            sb.append("]\n");
         }
 
         private void describeNeighbors() {

@@ -57,13 +57,11 @@ class Hunter extends Room.Occupant {
         if (validExitNumber(exitNumber)) {
             Logger.info("Your arrow hurtles down tunnel " + (exitNumber + 1));
             Room target = getRoom().exits().get(exitNumber);
-            if (target.occupants().stream().anyMatch(Wumpus.class::isInstance)) {
-                Logger.info("There is a Wumpus in the room!");
-                kills++;  // arrows ALWAYS kill the wumpus
-            } else {
-                Logger.info("There is no Wumpus there");
+            Arrow arrow = quiver.next();
+            arrow.moveTo(target);
+            if (arrow.killedAWumpus()) {
+                kills += 1;
             }
-            quiver.next().moveTo(target); // a little dubious re: kills++
         } else {
             Logger.info("You can't shoot that way");
         }
@@ -72,6 +70,9 @@ class Hunter extends Room.Occupant {
     void moveTo(Integer exitNumber) {
         if (validExitNumber(exitNumber)) {
             super.moveTo(getRoom().exits(exitNumber));
+            if (!isDead()) {  // TODO need a test for isDead
+                Logger.info(getRoom().toString());  // TODO sneaky and confusing, report only if we were previously in a room suppresses startup noise BUT this code now doesn't make sense
+            }
         } else {
             Logger.debug("invalid exitNumber (" + exitNumber + ") in Hunter.moveTo()");
         }

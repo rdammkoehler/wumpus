@@ -150,6 +150,16 @@ class MazeLoader {
         addWumpi();
         addPits();
         addBats();
+        if (Logger.isDebugging()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("### Maze Population ###\n");
+            sb.append("  Rooms: ").append(rooms.size()).append("\n");
+            sb.append("  Wumpi: ").append(getWumpiCount()).append("\n");
+            sb.append("   Pits: ").append(getPitCount()).append("\n");
+            sb.append("   Bats: ").append(getBatCount()).append("\n");
+            sb.append("  ######################");
+            Logger.debug(sb.toString());
+        }
         return maze;
     }
 

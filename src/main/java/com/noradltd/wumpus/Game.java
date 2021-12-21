@@ -94,7 +94,12 @@ class Game {
         MazeOccupantCounter counter = new MazeOccupantCounter();
         Long huntersKilled = counter.count(Hunter.class);
         Long wumpiKilled = counter.count(Wumpus.class);
-        return "Score: Hunter " + wumpiKilled + " Wumpus " + huntersKilled;
+        if (Logger.isDebugging()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("Remaining Wumpi: ").append(!allWumpiAreDead());
+            Logger.debug(sb.toString());
+        }
+        return new StringBuilder().append("Score: Hunter ").append(wumpiKilled).append(" Wumpus ").append(huntersKilled).toString();
     }
 
     private static final ThreadLocal<Map<String, Object>> threadLocalBag = ThreadLocal.withInitial(() -> new HashMap<>() {{

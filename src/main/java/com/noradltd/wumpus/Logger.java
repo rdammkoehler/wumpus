@@ -5,6 +5,10 @@ import org.slf4j.LoggerFactory;
 public class Logger {
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger("HuntTheWumpusLogger");
 
+    static final boolean isDebugging() {
+        return logger.isDebugEnabled();
+    }
+
     static final void error(String message) {
         logger.error(message);
     }
