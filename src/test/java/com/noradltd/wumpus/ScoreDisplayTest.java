@@ -10,6 +10,7 @@ import java.io.ByteArrayOutputStream;
 import static com.noradltd.wumpus.Helpers.captureStdout;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class ScoreDisplayTest {
 
@@ -26,7 +27,7 @@ public class ScoreDisplayTest {
         out = captureStdout();
         Room firstRoom = new Room();
         Room secondRoom = new Room();
-        firstRoom.attach(secondRoom);
+        firstRoom.attachRoom(secondRoom);
         hunter = new Hunter(firstRoom);
         game = new Game(hunter);
     }
@@ -68,6 +69,14 @@ public class ScoreDisplayTest {
         game.quit();
 
         assertThat(playLog(), containsString("Moves Made:\t2"));
+    }
+
+    @Test
+    public void ifMoveIsIllegalMoveCountStillIncreases() {
+        assertThrows(IndexOutOfBoundsException.class, () -> game.moveHunterThroughExit(-1));
+        game.quit();
+
+        assertThat(playLog(), containsString("Moves Made:\t1"));
     }
 
     @Test

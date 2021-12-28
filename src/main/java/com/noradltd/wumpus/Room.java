@@ -4,14 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Room {
-    private List<Room> exits = new ArrayList<>();
+    private List<Room> adjacentRooms = new ArrayList<>();
 
-    void attach(Room otherRoom) {
-        exits.add(otherRoom);
-        otherRoom.exits.add(this);
+    void attachRoom(Room otherRoom) {
+        adjacentRooms.add(otherRoom);
+        otherRoom.adjacentRooms.add(this);
     }
 
-    List<Room> getExits() {
-        return exits;
+    List<Room> getAdjacentRooms() {
+        return adjacentRooms;
     }
 }

@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class MoveHunterTest {
 
@@ -17,7 +18,7 @@ public class MoveHunterTest {
     public void beforeEach() {
         firstRoom = new Room();
         secondRoom = new Room();
-        firstRoom.attach(secondRoom);
+        firstRoom.attachRoom(secondRoom);
         hunter = new Hunter(firstRoom);
         game = new Game(hunter);
     }
@@ -39,23 +40,23 @@ public class MoveHunterTest {
 
     @Test
     public void huntersDontMoveThroughNonExistentExits() {
-        game.moveHunterThroughExit(1);
+        assertThrows(IndexOutOfBoundsException.class, () -> game.moveHunterThroughExit(1));
 
         assertThat(hunter.getRoom(), equalTo(firstRoom));
     }
 
     @Test
     public void huntersDontMoveThroughNonExistentExitsWhenGivenManyChoices() {
-        secondRoom.attach(new Room());
+        secondRoom.attachRoom(new Room());
 
-        game.moveHunterThroughExit(2);
+        assertThrows(IndexOutOfBoundsException.class, () -> game.moveHunterThroughExit(2));
 
         assertThat(hunter.getRoom(), equalTo(firstRoom));
     }
 
     @Test
     public void huntersCantMoveThroughUnnaturalExits() {
-        game.moveHunterThroughExit(-1);
+        assertThrows(IndexOutOfBoundsException.class, () -> game.moveHunterThroughExit(-1));
 
         assertThat(hunter.getRoom(), equalTo(firstRoom));
     }
