@@ -24,8 +24,26 @@ public class ScoreDisplayTest {
     @BeforeEach
     public void beforeEach() {
         out = captureStdout();
-        hunter = new Hunter();
+        Room firstRoom = new Room();
+        Room secondRoom = new Room();
+        firstRoom.attach(secondRoom);
+        hunter = new Hunter(firstRoom);
         game = new Game(hunter);
+    }
+
+    @Test
+    public void ifAHunterSurvivesTheGameScoreHuntersKilledIsZero() {
+        game.quit();
+
+        assertThat(playLog(), containsString("Hunters Killed:\t0"));
+    }
+
+    @Test
+    public void ifAHunterDiesTheGameScoreHuntersKilledIsOne() {
+        hunter.die();
+        game.quit();
+
+        assertThat(playLog(), containsString("Hunters Killed:\t1"));
     }
 
     @Test
