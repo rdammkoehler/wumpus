@@ -1,5 +1,7 @@
 package com.noradltd.wumpus;
 
+import java.util.List;
+
 class Game {
     private final Hunter hunter;
     private int moveCount = 0;
@@ -11,8 +13,11 @@ class Game {
 
     void moveHunterThroughExit(int exitIndex) {
         moveCount++;
-        Room exit = hunter.getRoom().getExits().get(exitIndex);
-        hunter.setRoom(exit);
+        final List<Room> exits = hunter.getRoom().getExits();
+        if (exitIndex >=0 && exitIndex < exits.size()) {
+            Room exit = exits.get(exitIndex);
+            hunter.setRoom(exit);
+        }
     }
 
     void quit() {
