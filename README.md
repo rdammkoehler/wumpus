@@ -8,7 +8,7 @@ Guided by Gregory Brown's [article](https://practicingruby.com/articles/wumpus)
 
 ## Playing
 
-Ensure that JRE 14+ is in your path
+Ensure that JRE 16+ is in your path
 
 ```shell script
 export PATH=$JAVA_HOME/bin:$PATH
@@ -63,7 +63,7 @@ Room: At least one exit. Exits are labeled by the room they lead to.
 
 * may contain a Bottomless Pit!
 
-* may contain a Superbat
+* may contain a Colony Of Bats
 
 Wumpus: Will eat you! (you loose) or Run Away, game continues
 
@@ -75,7 +75,7 @@ Bottomless Pit: You die in a tragic fall
 
 * emits a cool drafy breeze into adjacent rooms
 
-Superbat: Moves you a random number of moves up to room-count minus one rooms away; the Superbat then moves itself a
+Colony of Bats: Moves you a random number of moves up to room-count minus one rooms away; the Colony of Bats then moves itself a
 random number of rooms.
 
 * emits a rustling sound into adjacent rooms
@@ -88,7 +88,7 @@ Hunter: The player
 
 * can fall in pits
 
-* can be carried off by Superbats
+* can be carried off by Colony of Bats
 
 * can be eaten by a Wumpus
 
@@ -108,4 +108,3 @@ Rules:
       Hunter stands, they die
 
     * (opt) keep track of lost arrows, tell the Hunter when they find them
-  
