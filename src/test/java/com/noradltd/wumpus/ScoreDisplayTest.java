@@ -1,6 +1,7 @@
 package com.noradltd.wumpus;
 
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -11,66 +12,91 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 
 public class ScoreDisplayTest {
-    class Hunter {
-        enum InventoryItem {WumpusScalp}
 
-        int scalpCount = 0;
+    private Hunter hunter;
+    private Game game;
+    private ByteArrayOutputStream out;
 
-        void addInventory(InventoryItem item) {
-            if (item == InventoryItem.WumpusScalp) {
-                scalpCount++;
-            }
-        }
+    String playLog() {
+        return out.toString();
     }
 
-    class Game {
-        private Hunter hunter;
+    @BeforeEach
+    public void beforeEach() {
+        out = captureStdout();
+        hunter = new Hunter();
+        game = new Game(hunter);
+    }
 
-        Game(Hunter hunter) {
-            this.hunter = hunter;
-        }
+    @Test
+    public void ifYouQuitImmediatelyThereAreNoMoves() {
+        game.quit();
 
-        void quit() {
-            System.out.println("Moves Made:");
-            System.out.println("Wumpi Scalps:\t" + hunter.scalpCount);
-            System.out.println("Arrows Remaining:");
-            System.out.println("Hunters Killed:");
-            System.out.println("Game Over");
-        }
+        assertThat(playLog(), containsString("Moves Made:\t0"));
+    }
+
+    @Test
+    public void ifYouMoveTheHunterThenMovesIncrease() {
+        game.moveHunterThroughExit(0);
+        game.quit();
+
+        assertThat(playLog(), containsString("Moves Made:\t1"));
+    }
+
+    @Test
+    public void ifMoveMoreThanOnceThatIsCountedToo() {
+        game.moveHunterThroughExit(0);
+        game.moveHunterThroughExit(0);
+        game.quit();
+
+        assertThat(playLog(), containsString("Moves Made:\t2"));
+    }
+
+    @Test
+    public void huntersStartWithFiveArrows() {
+        game.quit();
+
+        assertThat(playLog(), containsString("Arrows Remaining:\t5"));
+    }
+
+    @Test
+    public void huntersExpendArrowsThroughoutTheGame() {
+        hunter.removeInventory(Hunter.InventoryItem.Arrow);
+        game.quit();
+
+        assertThat(playLog(), containsString("Arrows Remaining:\t4"));
+    }
+
+    @Test
+    public void huntersCanUseUpAllTheirArrows() {
+        hunter.removeInventory(Hunter.InventoryItem.Arrow);
+        hunter.removeInventory(Hunter.InventoryItem.Arrow);
+        hunter.removeInventory(Hunter.InventoryItem.Arrow);
+        hunter.removeInventory(Hunter.InventoryItem.Arrow);
+        hunter.removeInventory(Hunter.InventoryItem.Arrow);
+        game.quit();
+
+        assertThat(playLog(), containsString("Arrows Remaining:\t0"));
     }
 
     @Test
     public void huntersWithoutKillsScoreZeroWumpiScalps() {
-        ByteArrayOutputStream out = captureStdout();
-        Hunter hunter = new Hunter();
-        Game game = new Game(hunter);
-
         game.quit();
 
-        String playLog = out.toString();
-        assertThat(playLog, containsString("Wumpi Scalps:\t0"));
+        assertThat(playLog(), containsString("Wumpi Scalps:\t0"));
     }
 
 
     @Test
     public void huntersKillsEffectScoreByIncreasingWumpiScalps() {
-        ByteArrayOutputStream out = captureStdout();
-        Hunter hunter = new Hunter();
-        Game game = new Game(hunter);
-
         hunter.addInventory(Hunter.InventoryItem.WumpusScalp);
         game.quit();
 
-        String playLog = out.toString();
-        assertThat(playLog, containsString("Wumpi Scalps:\t1"));
+        assertThat(playLog(), containsString("Wumpi Scalps:\t1"));
     }
 
     @Test
     public void proficientHuntersHaveManyKillsEffectingWumpiScalpCount() {
-        ByteArrayOutputStream out = captureStdout();
-        Hunter hunter = new Hunter();
-        Game game = new Game(hunter);
-
         hunter.addInventory(Hunter.InventoryItem.WumpusScalp);
         hunter.addInventory(Hunter.InventoryItem.WumpusScalp);
         hunter.addInventory(Hunter.InventoryItem.WumpusScalp);
@@ -78,20 +104,14 @@ public class ScoreDisplayTest {
         hunter.addInventory(Hunter.InventoryItem.WumpusScalp);
         game.quit();
 
-        String playLog = out.toString();
-        assertThat(playLog, containsString("Wumpi Scalps:\t5"));
+        assertThat(playLog(), containsString("Wumpi Scalps:\t5"));
     }
 
     @ParameterizedTest
     @ValueSource(strings = {"Moves Made:", "Wumpi Scalps:", "Arrows Remaining:", "Hunters Killed:", "Game Over"})
     void scoreContainsString(String string) {
-        ByteArrayOutputStream out = captureStdout();
-        Hunter hunter = new Hunter();
-        Game game = new Game(hunter);
-
         game.quit();
 
-        String playLog = out.toString();
-        assertThat(playLog, containsString(string));
+        assertThat(playLog(), containsString(string));
     }
 }
