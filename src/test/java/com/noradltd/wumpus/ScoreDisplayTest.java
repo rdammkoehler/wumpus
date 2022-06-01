@@ -1,5 +1,6 @@
 package com.noradltd.wumpus;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -8,6 +9,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import java.io.ByteArrayOutputStream;
 
 import static com.noradltd.wumpus.Helpers.captureStdout;
+import static com.noradltd.wumpus.Helpers.resetStdout;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -30,6 +32,11 @@ public class ScoreDisplayTest {
         firstRoom.attachRoom(secondRoom);
         hunter = new Hunter(firstRoom);
         game = new Game(hunter);
+    }
+
+    @AfterEach
+    public void afterEach() {
+        resetStdout();
     }
 
     @Test
