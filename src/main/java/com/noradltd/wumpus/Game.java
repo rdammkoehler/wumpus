@@ -12,7 +12,7 @@ class Game {
     void moveHunterThroughExit(int exitIndex) {
         moveCount++;
         Room currentRoom = hunter.getRoom();
-        Room roomExit = currentRoom.getAdjacentRooms().get(exitIndex);
+        Room roomExit = currentRoom.getAdjacentRooms().stream().toList().get(exitIndex);
         hunter.setRoom(roomExit);
     }
 
