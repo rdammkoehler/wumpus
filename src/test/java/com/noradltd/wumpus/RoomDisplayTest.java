@@ -27,7 +27,7 @@ public class RoomDisplayTest {
         };
         roomOne.addOccupant(occupant);
 
-        assertThat(roomOne.getOccupants().get(0), equalTo(occupant));
+        assertThat(roomOne.getOccupants().stream().toList().get(0), equalTo(occupant));
     }
 
     @Test

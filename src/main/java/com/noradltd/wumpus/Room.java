@@ -4,7 +4,7 @@ import java.util.*;
 
 public class Room implements Comparable {
     private Set<Room> adjacentRooms = new TreeSet<>();
-    private List<Occupant> occupants = new ArrayList<>();
+    private Set<Occupant> occupants = new TreeSet<>();
     private String name = "Unnamed Room";
 
     void attachRoom(Room otherRoom) {
@@ -18,8 +18,8 @@ public class Room implements Comparable {
         occupants.add(occupant);
     }
 
-    List<Occupant> getOccupants() {
-        return Collections.unmodifiableList(occupants);
+    Set<Occupant> getOccupants() {
+        return Collections.unmodifiableSet(occupants);
     }
 
     public String getName() {
@@ -51,7 +51,7 @@ public class Room implements Comparable {
         builder.append(" occupant\n");
         if (occupants.size() > 0) {
             builder.append("\t");
-            builder.append(occupants.get(0).getDescription());
+            builder.append(getOccupants().stream().toList().get(0).getDescription());
             builder.append("\n");
         }
         return builder.toString();
