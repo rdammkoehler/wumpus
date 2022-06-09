@@ -108,3 +108,7 @@ Rules:
       Hunter stands, they die
 
     * (opt) keep track of lost arrows, tell the Hunter when they find them
+
+## Notes / Decision Record
+
+* Rooms are going to have names and names are going to be unique. But the idea of a name on a room is not really an atribute of the room so much as it is an observation. So it becomes interesting to think about who owns the 'name' of a room as an attribute and who decides what that name is and how uniquness is maintained.
