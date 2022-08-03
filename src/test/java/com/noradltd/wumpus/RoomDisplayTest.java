@@ -64,9 +64,7 @@ public class RoomDisplayTest {
         String roomName = "A Room";
         Room roomOne = new Room(roomName);
 
-        String description = roomOne.getDescription();
-        String[] lines = description.split("\n");
-        String secondLine = lines[1];
+        String secondLine = getDescriptionLine(roomOne, 2);
         assertThat(secondLine, matchesPattern("Has \\d+ exits"));
     }
 
@@ -86,9 +84,7 @@ public class RoomDisplayTest {
             baseRoom.attachRoom(new Room("Room " + exitIndex));
         }
 
-        String description = baseRoom.getDescription();
-        String[] lines = description.split("\n");
-        String secondLine = lines[1];
+        String secondLine = getDescriptionLine(baseRoom, 2);
         assertThat(secondLine, matchesPattern(".*" + grammaticallyCorrectNoun + "$"));
     }
 
@@ -99,10 +95,8 @@ public class RoomDisplayTest {
         Room roomTwo = new Room(roomName);
         roomOne.attachRoom(roomTwo);
 
-        String description = roomOne.getDescription();
-        String[] lines = description.split("\n");
-        String secondLine = lines[2];
-        assertThat(secondLine, matchesPattern("\t\\d+\t" + roomName));
+        String thirdLine = getDescriptionLine(roomOne, 3);
+        assertThat(thirdLine, matchesPattern("\t\\d+\t" + roomName));
     }
 
     @Test
@@ -112,10 +106,8 @@ public class RoomDisplayTest {
         Room roomTwo = new Room(roomName);
         roomOne.attachRoom(roomTwo);
 
-        String description = roomOne.getDescription();
-        String[] lines = description.split("\n");
-        String secondLine = lines[2];
-        assertThat(secondLine, matchesPattern("\t1+\t" + roomName));
+        String thirdLine = getDescriptionLine(roomOne, 3);
+        assertThat(thirdLine, matchesPattern("\t1+\t" + roomName));
     }
 
     @Test
@@ -128,12 +120,10 @@ public class RoomDisplayTest {
         Room roomThree = new Room(secondRoomName);
         roomOne.attachRoom(roomThree);
 
-        String description = roomOne.getDescription();
-        String[] lines = description.split("\n");
-        String secondLine = lines[2];
-        assertThat(secondLine, matchesPattern("\t1\t" + firstRoomName));
-        String thirdLine = lines[3];
-        assertThat(thirdLine, matchesPattern("\t2\t" + secondRoomName));
+        String thirdLine = getDescriptionLine(roomOne, 3);
+        assertThat(thirdLine, matchesPattern("\t1\t" + firstRoomName));
+        String fourthLine = getDescriptionLine(roomOne, 4);
+        assertThat(fourthLine, matchesPattern("\t2\t" + secondRoomName));
     }
 
     @Test
@@ -141,10 +131,8 @@ public class RoomDisplayTest {
         String roomName = "A Room";
         Room roomOne = new Room(roomName);
 
-        String description = roomOne.getDescription();
-        String[] lines = description.split("\n");
-        String secondLine = lines[2];
-        assertThat(secondLine, matchesPattern("And \\d+ occupants"));
+        String thirdLine = getDescriptionLine(roomOne, 3);
+        assertThat(thirdLine, matchesPattern("And \\d+ occupants"));
     }
 
     private static Stream<Arguments> provideOccupantCountsAndGrammaticallyCorrectExpectations() {
@@ -175,10 +163,11 @@ public class RoomDisplayTest {
             });
         }
 
-        String description = baseRoom.getDescription();
-        String[] lines = description.split("\n");
-        String thirdLine = lines[2];
+        String thirdLine = getDescriptionLine(baseRoom, 3);
         assertThat(thirdLine, matchesPattern(".*" + grammaticallyCorrectNoun + "$"));
     }
 
+    private String getDescriptionLine(Room room, int lineNumber) {
+        return room.getDescription().split("\n")[lineNumber-1];
+    }
 }
