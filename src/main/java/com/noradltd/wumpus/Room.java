@@ -1,18 +1,27 @@
 package com.noradltd.wumpus;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Objects;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class Room implements Comparable {
     private Set<Room> adjacentRooms = new TreeSet<>();
     private Set<Occupant> occupants = new TreeSet<>();
-    private String name = "Unnamed Room";
+    private final String name;
+
+    Room(String uniqueName) {
+        name = uniqueName;
+    }
 
     void attachRoom(Room otherRoom) {
         adjacentRooms.add(otherRoom);
         otherRoom.adjacentRooms.add(this);
     }
 
-    Set<Room> getAdjacentRooms() { return Collections.unmodifiableSet(adjacentRooms); }
+    Set<Room> getAdjacentRooms() {
+        return Collections.unmodifiableSet(adjacentRooms);
+    }
 
     void addOccupant(Occupant occupant) {
         occupants.add(occupant);
@@ -26,16 +35,17 @@ public class Room implements Comparable {
         return name;
     }
 
-    public void setName(String newName) {
-        name = newName;
-    }
-
     public String getDescription() {
         StringBuilder builder = new StringBuilder();
         builder.append(name);
         builder.append("\nHas ");
-        builder.append(getAdjacentRooms().size());
-        builder.append(" exit\n");
+        final int exitCount = getAdjacentRooms().size();
+        builder.append(exitCount);
+        if (exitCount == 1) {
+            builder.append(" exit\n");
+        } else {
+            builder.append(" exits\n");
+        }
         if (getAdjacentRooms().size() > 0) {
             for (int index = 0; index < getAdjacentRooms().size(); index++) {
                 builder.append("\t");
@@ -60,7 +70,7 @@ public class Room implements Comparable {
     @Override
     public int compareTo(Object o) {
         if (o instanceof Room)
-            return this.name.compareTo(((Room)o).name);
+            return this.name.compareTo(((Room) o).name);
         return 0;
     }
 

@@ -27,8 +27,8 @@ public class ScoreDisplayTest {
     @BeforeEach
     public void beforeEach() {
         out = captureStdout();
-        Room firstRoom = new Room();
-        Room secondRoom = new Room();
+        Room firstRoom = new Room("Unnamed Room");
+        Room secondRoom = new Room("Unnamed Room");
         firstRoom.attachRoom(secondRoom);
         hunter = new Hunter(firstRoom);
         game = new Game(hunter);

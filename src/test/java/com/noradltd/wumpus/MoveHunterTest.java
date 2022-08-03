@@ -16,8 +16,8 @@ public class MoveHunterTest {
 
     @BeforeEach
     public void beforeEach() {
-        firstRoom = new Room();
-        secondRoom = new Room();
+        firstRoom = new Room("Unnamed Room");
+        secondRoom = new Room("Unnamed Room");
         firstRoom.attachRoom(secondRoom);
         hunter = new Hunter(firstRoom);
         game = new Game(hunter);
@@ -47,7 +47,7 @@ public class MoveHunterTest {
 
     @Test
     public void huntersDontMoveThroughNonExistentExitsWhenGivenManyChoices() {
-        secondRoom.attachRoom(new Room());
+        secondRoom.attachRoom(new Room("Unnamed Room"));
 
         assertThrows(IndexOutOfBoundsException.class, () -> game.moveHunterThroughExit(2));
 
