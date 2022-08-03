@@ -5,9 +5,9 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 
-public class Room implements Comparable {
-    private Set<Room> adjacentRooms = new TreeSet<>();
-    private Set<Occupant> occupants = new TreeSet<>();
+public class Room implements Comparable<Room> {
+    private final Set<Room> adjacentRooms = new TreeSet<>();
+    private final Set<Occupant> occupants = new TreeSet<>();
     private final String name;
 
     Room(String uniqueName) {
@@ -68,17 +68,14 @@ public class Room implements Comparable {
     }
 
     @Override
-    public int compareTo(Object o) {
-        if (o instanceof Room)
-            return this.name.compareTo(((Room) o).name);
-        return 0;
+    public int compareTo(Room room) {
+        return this.name.compareTo(room.name);
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Room)) return false;
-        Room room = (Room) o;
+        if (!(o instanceof Room room)) return false;
         return Objects.equals(name, room.name);
     }
 
