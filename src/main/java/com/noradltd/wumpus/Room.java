@@ -38,6 +38,28 @@ public class Room implements Comparable<Room> {
     public String getDescription() {
         StringBuilder builder = new StringBuilder();
         builder.append(name);
+        addExitsDescription(builder);
+        addOccupantsDescription(builder);
+        return builder.toString();
+    }
+
+    private void addOccupantsDescription(StringBuilder builder) {
+        builder.append("And ");
+        final int occupantCount = occupants.size();
+        builder.append(occupantCount);
+        if (occupantCount == 1) {
+            builder.append(" occupant\n");
+        } else {
+            builder.append(" occupants\n");
+        }
+        if (occupantCount > 0) {
+            builder.append("\t");
+            builder.append(getOccupants().stream().toList().get(0).getDescription());
+            builder.append("\n");
+        }
+    }
+
+    private void addExitsDescription(StringBuilder builder) {
         builder.append("\nHas ");
         final int exitCount = getAdjacentRooms().size();
         builder.append(exitCount);
@@ -56,15 +78,6 @@ public class Room implements Comparable<Room> {
                 builder.append("\n");
             }
         }
-        builder.append("And ");
-        builder.append(occupants.size());
-        builder.append(" occupant\n");
-        if (occupants.size() > 0) {
-            builder.append("\t");
-            builder.append(getOccupants().stream().toList().get(0).getDescription());
-            builder.append("\n");
-        }
-        return builder.toString();
     }
 
     @Override

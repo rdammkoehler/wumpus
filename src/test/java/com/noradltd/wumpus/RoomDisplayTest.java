@@ -144,6 +144,41 @@ public class RoomDisplayTest {
         String description = roomOne.getDescription();
         String[] lines = description.split("\n");
         String secondLine = lines[2];
-        assertThat(secondLine, matchesPattern("And \\d+ occupant"));
+        assertThat(secondLine, matchesPattern("And \\d+ occupants"));
     }
+
+    private static Stream<Arguments> provideOccupantCountsAndGrammaticallyCorrectExpectations() {
+        return Stream.of(
+                Arguments.of(0, "occupants"),
+                Arguments.of(1, "occupant"),
+                Arguments.of(2, "occupants")
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideOccupantCountsAndGrammaticallyCorrectExpectations")
+    public void aRoomsDescriptionOccupantCountIsGrammaticallyCorrect(int occupantCount, String grammaticallyCorrectNoun) {
+        Room baseRoom = new Room("Base Room");
+        for (int occupantIndex = 0; occupantIndex < occupantCount; occupantIndex++) {
+            String occupantDescription = "occupant " + (occupantIndex + 1);
+            baseRoom.addOccupant(new Occupant() {
+                @Override
+                public String getDescription() {
+                    return occupantDescription;
+                }
+
+                @Override
+                public int compareTo(Object o) {
+                    return getDescription().compareTo(((Occupant)o).getDescription());
+                }
+
+            });
+        }
+
+        String description = baseRoom.getDescription();
+        String[] lines = description.split("\n");
+        String thirdLine = lines[2];
+        assertThat(thirdLine, matchesPattern(".*" + grammaticallyCorrectNoun + "$"));
+    }
+
 }
