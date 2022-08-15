@@ -27,6 +27,7 @@ class MazeBuilder {
 
     Random random = new Random();
     private int exitLimit = 5;  // TODO make this unofficial default configurable
+    private int roomCount = 1;  // by default it's not at all interesting
 
     private Room bfsGet(Room room, int idx) {
         System.out.println(idx);
@@ -105,19 +106,24 @@ class MazeBuilder {
     //      runtime wise it will be slower but we should get a more even distribution of connections
 
     /* related thought, should there be a limit to the number of exits a room can have? */
-    public Room build(int initialRoomCount) {
-        if (initialRoomCount < 1) {
+    public Room build() {
+        if (roomCount < 1) {
             throw new RuntimeException("A maze must have at least one room");
         }
-        if (exitLimit == 1 && initialRoomCount > 2) {
+        if (exitLimit == 1 && roomCount > 2) {
             throw new IllegalArgumentException("A maze with exit limit one can only have 2 rooms");
         }
 //        return buildAlgo0(initialRoomCount);
-        return buildAlgo1(initialRoomCount);
+        return buildAlgo1(roomCount);
 //        return buildAlgo2(initialRoomCount);
     }
 
     /* Builder bits */
+    public MazeBuilder withRoomCount(int roomCount) {
+        this.roomCount = roomCount;
+        return this;
+    }
+
     public MazeBuilder withExitLimit(int exitLimit) {
         if (exitLimit < 1) {
             throw new IllegalArgumentException("Exit Limit must be greater than zero");
@@ -131,7 +137,7 @@ public class MazeBuilderTest {
 
     @Test
     public void aMazeBuilderReturnsARoomReference() {
-        Room entrance = new MazeBuilder().build(1);
+        Room entrance = new MazeBuilder().build();
 
         assertThat(entrance, is(not(nullValue())));
     }
@@ -139,7 +145,7 @@ public class MazeBuilderTest {
     @Test
     public void aMazeBuilderBuildsAMazeAsBigAsRequested() {
         int initialRoomCount = 5;
-        Room entrance = new MazeBuilder().build(initialRoomCount);
+        Room entrance = new MazeBuilder().withRoomCount(initialRoomCount).build();
 
         assertThat(Helpers.countRooms(entrance), is(initialRoomCount));
     }
@@ -149,7 +155,7 @@ public class MazeBuilderTest {
         int initialRoomCount = 0;
 
         RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> {
-            new MazeBuilder().build(initialRoomCount);
+            new MazeBuilder().withRoomCount(0).build();
         });
 
         assertThat(runtimeException.getMessage(), equalTo("A maze must have at least one room"));
@@ -158,7 +164,7 @@ public class MazeBuilderTest {
     // TODO potentially flakey test
     @Test
     public void aMazeBuilderBuildsNonLinearMazes() {
-        Room entrance = new MazeBuilder().build(20);
+        Room entrance = new MazeBuilder().withRoomCount(20).build();
         List<Room> rooms = getAllRooms(entrance);
         int maxExits = 0;
         for (Room room : rooms) {
@@ -169,7 +175,7 @@ public class MazeBuilderTest {
 
     @Test
     public void aMazeBuilderNeverBuildsAnOrphanedRoom() {
-        Room entrance = new MazeBuilder().build(5000);
+        Room entrance = new MazeBuilder().withRoomCount(20).build();
         List<Room> rooms = getAllRooms(entrance).stream().sorted(new Comparator<Room>() {
             @Override
             public int compare(Room o1, Room o2) {
@@ -191,7 +197,7 @@ public class MazeBuilderTest {
     @Test
     public void aMazeBuilderCanHaveLimitsOnRoomExits() {
         int exitLimit = 5;
-        Room entrance = new MazeBuilder().withExitLimit(exitLimit).build(5000);
+        Room entrance = new MazeBuilder().withExitLimit(exitLimit).withRoomCount(20).build();
         List<Room> rooms = getAllRooms(entrance);
         long maxExits = Long.MIN_VALUE;
         for (Room room : rooms) {
@@ -210,6 +216,6 @@ public class MazeBuilderTest {
 
     @Test
     public void aMazeBuilderWithExitLimitOneCanOnlyMakeMazesOfUpToTwoRooms() {
-        assertThrows(IllegalArgumentException.class, () -> new MazeBuilder().withExitLimit(1).build(3));
+        assertThrows(IllegalArgumentException.class, () -> new MazeBuilder().withExitLimit(1).withRoomCount(3).build());
     }
 }
