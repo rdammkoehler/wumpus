@@ -2,10 +2,7 @@ package com.noradltd.wumpus;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 import static com.noradltd.wumpus.Helpers.getAllRooms;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -27,11 +24,10 @@ class MazeBuilder {
 
     Random random = new Random();
     private int exitLimit = 5;  // TODO make this unofficial default configurable
-    private int roomCount = 1;  // by default it's not at all interesting
+    private int roomCount = 1;  // default it's not at all interesting
 
     private Room bfsGet(Room room, int idx) {
         System.out.println(idx);
-        int ct = 0;
         Room currentRoom = room;
         List<Room> exits = room.getAdjacentRooms().stream().toList();
         // does not account for zero exits (exhaustion)
@@ -59,12 +55,8 @@ class MazeBuilder {
         while (roomCount < initialRoomCount) {
             newRoom = new Room("test room " + ++roomCount);
             int roomIdx = (roomCount > 1) ? random.nextInt(roomCount - 1) : 0;
-            Room x = bfsGet(firstRoom, roomIdx);
-            if (x == null) {
-                firstRoom.attachRoom(newRoom);
-            } else {
-                x.attachRoom(newRoom);
-            }
+            Room nextRoom = bfsGet(firstRoom, roomIdx);
+            Objects.requireNonNullElse(nextRoom, firstRoom).attachRoom(newRoom);
         }
         return firstRoom;
     }
@@ -76,7 +68,7 @@ class MazeBuilder {
         rooms.add(newRoom);
         while (rooms.size() < initialRoomCount) {
             newRoom = new Room("test room " + ++roomCount);
-            Room oldRoom = null;
+            Room oldRoom;
             do {
                 int roomIdx = (rooms.size() > 1) ? random.nextInt(rooms.size() - 1) : 0;
                 oldRoom = rooms.get(roomIdx);
@@ -154,14 +146,12 @@ public class MazeBuilderTest {
     public void aMazeBuilderRejectsRequestsForZeroRooms() {
         int initialRoomCount = 0;
 
-        RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> {
-            new MazeBuilder().withRoomCount(0).build();
-        });
+        RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> new MazeBuilder().withRoomCount(initialRoomCount).build());
 
         assertThat(runtimeException.getMessage(), equalTo("A maze must have at least one room"));
     }
 
-    // TODO potentially flakey test
+    // TODO potentially flaky test
     @Test
     public void aMazeBuilderBuildsNonLinearMazes() {
         Room entrance = new MazeBuilder().withRoomCount(20).build();
@@ -176,13 +166,10 @@ public class MazeBuilderTest {
     @Test
     public void aMazeBuilderNeverBuildsAnOrphanedRoom() {
         Room entrance = new MazeBuilder().withRoomCount(20).build();
-        List<Room> rooms = getAllRooms(entrance).stream().sorted(new Comparator<Room>() {
-            @Override
-            public int compare(Room o1, Room o2) {
-                int roomNumber1 = Integer.parseInt(o1.getName().substring(10));
-                int roomNumber2 = Integer.parseInt(o2.getName().substring(10));
-                return roomNumber1 - roomNumber2;
-            }
+        List<Room> rooms = getAllRooms(entrance).stream().sorted((o1, o2) -> {
+            int roomNumber1 = Integer.parseInt(o1.getName().substring(10));
+            int roomNumber2 = Integer.parseInt(o2.getName().substring(10));
+            return roomNumber1 - roomNumber2;
         }).toList();
         System.out.println("There are " + rooms.size() + " rooms in the test set");
         long minExits = Long.MAX_VALUE;
