@@ -29,17 +29,12 @@ public class Helpers {
         return collectRoom(entrance, new HashSet<>()).stream().collect(Collectors.toUnmodifiableList());
     }
 
-    /* this is fuckin' broken */
     private static Set<Room> collectRoom(Room room, Set<Room> rooms) {
-//        System.out.println(rooms);
         if (rooms.add(room)) {
             for (Room adjacentRoom : room.getAdjacentRooms()) {
                 collectRoom(adjacentRoom, rooms);
             }
         }
-//        else {
-//            System.out.println("btdt " + room);
-//        }
         return rooms;
     }
 
