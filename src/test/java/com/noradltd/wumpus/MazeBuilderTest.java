@@ -2,7 +2,10 @@ package com.noradltd.wumpus;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Random;
 
 import static com.noradltd.wumpus.Helpers.getAllRooms;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -76,7 +79,7 @@ class MazeBuilder {
             oldRoom.attachRoom(newRoom);
             rooms.add(newRoom);
         }
-        System.out.println("I made " + rooms.size() + " rooms, and roomCount is " + roomCount);
+//        System.out.println("I made " + rooms.size() + " rooms, and roomCount is " + roomCount);
         return rooms.get(0);
     }
 
@@ -156,28 +159,21 @@ public class MazeBuilderTest {
     public void aMazeBuilderBuildsNonLinearMazes() {
         Room entrance = new MazeBuilder().withRoomCount(20).build();
         List<Room> rooms = getAllRooms(entrance);
-        int maxExits = 0;
-        for (Room room : rooms) {
-            maxExits = Math.max(maxExits, room.getAdjacentRooms().size());
-        }
+        int maxExits = rooms.stream().mapToInt(room -> room.getAdjacentRooms().size()).max().getAsInt();
         assertThat(maxExits, greaterThan(2));
     }
 
     @Test
     public void aMazeBuilderNeverBuildsAnOrphanedRoom() {
-        Room entrance = new MazeBuilder().withRoomCount(20).build();
+        int initialRoomCount = 20;
+        Room entrance = new MazeBuilder().withRoomCount(initialRoomCount).build();
         List<Room> rooms = getAllRooms(entrance).stream().sorted((o1, o2) -> {
             int roomNumber1 = Integer.parseInt(o1.getName().substring(10));
             int roomNumber2 = Integer.parseInt(o2.getName().substring(10));
             return roomNumber1 - roomNumber2;
         }).toList();
-        System.out.println("There are " + rooms.size() + " rooms in the test set");
-        long minExits = Long.MAX_VALUE;
-        for (Room room : rooms) {
-            long exitCount = room.getAdjacentRooms().size();
-            minExits = Math.min(minExits, exitCount);
-            System.out.println(room.getDescription());
-        }
+        assertThat(rooms.size(), equalTo(initialRoomCount));
+        long minExits = rooms.stream().mapToLong(room -> room.getAdjacentRooms().size()).min().getAsLong();
         assertThat(minExits, greaterThan(0L));
     }  //TODO this test can/should do more better
 
@@ -186,18 +182,13 @@ public class MazeBuilderTest {
         int exitLimit = 5;
         Room entrance = new MazeBuilder().withExitLimit(exitLimit).withRoomCount(20).build();
         List<Room> rooms = getAllRooms(entrance);
-        long maxExits = Long.MIN_VALUE;
-        for (Room room : rooms) {
-            long exitCount = room.getAdjacentRooms().size();
-            maxExits = Math.max(maxExits, exitCount);
-        }
-        assertThat(maxExits, lessThanOrEqualTo((long) exitLimit));
+        int maxExits = rooms.stream().mapToInt(room -> room.getAdjacentRooms().size()).max().getAsInt();
+        assertThat(maxExits, lessThanOrEqualTo(exitLimit));
     }
 
     @Test
     public void aMazeBuilderRejectsExitLimitsLessThanOne() {
         int exitLimit = 0;
-
         assertThrows(IllegalArgumentException.class, () -> new MazeBuilder().withExitLimit(exitLimit));
     }
 
