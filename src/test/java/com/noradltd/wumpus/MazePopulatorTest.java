@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.noradltd.wumpus.Helpers.getAllRooms;
+import static com.noradltd.wumpus.Helpers.printMaze;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -18,8 +19,12 @@ public class MazePopulatorTest {
     class Wumpus implements Occupant {
 
     }
-    class ColonyOfBats implements Occupant {}
-    class BottomlessPit implements Occupant {}
+
+    class ColonyOfBats implements Occupant {
+    }
+
+    class BottomlessPit implements Occupant {
+    }
 
     class MazePopulator {
         Random random = new Random();
@@ -30,49 +35,42 @@ public class MazePopulatorTest {
             return this;
         }
 
-        MazePopulator withWumpi(int wumpiCount) {
-            if (wumpiCount < 0) {
-                throw new IllegalArgumentException("Zero or more wumpi per maze, please");
+        interface OccupantBuilder<T extends Occupant> {
+            T  build();
+        }
+        private MazePopulator withOccupant(int occupantCount, OccupantBuilder occupantBuilder) {
+            if (occupantCount < 0) {
+                throw new IllegalArgumentException("Zero or more ??? per maze, please");
             }
             List<Room> rooms = collectRooms();
-            if (wumpiCount > rooms.size()) {
-                throw new IllegalArgumentException("Only one wumpi per room, please");
+            if (occupantCount > rooms.size()) {
+                throw new IllegalArgumentException("Only one ??? per room, please");
             }
-            for (int count = 0; count < wumpiCount; count++) {
-                int randomRoomIdx = random.nextInt(rooms.size());
-                rooms.get(randomRoomIdx).addOccupant(new Wumpus());
+            for (int count = 0; count < occupantCount; count++) {
+                Occupant occupant = occupantBuilder.build();
+                // TODO this is really really really and ugly way to check
+                while(true) {
+                    int randomRoomIdx = random.nextInt(rooms.size());
+                    Room targetRoom = rooms.get(randomRoomIdx);
+                    if (targetRoom.getOccupants().stream().filter((o)->occupant.getClass().isInstance(o)).count()==0) {
+                        targetRoom.addOccupant(occupant);
+                        break;
+                    }
+                }
             }
             return this;
+        }
+
+        MazePopulator withWumpi(int wumpiCount) {
+            return withOccupant(wumpiCount, () -> new Wumpus());
         }
 
         MazePopulator withBats(int batCount) {
-            if (batCount < 0) {
-                throw new IllegalArgumentException("Zero or more colony of bats per maze, please");
-            }
-            List<Room> rooms = collectRooms();
-            if (batCount > rooms.size()) {
-                throw new IllegalArgumentException("Only one colony of bats per room, please");
-            }
-            for (int count = 0; count < batCount; count++) {
-                int randomRoomIdx = random.nextInt(rooms.size());
-                rooms.get(randomRoomIdx).addOccupant(new ColonyOfBats());
-            }
-            return this;
+            return withOccupant(batCount, () -> new ColonyOfBats());
         }
 
         MazePopulator withBottomlessPits(int pitCount) {
-            if (pitCount < 0) {
-                throw new IllegalArgumentException("Zero or more bottomless pit per maze, please");
-            }
-            List<Room> rooms = collectRooms();
-            if (pitCount > rooms.size()) {
-                throw new IllegalArgumentException("Only one bottomless pit per room, please");
-            }
-            for (int count = 0; count < pitCount; count++) {
-                int randomRoomIdx = random.nextInt(rooms.size());
-                rooms.get(randomRoomIdx).addOccupant(new BottomlessPit());
-            }
-            return this;
+            return withOccupant(pitCount, () -> new BottomlessPit());
         }
 
         private List<Room> collectRooms() {
@@ -152,16 +150,16 @@ public class MazePopulatorTest {
 
         assertThrows(IllegalArgumentException.class, () -> new MazePopulator().populate(mazeEntrance).withWumpi(wumpiCount));
     }
-    
+
     @Test
-    public void aMazePopulatorPlacesBatsInAMaze(){
+    public void aMazePopulatorPlacesBatsInAMaze() {
         int batCount = 1;
         Room mazeEntrance = new MazeBuilder().withRoomCount(5).build();
         new MazePopulator().populate(mazeEntrance).withBats(batCount);
 
         assertThat(countBats(mazeEntrance), equalTo((long) batCount));
     }
-    
+
     @Test
     public void aMazePopulatorPlacesMultipleBatsInAMaze() {
         int batCount = 2;
@@ -170,7 +168,7 @@ public class MazePopulatorTest {
 
         assertThat(countBats(mazeEntrance), equalTo((long) batCount));
     }
-    
+
     @Test
     public void aMazePopulatorCannotPlaceMoreBatsThanThereAreRooms() {
         int batCount = -1;
@@ -179,7 +177,7 @@ public class MazePopulatorTest {
 
         assertThrows(IllegalArgumentException.class, () -> new MazePopulator().populate(mazeEntrance).withBats(batCount));
     }
-    
+
     @Test
     public void aMazePopulatorCannotPlaceNegativeNumbersOfBats() {
         int batCount = -1;
@@ -190,7 +188,7 @@ public class MazePopulatorTest {
     }
 
     @Test
-    public void aMazePopulatorPlacesBottomlessPitsInAMaze(){
+    public void aMazePopulatorPlacesBottomlessPitsInAMaze() {
         int bottomlessPitCount = 1;
         Room mazeEntrance = new MazeBuilder().withRoomCount(5).build();
         new MazePopulator().populate(mazeEntrance).withBottomlessPits(bottomlessPitCount);
@@ -225,5 +223,15 @@ public class MazePopulatorTest {
         assertThrows(IllegalArgumentException.class, () -> new MazePopulator().populate(mazeEntrance).withBottomlessPits(bottomlessPitCount));
     }
 
+    @Test
+    public void aMazePopulatorCantPutMoreThanOneTypeOfOccupantInARoom() {
+        int wumpiCount = 5;
+        Room mazeEntrance = new MazeBuilder().withRoomCount(wumpiCount).build();
+        new MazePopulator().populate(mazeEntrance).withWumpi(wumpiCount);
+
+        assertThat(countWumpi(mazeEntrance), equalTo((long) wumpiCount));
+
+        printMaze(mazeEntrance);
+    }
 
 }

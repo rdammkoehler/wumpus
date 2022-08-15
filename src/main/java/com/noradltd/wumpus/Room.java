@@ -15,7 +15,6 @@ public class Room implements Comparable<Room> {
     }
 
     void attachRoom(Room otherRoom) {
-//        System.out.println("attaching " + this.name + " with " + otherRoom.name);
         adjacentRooms.add(otherRoom);
         otherRoom.adjacentRooms.add(this);
     }
@@ -105,6 +104,11 @@ public class Room implements Comparable<Room> {
         sb.append(" adjacent={ ");
         for(Room exit: getAdjacentRooms()){
             sb.append(exit.getName()).append(", ");
+        }
+        sb.append('}');
+        sb.append(" occupants={");
+        for(Occupant occupant:getOccupants()) {
+            sb.append(occupant).append(", ");
         }
         sb.append('}');
         sb.append('}');

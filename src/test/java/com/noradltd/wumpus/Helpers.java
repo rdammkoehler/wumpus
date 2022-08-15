@@ -49,4 +49,16 @@ public class Helpers {
     static IntStream getRoomExitCounts(List<Room> rooms) {
         return rooms.stream().mapToInt(room -> room.getAdjacentRooms().size());
     }
+
+    static void printMaze(Room mazeEntrance) {
+        // makes assumptions about room name being 'test room \d+'
+        getAllRooms(mazeEntrance).stream().sorted((room1, room2) -> {
+            int roomNumber1 = Integer.parseInt(room1.getName().substring(10));
+            int roomNumber2 = Integer.parseInt(room2.getName().substring(10));
+            return roomNumber1 - roomNumber2;
+        })
+                .toList()
+                .stream()
+                .forEach(System.out::println);
+    }
 }
