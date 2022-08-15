@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 
-import static com.noradltd.wumpus.Helpers.getAllRooms;
+import static com.noradltd.wumpus.Helpers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -142,7 +142,7 @@ public class MazeBuilderTest {
         int initialRoomCount = 5;
         Room entrance = new MazeBuilder().withRoomCount(initialRoomCount).build();
 
-        assertThat(Helpers.countRooms(entrance), is(initialRoomCount));
+        assertThat(countRooms(entrance), is(initialRoomCount));
     }
 
     @Test
@@ -159,7 +159,7 @@ public class MazeBuilderTest {
     public void aMazeBuilderBuildsNonLinearMazes() {
         Room entrance = new MazeBuilder().withRoomCount(20).build();
         List<Room> rooms = getAllRooms(entrance);
-        int maxExits = rooms.stream().mapToInt(room -> room.getAdjacentRooms().size()).max().getAsInt();
+        int maxExits = getMaxExits(rooms);
         assertThat(maxExits, greaterThan(2));
     }
 
@@ -173,16 +173,17 @@ public class MazeBuilderTest {
             return roomNumber1 - roomNumber2;
         }).toList();
         assertThat(rooms.size(), equalTo(initialRoomCount));
-        long minExits = rooms.stream().mapToLong(room -> room.getAdjacentRooms().size()).min().getAsLong();
-        assertThat(minExits, greaterThan(0L));
+        int minExits = getMinExits(rooms);
+        assertThat(minExits, greaterThan(0));
     }  //TODO this test can/should do more better
+
 
     @Test
     public void aMazeBuilderCanHaveLimitsOnRoomExits() {
         int exitLimit = 5;
         Room entrance = new MazeBuilder().withExitLimit(exitLimit).withRoomCount(20).build();
         List<Room> rooms = getAllRooms(entrance);
-        int maxExits = rooms.stream().mapToInt(room -> room.getAdjacentRooms().size()).max().getAsInt();
+        int maxExits = getMaxExits(rooms);
         assertThat(maxExits, lessThanOrEqualTo(exitLimit));
     }
 

@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class Helpers {
     public static ByteArrayOutputStream captureStdout() {
@@ -40,5 +41,17 @@ public class Helpers {
 //            System.out.println("btdt " + room);
 //        }
         return rooms;
+    }
+
+    static int getMinExits(List<Room> rooms) {
+        return getRoomExitCounts(rooms).min().orElseThrow();
+    }
+
+    static int getMaxExits(List<Room> rooms) {
+        return getRoomExitCounts(rooms).max().orElseThrow();
+    }
+
+    static IntStream getRoomExitCounts(List<Room> rooms) {
+        return rooms.stream().mapToInt(room -> room.getAdjacentRooms().size());
     }
 }
