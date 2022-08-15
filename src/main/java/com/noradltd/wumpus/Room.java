@@ -15,6 +15,7 @@ public class Room implements Comparable<Room> {
     }
 
     void attachRoom(Room otherRoom) {
+//        System.out.println("attaching " + this.name + " with " + otherRoom.name);
         adjacentRooms.add(otherRoom);
         otherRoom.adjacentRooms.add(this);
     }
@@ -95,5 +96,18 @@ public class Room implements Comparable<Room> {
     @Override
     public int hashCode() {
         return Objects.hash(name);
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("Room{");
+        sb.append("name='").append(name).append('\'');
+        sb.append(" adjacent={ ");
+        for(Room exit: getAdjacentRooms()){
+            sb.append(exit.getName()).append(", ");
+        }
+        sb.append('}');
+        sb.append('}');
+        return sb.toString();
     }
 }
