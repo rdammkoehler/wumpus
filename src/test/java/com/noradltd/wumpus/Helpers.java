@@ -7,7 +7,6 @@ import java.io.PrintStream;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class Helpers {
@@ -26,7 +25,7 @@ public class Helpers {
     }
 
     static List<Room> getAllRooms(Room entrance) {
-        return collectRoom(entrance, new HashSet<>()).stream().collect(Collectors.toUnmodifiableList());
+        return collectRoom(entrance, new HashSet<>()).stream().toList();
     }
 
     private static Set<Room> collectRoom(Room room, Set<Room> rooms) {
@@ -51,14 +50,33 @@ public class Helpers {
     }
 
     static void printMaze(Room mazeEntrance) {
-        // makes assumptions about room name being 'test room \d+'
-        getAllRooms(mazeEntrance).stream().sorted((room1, room2) -> {
-            int roomNumber1 = Integer.parseInt(room1.getName().substring(10));
-            int roomNumber2 = Integer.parseInt(room2.getName().substring(10));
-            return roomNumber1 - roomNumber2;
-        })
-                .toList()
-                .stream()
-                .forEach(System.out::println);
+        getAllRooms(mazeEntrance).stream().forEach(System.out::println);
+    }
+
+    static boolean hasWumpus(Room room) {
+        return room.getOccupants().stream().anyMatch((occupant) -> occupant instanceof MazePopulatorTest.Wumpus);
+    }
+
+    static long countWumpi(Room mazeEntrance) {
+        List<Room> rooms = getAllRooms(mazeEntrance);
+        return rooms.stream().filter(Helpers::hasWumpus).count();
+    }
+
+    static boolean hasBats(Room room) {
+        return room.getOccupants().stream().anyMatch((occupant) -> occupant instanceof MazePopulatorTest.ColonyOfBats);
+    }
+
+    static long countBats(Room mazeEntrance) {
+        List<Room> rooms = getAllRooms(mazeEntrance);
+        return rooms.stream().filter(Helpers::hasBats).count();
+    }
+
+    static boolean hasBottomlessPits(Room room) {
+        return room.getOccupants().stream().anyMatch((occupant) -> occupant instanceof MazePopulatorTest.BottomlessPit);
+    }
+
+    static long countBottomlessPits(Room mazeEntrance) {
+        List<Room> rooms = getAllRooms(mazeEntrance);
+        return rooms.stream().filter(Helpers::hasBottomlessPits).count();
     }
 }

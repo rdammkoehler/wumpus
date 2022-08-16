@@ -6,9 +6,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
-import java.util.stream.Collectors;
 
-import static com.noradltd.wumpus.Helpers.getAllRooms;
+import static com.noradltd.wumpus.Helpers.*;
 import static com.noradltd.wumpus.Helpers.printMaze;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -38,7 +37,7 @@ public class MazePopulatorTest {
         interface OccupantBuilder<T extends Occupant> {
             T  build();
         }
-        private MazePopulator withOccupant(int occupantCount, OccupantBuilder occupantBuilder) {
+        private MazePopulator withOccupant(int occupantCount, OccupantBuilder<?> occupantBuilder) {
             if (occupantCount < 0) {
                 throw new IllegalArgumentException("Zero or more ??? per maze, please");
             }
@@ -52,7 +51,7 @@ public class MazePopulatorTest {
                 while(true) {
                     int randomRoomIdx = random.nextInt(rooms.size());
                     Room targetRoom = rooms.get(randomRoomIdx);
-                    if (targetRoom.getOccupants().stream().filter((o)->occupant.getClass().isInstance(o)).count()==0) {
+                    if (targetRoom.getOccupants().stream().noneMatch((o) -> occupant.getClass().isInstance(o))) {
                         targetRoom.addOccupant(occupant);
                         break;
                     }
@@ -62,19 +61,19 @@ public class MazePopulatorTest {
         }
 
         MazePopulator withWumpi(int wumpiCount) {
-            return withOccupant(wumpiCount, () -> new Wumpus());
+            return withOccupant(wumpiCount, Wumpus::new);
         }
 
         MazePopulator withBats(int batCount) {
-            return withOccupant(batCount, () -> new ColonyOfBats());
+            return withOccupant(batCount, ColonyOfBats::new);
         }
 
         MazePopulator withBottomlessPits(int pitCount) {
-            return withOccupant(pitCount, () -> new BottomlessPit());
+            return withOccupant(pitCount, BottomlessPit::new);
         }
 
         private List<Room> collectRooms() {
-            return collectRoom(maze, new HashSet<>()).stream().collect(Collectors.toUnmodifiableList());
+            return collectRoom(maze, new HashSet<>()).stream().toList();
         }
 
         private Set<Room> collectRoom(Room room, Set<Room> rooms) {
@@ -86,33 +85,6 @@ public class MazePopulatorTest {
             }
             return rooms;
         }
-    }
-
-    boolean hasWumpus(Room room) {
-        return room.getOccupants().stream().filter((occupant) -> occupant instanceof Wumpus).count() > 0;
-    }
-
-    long countWumpi(Room mazeEntrance) {
-        List<Room> rooms = getAllRooms(mazeEntrance);
-        return rooms.stream().filter((room) -> hasWumpus(room)).count();
-    }
-
-    boolean hasBats(Room room) {
-        return room.getOccupants().stream().filter((occupant) -> occupant instanceof ColonyOfBats).count() > 0;
-    }
-
-    long countBats(Room mazeEntrance) {
-        List<Room> rooms = getAllRooms(mazeEntrance);
-        return rooms.stream().filter((room) -> hasBats(room)).count();
-    }
-
-    boolean hasBottomlessPits(Room room) {
-        return room.getOccupants().stream().filter((occupant) -> occupant instanceof BottomlessPit).count() > 0;
-    }
-
-    long countBottomlessPits(Room mazeEntrance) {
-        List<Room> rooms = getAllRooms(mazeEntrance);
-        return rooms.stream().filter((room) -> hasBottomlessPits(room)).count();
     }
 
     @Test
