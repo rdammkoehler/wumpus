@@ -54,7 +54,7 @@ public class Helpers {
     }
 
     static boolean hasWumpus(Room room) {
-        return room.getOccupants().stream().anyMatch((occupant) -> occupant instanceof MazePopulatorTest.Wumpus);
+        return room.getOccupants().stream().anyMatch((occupant) -> occupant instanceof Wumpus);
     }
 
     static long countWumpi(Room mazeEntrance) {
@@ -63,7 +63,7 @@ public class Helpers {
     }
 
     static boolean hasBats(Room room) {
-        return room.getOccupants().stream().anyMatch((occupant) -> occupant instanceof MazePopulatorTest.ColonyOfBats);
+        return room.getOccupants().stream().anyMatch((occupant) -> occupant instanceof ColonyOfBats);
     }
 
     static long countBats(Room mazeEntrance) {
@@ -72,7 +72,7 @@ public class Helpers {
     }
 
     static boolean hasBottomlessPits(Room room) {
-        return room.getOccupants().stream().anyMatch((occupant) -> occupant instanceof MazePopulatorTest.BottomlessPit);
+        return room.getOccupants().stream().anyMatch((occupant) -> occupant instanceof BottomlessPit);
     }
 
     static long countBottomlessPits(Room mazeEntrance) {
