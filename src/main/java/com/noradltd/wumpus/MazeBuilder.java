@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
+import java.util.function.Predicate;
 
 class MazeBuilder {
 
@@ -27,43 +28,16 @@ class MazeBuilder {
     }
 
     private void addRoom(List<Room> rooms) {
-        switch (random.nextInt(3)) {
-            case 0:
-                addRoom0(rooms);
-                break;
-            case 1:
-                addRoom1(rooms);
-                break;
-            case 2:
-                addRoom2(rooms);
-                break;
-            default:
-                addRoom0(rooms);
-                break;
-        }
-    }
-
-    private void addRoom0(List<Room> rooms) {
         Room newRoom = new Room(roomName());
-        Room oldRoom;
-        do oldRoom = selectRoomAtRandom(rooms); while (oldRoom.getAdjacentRooms().size() == exitLimit);
-        oldRoom.attachRoom(newRoom);
+        Room oldRoom = selectRoomWithFewerThanExitLimitExits(rooms);
+        newRoom.attachRoom(oldRoom);
         rooms.add(newRoom);
     }
 
-    private void addRoom1(List<Room> rooms) {
-        Room newRoom = new Room(roomName());
-        Room oldRoom;
-        for (oldRoom = selectRoomAtRandom(rooms); oldRoom.getAdjacentRooms().size() == exitLimit; oldRoom = selectRoomAtRandom(rooms))
-            ;
-        oldRoom.attachRoom(newRoom);
-        rooms.add(newRoom);
-    }
-
-    private void addRoom2(List<Room> rooms) {
-        Room newRoom = new Room(roomName());
-        selectRoomAtRandom(rooms.stream().filter((oldRoom) -> oldRoom.getAdjacentRooms().size() != exitLimit).toList()).attachRoom(newRoom);
-        rooms.add(newRoom);
+    private Room selectRoomWithFewerThanExitLimitExits(List<Room> rooms) {
+        Predicate<Room> hasAvailableExits = room -> room.getAdjacentRooms().size() != exitLimit;
+        List<Room> viableRooms = rooms.stream().filter(hasAvailableExits).toList();
+        return selectRoomAtRandom(viableRooms);
     }
 
     private Room selectRoomAtRandom(List<Room> rooms) {
