@@ -3,6 +3,7 @@ package com.noradltd.wumpus;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 
 class MazeBuilder {
 
@@ -15,20 +16,59 @@ class MazeBuilder {
             throw new IllegalArgumentException("A maze with exit limit one can only have 2 rooms");
         }
         List<Room> rooms = new ArrayList<>();
-        int roomCount1 = 0;
-        Room newRoom = new Room("test room " + ++roomCount1);
+        Room newRoom = new Room(roomName());
         rooms.add(newRoom);
-        while (rooms.size() < roomCount) {
-            newRoom = new Room("test room " + ++roomCount1);
-            Room oldRoom;
-            do {
-                int roomIdx = (rooms.size() > 1) ? random.nextInt(rooms.size() - 1) : 0;
-                oldRoom = rooms.get(roomIdx);
-            } while (oldRoom.getAdjacentRooms().size() == exitLimit);
-            oldRoom.attachRoom(newRoom);
-            rooms.add(newRoom);
+        while (rooms.size() < this.roomCount) addRoom(rooms);
+        return selectRoomAtRandom(rooms);
+    }
+
+    private String roomName() {
+        return "test room " + UUID.randomUUID();
+    }
+
+    private void addRoom(List<Room> rooms) {
+        switch (random.nextInt(3)) {
+            case 0:
+                addRoom0(rooms);
+                break;
+            case 1:
+                addRoom1(rooms);
+                break;
+            case 2:
+                addRoom2(rooms);
+                break;
+            default:
+                addRoom0(rooms);
+                break;
         }
-        return rooms.get(0);
+    }
+
+    private void addRoom0(List<Room> rooms) {
+        Room newRoom = new Room(roomName());
+        Room oldRoom;
+        do oldRoom = selectRoomAtRandom(rooms); while (oldRoom.getAdjacentRooms().size() == exitLimit);
+        oldRoom.attachRoom(newRoom);
+        rooms.add(newRoom);
+    }
+
+    private void addRoom1(List<Room> rooms) {
+        Room newRoom = new Room(roomName());
+        Room oldRoom;
+        for (oldRoom = selectRoomAtRandom(rooms); oldRoom.getAdjacentRooms().size() == exitLimit; oldRoom = selectRoomAtRandom(rooms))
+            ;
+        oldRoom.attachRoom(newRoom);
+        rooms.add(newRoom);
+    }
+
+    private void addRoom2(List<Room> rooms) {
+        Room newRoom = new Room(roomName());
+        selectRoomAtRandom(rooms.stream().filter((oldRoom) -> oldRoom.getAdjacentRooms().size() != exitLimit).toList()).attachRoom(newRoom);
+        rooms.add(newRoom);
+    }
+
+    private Room selectRoomAtRandom(List<Room> rooms) {
+        int roomIdx = (rooms.size() > 1) ? random.nextInt(rooms.size() - 1) : 0;
+        return rooms.get(roomIdx);
     }
 
     /* Builder bits */
