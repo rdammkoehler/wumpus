@@ -7,12 +7,12 @@ import java.util.Arrays;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
-
+// todo,need factory wrapper on the impl; these test are for the interface level
 public class RoomNamerTest {
 
     @Test
     public void aRoomNamerGeneratesARoomName() {
-        String roomName = new RoomNameGenerator().nextName();
+        String roomName = new ListBasedRoomNameGenerator().nextName();
 
         assertThat(roomName, is(notNullValue()));
     }
@@ -21,7 +21,7 @@ public class RoomNamerTest {
     public void aRoomNamerAcceptsAListOfPossibleNames() {
         String[] possibleNames = {"Test Room 1", "Test Room 2"};
 
-        String roomName = new RoomNameGenerator().using(possibleNames).nextName();
+        String roomName = new ListBasedRoomNameGenerator().using(possibleNames).nextName();
 
         assertThat(roomName, in(Arrays.asList(possibleNames)));
     }
@@ -29,7 +29,7 @@ public class RoomNamerTest {
     @Test
     public void aRoomNamerReturnsAllTheRoomNames() {
         String[] possibleNames = {"Test Room 1", "Test Room 2"};
-        RoomNameGenerator nameGenerator = new RoomNameGenerator().using(possibleNames);
+        RoomNameGenerator nameGenerator = new ListBasedRoomNameGenerator().using(possibleNames);
 
         String[] roomNames = {
                 nameGenerator.nextName(),
@@ -42,7 +42,7 @@ public class RoomNamerTest {
     @Test
     public void aRoomNamerReturnsRoomNamesInOrderWhenAsked() {
         String[] possibleNames = {"Test Room 1", "Test Room 2"};
-        RoomNameGenerator nameGenerator = new RoomNameGenerator().sequentially().using(possibleNames);
+        RoomNameGenerator nameGenerator = new ListBasedRoomNameGenerator().sequentially().using(possibleNames);
 
         String[] roomNames = {
                 nameGenerator.nextName(),
@@ -59,7 +59,7 @@ public class RoomNamerTest {
         for (int idx = 0; idx < possibleNames.length; idx++) {
             possibleNames[idx] = "Test Room " + varVar++;
         }
-        RoomNameGenerator nameGenerator = new RoomNameGenerator().randomly().using(possibleNames);
+        RoomNameGenerator nameGenerator = new ListBasedRoomNameGenerator().randomly().using(possibleNames);
 
         String[] roomNames = new String[possibleNames.length];
         for (int idx = 0; idx < roomNames.length; idx++) {
@@ -80,7 +80,7 @@ public class RoomNamerTest {
         }
         System.arraycopy(possibleNames, 0, originalPossibleNames, 0, possibleNames.length);
 
-        new RoomNameGenerator().randomly().using(possibleNames);
+        new ListBasedRoomNameGenerator().randomly().using(possibleNames);
 
         assertThat(originalPossibleNames, equalTo(possibleNames));
     }
