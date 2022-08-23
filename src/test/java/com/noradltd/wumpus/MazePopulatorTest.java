@@ -3,7 +3,6 @@ package com.noradltd.wumpus;
 import org.junit.jupiter.api.Test;
 
 import static com.noradltd.wumpus.Helpers.*;
-import static com.noradltd.wumpus.Helpers.printMaze;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -125,8 +124,6 @@ public class MazePopulatorTest {
         new MazePopulator().populate(mazeEntrance).withWumpi(wumpiCount);
 
         assertThat(countWumpi(mazeEntrance), equalTo((long) wumpiCount));
-
-        printMaze(mazeEntrance);
     }
 
 }
