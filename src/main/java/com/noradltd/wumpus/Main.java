@@ -64,8 +64,7 @@ public class Main {
                 executeUserCommand();
             }
         } catch (Throwable thrown) {
-            thrown.printStackTrace(System.err);
-            Logger.error("something went terribly wrong.");
+            Logger.error("something went terribly wrong.", thrown);
         } finally {
             Logger.info(game.getScore());
         }
