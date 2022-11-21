@@ -15,7 +15,7 @@ public class Main {
 
     private static final Pattern USER_COMMAND = Pattern.compile("\\s*(\\S+)\\s*?(\\d*)?\\s*");
     private Game game;
-    private final BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
+    private final BufferedReader input;
 
     private interface Command {
         void execute(String arg);
@@ -50,6 +50,10 @@ public class Main {
         }
     });
     private final Command ASK_USER_WHAT = COMMANDS.get("what");
+
+    private Main(BufferedReader input) {
+        this.input = input;
+    }
 
     private void play(String... options) {
         try {
@@ -100,23 +104,18 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        boolean playAgain = true;
-        while (playAgain) {
-            new Main().play(args);
-            playAgain = promptToPlayAgain();
+        try (final BufferedReader input = new BufferedReader(new InputStreamReader(System.in))) {
+            do new Main(input).play(args); while (promptToPlayAgain(input));
+        } catch (IOException ioException) {
+            Logger.debug("System Failure", ioException);
+        } finally {
+            Logger.info("Goodbye");
         }
-        Logger.info("Goodbye");
     }
 
-    private static boolean promptToPlayAgain() {
-        boolean playAgain;
+    private static boolean promptToPlayAgain(BufferedReader input) throws IOException {
         Logger.info("Play again? (yes/[no])");
-        try {
-            String yesOrNo = new BufferedReader(new InputStreamReader(System.in)).readLine();
-            playAgain = yesOrNo.toLowerCase().charAt(0) == 'y';
-        } catch (Exception e) {
-            playAgain = false;
-        }
-        return playAgain;
+        String yesOrNo = input.readLine();
+        return yesOrNo.toLowerCase().charAt(0) == 'y';
     }
 }

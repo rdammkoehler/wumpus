@@ -53,9 +53,10 @@ public class MainTest {
     }
 
     private void assertThat(String reOutput, String... instructions) {
-        final String regex = preProcessRegularExpression(reOutput);
+        String regex = preProcessRegularExpression(reOutput);
         Pattern pattern = Pattern.compile(regex, Pattern.DOTALL);
-        String allInstructions = String.join("\n", instructions) + "\n";
+        String playAgain = "no";
+        String allInstructions = String.join("\n", instructions) + "\n" + playAgain;
 
         String actual = playInstructions(allInstructions);
 

@@ -2,7 +2,8 @@ package com.noradltd.wumpus;
 
 import org.slf4j.LoggerFactory;
 
-public class Logger {
+public final class Logger {
+
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger("HuntTheWumpusLogger");
 
     static final void error(String message) {
@@ -15,5 +16,9 @@ public class Logger {
 
     static final void debug(String message) {
         logger.debug(message);
+    }
+
+    static final void debug(String message, Throwable thrown) {
+        logger.debug(message, thrown);
     }
 }
