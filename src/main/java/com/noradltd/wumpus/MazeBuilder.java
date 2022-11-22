@@ -1,8 +1,10 @@
 package com.noradltd.wumpus;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 interface Maze {
@@ -52,7 +54,7 @@ class MazeBuilder {
 
     private void addExits(Room room, boolean forceLinking) {
         if (needsMoreExits(room)) {
-            randomLengthIntegerStream(3)
+            randomLengthIntegerStream(3)  // TODO max exits as a parameter?
                     .forEach(integer -> addExit(room, forceLinking));
             room.exits().stream()
                     .filter(exit -> Random.getRandomizer().nextBoolean())
@@ -188,27 +190,46 @@ class MazeLoader {
     }
 
     private void addOccupants(Collection<? extends Room.Occupant> occupants) {
-        for (Room.Occupant occupant : occupants) {
-            int occupantIdx = Random.getRandomizer().nextInt(rooms.size());
-            while (maze.entrance().equals(rooms.get(occupantIdx))
-                    ||
-                    rooms.get(occupantIdx).occupants().stream().anyMatch(occ -> occupant.getClass().isInstance(occ))) {
-                occupantIdx = Random.getRandomizer().nextInt(rooms.size());
+        occupants.stream().forEach(occupant -> {
+            Room room = selectRoomRandomly();
+            while (isInvalidOccupantPlacement(occupant, room)) {
+                room = selectRoomRandomly();
             }
-            occupant.moveTo(rooms.get(occupantIdx));
-        }
+            occupant.moveTo(room);
+        });
     }
 
-    private Collection<Room.Occupant> createOccupantsByType(int requiredCount, Class<? extends Room.Occupant> occupantClass) {
-        Collection<Room.Occupant> occupants = new ArrayList<>();
-        for (int idx = 0; idx < requiredCount; idx++) {
-            try {
-                occupants.add(occupantClass.getDeclaredConstructor((Class<?>[]) null).newInstance((Object[]) null));
-            } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException ex) {
-                throw new RuntimeException(ex);
-            }
+    private boolean isInvalidOccupantPlacement(Room.Occupant occupant, Room room) {
+        return isEntrance(room) || room.containsSameTypeOfOccupant(occupant);
+    }
+
+    private Room selectRoomRandomly() {
+        int roomIndex = Random.getRandomizer().nextInt(rooms.size());
+        return rooms.get(roomIndex);
+    }
+
+    private boolean isEntrance(Room room) {
+        return maze.entrance().equals(room);
+    }
+
+
+    private Collection<Room.Occupant> createOccupantsByType(int requiredCount, Class<? extends Room.Occupant> klass) {
+        return IntStream
+                .range(0, requiredCount)
+                .mapToObj((idx) -> newOccupant(klass))
+                .collect(Collectors.toList());
+    }
+
+    private static Room.Occupant newOccupant(Class<? extends Room.Occupant> occupantClass) {
+        try {
+            Constructor<? extends Room.Occupant> constructor = occupantClass.getDeclaredConstructor((Class<?>[]) null);
+            return constructor.newInstance((Object[]) null);
+        } catch (InstantiationException |
+                 IllegalAccessException |
+                 InvocationTargetException |
+                 NoSuchMethodException ex) {
+            throw new RuntimeException(ex);
         }
-        return occupants;
     }
 
     static Maze populate(Maze maze, Game.Options options) {

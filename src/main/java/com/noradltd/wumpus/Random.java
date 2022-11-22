@@ -18,4 +18,7 @@ public class Random {
     static Random getRandomizer() {
         return (Random) Game.getThreadLocalBag().get("randomizer");
     }
+    java.util.Random getJavaRandomizer() {
+        return randomizer;
+    }
 }

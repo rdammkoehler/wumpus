@@ -4,7 +4,10 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.function.BiFunction;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 class Game {
     private final Hunter hunter;
@@ -70,11 +73,7 @@ class Game {
             private Set<Room> collectRoom(Room room, Set<Room> rooms) {
                 if (!rooms.contains(room)) {
                     rooms.add(room);
-                    for (Room exit : room.exits()) {
-                        if (!rooms.contains(exit)) {
-                            collectRoom(exit, rooms);
-                        }
-                    }
+                    room.exits().stream().forEach(exit -> collectRoom(exit, rooms));
                 }
                 return rooms;
             }
@@ -96,13 +95,13 @@ class Game {
 
     public static class Options {
         private static final Map<String, String> optionNameAttrMap = new HashMap<>() {{
-            put("arrows", "initialArrowCount");
-            put("bats", "batCount");
-            put("format", "displayFormat");
-            put("pits", "pitCount");
-            put("rooms", "roomCount");
-            put("seed", "randomSeed");
-            put("wumpi", "wumpiCount");
+            put("--arrows", "initialArrowCount");
+            put("--bats", "batCount");
+            put("--format", "displayFormat");
+            put("--pits", "pitCount");
+            put("--rooms", "roomCount");
+            put("--seed", "randomSeed");
+            put("--wumpi", "wumpiCount");
         }};
         public static final Options DEFAULT = new Options();
         public static final int DEFAULT_BAT_COUNT = 0;
@@ -126,14 +125,22 @@ class Game {
         }
 
         private void processOptions(String... options) {
-            for (int optionIdx = 0; optionIdx < options.length - 1; optionIdx += 2) {
-                String optionName = options[optionIdx].substring(2);
-                String attrName = optionNameAttrMap.getOrDefault(optionName, null);
-                if (attrName != null) {
-                    String optionValue = options[optionIdx + 1].toUpperCase();
-                    setOptionValue(attrName, optionValue);
-                }
-            }
+            Map<String, String> optionValues = mapOptionValues(options);
+            Arrays.asList(options)
+                    .stream()
+                    .filter(option -> option.startsWith("--"))
+                    .forEach(option -> setOptionValue(optionNameAttrMap.get(option), optionValues.get(option)));
+        }
+
+        private static <X> Stream<X> pairs(List<X> options, BiFunction<X, X, X> mapper) {
+            Supplier<X> supplier = options.iterator()::next;
+            return Stream.generate(() -> mapper.apply(supplier.get(), supplier.get())).limit(options.size() / 2);
+        }
+
+        private static Map<String, String> mapOptionValues(String[] options) {
+            Map<String, String> optionValues = new HashMap<>();
+            pairs(Arrays.asList(options), (opt, value) -> optionValues.put(opt, value)).toList(); // TODO why toList()
+            return optionValues;
         }
 
         private void setOptionValue(String attrName, String optionValue) {
@@ -141,8 +148,11 @@ class Game {
                 Field field = getClass().getDeclaredField(attrName);
                 Method valueOf = field.getType().getMethod("valueOf", String.class);
                 field.set(this, valueOf.invoke(null, optionValue));
-            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | NoSuchFieldException ex) {
-                throw new RuntimeException(ex);
+            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException |
+                     NoSuchFieldException | NullPointerException ex) {
+                if (attrName != null ) {
+                    System.err.println(new StringBuilder("Unknown option ").append(attrName));
+                }
             }
         }
 

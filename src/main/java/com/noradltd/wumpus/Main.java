@@ -56,8 +56,8 @@ public class Main {
     }
 
     private void play(String... options) {
+        Logger.info("Welcome to Hunt The Wumpus!");
         try {
-            Logger.info("Welcome to Hunt The Wumpus!");
             game = new Game(options);
             while (game.isPlaying()) {
                 promptUser();

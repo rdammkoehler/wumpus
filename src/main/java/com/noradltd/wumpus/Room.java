@@ -77,9 +77,16 @@ class Room {
             Logger.debug(interloper.getClass().getSimpleName() + " is interacting with " + occupants.stream()
                     .map(occupant -> occupant.getClass().getSimpleName() + "(" + ((occupant.isDead()) ? "DEAD" : "ALIVE") + ")")
                     .collect(Collectors.joining(", ")));
-            for (Occupant cohabitant : new ArrayList<>(occupants)) {
+            ArrayList<Occupant> copyOfOccupants = new ArrayList<>(occupants);
+            for (Occupant cohabitant : copyOfOccupants) {
                 if (!interloper.isDead()) {
-                    // TODO this could potentially be cleaner
+                    // TODO the following should work effectively the same as the later version but doesn't
+//                    List<Occupant> occupantList = Arrays.asList(new Occupant[]{interloper, cohabitant});
+//                    if (Random.getRandomizer().nextBoolean()) {
+//                        Collections.reverse(occupantList);
+//                    }
+//                    occupantList.get(0).respondTo(occupantList.get(1));
+//                  TODO this could potentially be cleaner, see above
                     if (Random.getRandomizer().nextBoolean()) {
                         cohabitant.respondTo(interloper);
                         interloper.respondTo(cohabitant);
@@ -104,6 +111,10 @@ class Room {
 
     Set<Occupant> occupants() {
         return occupants.stream().collect(Collectors.toUnmodifiableSet());
+    }
+
+    boolean containsSameTypeOfOccupant(Occupant occupant) {
+        return occupants().stream().anyMatch(occ -> occupant.getClass().isInstance(occ));
     }
 
     private static void connectRooms(Room one, Room two) {

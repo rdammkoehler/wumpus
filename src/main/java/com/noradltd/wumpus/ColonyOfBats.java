@@ -1,5 +1,8 @@
 package com.noradltd.wumpus;
 
+import java.util.Stack;
+import java.util.stream.IntStream;
+
 public class ColonyOfBats extends Room.Occupant {
     @Override
     public void respondTo(Room.Occupant interloper) {
@@ -13,13 +16,24 @@ public class ColonyOfBats extends Room.Occupant {
 
     private Room findRandomRoom() {
         Room currentRoom = getRoom();
+        final Stack<Room> stack = new Stack<>();
+        stack.push(currentRoom);
         if (currentRoom.exits().size() > 1) {
-            while (getRoom().equals(currentRoom)) {  // TODO humm?
-                int moves = Random.getRandomizer().nextInt(10) + 1;
-                for (int moveCount = 0; moveCount < moves; moveCount++) {
-                    int exitNumber = Random.getRandomizer().nextInt(currentRoom.exits().size());
-                    currentRoom = currentRoom.exits().get(exitNumber);
-                }
+            while (getRoom().equals(currentRoom)) {
+                // TODO max moves parameterized?
+                IntStream.range(0, Random.getRandomizer().nextInt(10) + 1)
+                        .forEach(idx->
+                            stack.push(stack.peek()
+                                    .exits()
+                                    .get(Random.getRandomizer()
+                                            .nextInt(stack.peek()
+                                                    .exits()
+                                                    .size()
+                                            )
+                                    )
+                            )
+                        );
+                currentRoom=stack.pop();
             }
         } else {
             currentRoom = currentRoom.exits().get(0);
