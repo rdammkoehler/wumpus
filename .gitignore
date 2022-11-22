@@ -5,3 +5,4 @@ wumpus.iml
 
 neato.gv
 test_maze.png
+*.log
