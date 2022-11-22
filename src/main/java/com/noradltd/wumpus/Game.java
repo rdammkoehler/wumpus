@@ -122,6 +122,20 @@ class Game {
             } else {
                 processOptions(options);
             }
+            Logger.debug(this.toString());
+        }
+
+        @Override
+        public String toString() {
+            final StringBuilder sb = new StringBuilder("Options{");
+            sb.append("roomCount=").append(roomCount);
+            sb.append(", randomSeed=").append(randomSeed);
+            sb.append(", wumpiCount=").append(wumpiCount);
+            sb.append(", pitCount=").append(pitCount);
+            sb.append(", batCount=").append(batCount);
+            sb.append(", initialArrowCount=").append(initialArrowCount);
+            sb.append('}');
+            return sb.toString();
         }
 
         private void processOptions(String... options) {
@@ -150,8 +164,9 @@ class Game {
                 field.set(this, valueOf.invoke(null, optionValue));
             } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException |
                      NoSuchFieldException | NullPointerException ex) {
-                if (attrName != null ) {
-                    System.err.println(new StringBuilder("Unknown option ").append(attrName));
+                Logger.debug(attrName + " " + ex.getMessage(), ex);
+                if (attrName != null) {
+                    System.err.println("Unknown option " + attrName);
                 }
             }
         }

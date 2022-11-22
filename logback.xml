@@ -1,22 +1,18 @@
-<configuration debug="false">
+<configuration>
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder>
-            <pattern>- %msg%n</pattern>
-        </encoder>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>%d [%thread] %level %logger - %m%n</Pattern>
+        </layout>
     </appender>
     <property name="LOG_DIR" value="." />
     <appender name="FILE" class="ch.qos.logback.core.FileAppender">
         <file>${LOG_DIR}/tests.log</file>
-        <append>false</append>
+        <append>true</append>
         <encoder>
             <pattern>%-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>
         </encoder>
     </appender>
-    <logger name="HuntTheWumpusLogger" level="info" additivity="false">
-        <appender-ref ref="CONSOLE"/>
-        <appender-ref ref="FILE"/>
-    </logger>
-    <root level="error">
+    <root level="${root-level:-DEBUG}">
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="FILE"/>
     </root>

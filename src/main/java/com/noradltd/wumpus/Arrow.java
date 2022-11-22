@@ -14,7 +14,7 @@ public class Arrow extends Room.Occupant {
     };
 
     private static int nextArrowId = 0;
-    private int arrowId = nextArrowId++;
+    private final int arrowId = nextArrowId++;
     private boolean killedAWumpus = false;
 
     @Override

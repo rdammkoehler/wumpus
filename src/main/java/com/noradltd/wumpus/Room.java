@@ -61,7 +61,7 @@ class Room {
     static RoomNumberer roomNumberer = DEFAULT_ROOM_NUMBERER;
     private final int instanceNumber = roomNumberer.nextRoomNumber();
     private final Set<Room> exits = new HashSet<>();
-    private List<Occupant> occupants = new ArrayList<>();
+    private final List<Occupant> occupants = new ArrayList<>();
 
     List<Room> exits() {
         return new ArrayList<>(exits);

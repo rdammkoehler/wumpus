@@ -6,8 +6,7 @@ import java.util.stream.IntStream;
 public class ColonyOfBats extends Room.Occupant {
     @Override
     public void respondTo(Room.Occupant interloper) {
-        if (interloper instanceof Hunter) {
-            Hunter hunter = (Hunter) interloper;
+        if (interloper instanceof Hunter hunter) {
             Room randomRoom = findRandomRoom();
             Logger.info("A swarm of bats lift you from the ground in a blinding flurry of leathery wings. They drop you in room " + randomRoom.number());
             hunter.moveTo(randomRoom);
@@ -22,18 +21,18 @@ public class ColonyOfBats extends Room.Occupant {
             while (getRoom().equals(currentRoom)) {
                 // TODO max moves parameterized?
                 IntStream.range(0, Random.getRandomizer().nextInt(10) + 1)
-                        .forEach(idx->
-                            stack.push(stack.peek()
-                                    .exits()
-                                    .get(Random.getRandomizer()
-                                            .nextInt(stack.peek()
-                                                    .exits()
-                                                    .size()
-                                            )
-                                    )
-                            )
+                        .forEach(idx ->
+                                stack.push(stack.peek()
+                                        .exits()
+                                        .get(Random.getRandomizer()
+                                                .nextInt(stack.peek()
+                                                        .exits()
+                                                        .size()
+                                                )
+                                        )
+                                )
                         );
-                currentRoom=stack.pop();
+                currentRoom = stack.pop();
             }
         } else {
             currentRoom = currentRoom.exits().get(0);
