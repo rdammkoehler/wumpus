@@ -8,7 +8,7 @@ Guided by Gregory Brown's [article](https://practicingruby.com/articles/wumpus)
 
 ## Playing
 
-Ensure that JRE 14+ is in your path
+Ensure that JRE 17+ is in your path
 
 ```shell script
 export PATH=$JAVA_HOME/bin:$PATH
