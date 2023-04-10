@@ -153,7 +153,10 @@ class Game {
 
         private static Map<String, String> mapOptionValues(String[] options) {
             Map<String, String> optionValues = new HashMap<>();
-            pairs(Arrays.asList(options), (opt, value) -> optionValues.put(opt, value)).toList(); // TODO why toList()
+            List<?> l = pairs(Arrays.asList(options), (opt, value) -> optionValues.put(opt, value)).toList(); // TODO why toList()
+            System.err.println("*************************");
+            System.err.println(l);
+            System.err.println("*************************");
             return optionValues;
         }
 

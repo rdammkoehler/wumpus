@@ -73,7 +73,7 @@ Wumpus: Will eat you! (you loose) or Run Away, game continues
 
 Bottomless Pit: You die in a tragic fall
 
-* emits a cool drafy breeze into adjacent rooms
+* emits a cool drafty breeze into adjacent rooms
 
 Superbat: Moves you a random number of moves up to room-count minus one rooms away; the Superbat then moves itself a
 random number of rooms.
