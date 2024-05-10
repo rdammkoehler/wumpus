@@ -37,5 +37,17 @@ public class GameTest {
         }
     }
 
-
+//    @Test
+//    public void warnsAboutUnknownOptions() {
+//        String regex = "cli: unknown argument ";
+//        Pattern pattern = Pattern.compile(regex, Pattern.DOTALL);
+//        ByteArrayOutputStream stdout = Helpers.captureStdout();
+//        try {
+//            new Game(new String[] { "--verbose", "true" });
+//
+//            assertThat(stdout.toString(), matchesRegex(pattern));
+//        } finally {
+//            Helpers.resetStdout();
+//        }
+//    }
 }

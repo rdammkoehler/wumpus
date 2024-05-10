@@ -4,10 +4,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
-import java.util.function.BiFunction;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 class Game {
     private final Hunter hunter;
@@ -140,23 +137,16 @@ class Game {
 
         private void processOptions(String... options) {
             Map<String, String> optionValues = mapOptionValues(options);
-            Arrays.asList(options)
-                    .stream()
+            Arrays.stream(options)
                     .filter(option -> option.startsWith("--"))
                     .forEach(option -> setOptionValue(optionNameAttrMap.get(option), optionValues.get(option)));
         }
 
-        private static <X> Stream<X> pairs(List<X> options, BiFunction<X, X, X> mapper) {
-            Supplier<X> supplier = options.iterator()::next;
-            return Stream.generate(() -> mapper.apply(supplier.get(), supplier.get())).limit(options.size() / 2);
-        }
-
         private static Map<String, String> mapOptionValues(String[] options) {
             Map<String, String> optionValues = new HashMap<>();
-            List<?> l = pairs(Arrays.asList(options), (opt, value) -> optionValues.put(opt, value)).toList(); // TODO why toList()
-            System.err.println("*************************");
-            System.err.println(l);
-            System.err.println("*************************");
+            for (int idx = 0; idx + 1 < options.length; idx += 2) {
+                optionValues.put(options[idx], options[idx + 1]);
+            }
             return optionValues;
         }
 
@@ -167,10 +157,7 @@ class Game {
                 field.set(this, valueOf.invoke(null, optionValue));
             } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException |
                      NoSuchFieldException | NullPointerException ex) {
-                Logger.debug(attrName + " " + ex.getMessage(), ex);
-                if (attrName != null) {
-                    System.err.println("Unknown option " + attrName);
-                }
+                Logger.debug("cli: unknown argument " + attrName + " " + ex.getMessage(), ex);
             }
         }
 
