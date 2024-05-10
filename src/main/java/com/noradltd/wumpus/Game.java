@@ -157,7 +157,6 @@ class Game {
                 field.set(this, valueOf.invoke(null, optionValue));
             } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException |
                      NoSuchFieldException | NullPointerException ex) {
-                System.err.println("here i am");
                 Logger.debug("cli: unknown argument " + attrName + " " + ex.getMessage(), ex);
             }
         }
