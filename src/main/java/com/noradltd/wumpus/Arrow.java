@@ -6,11 +6,6 @@ public class Arrow extends Room.Occupant {
         public void respondTo(Room.Occupant occupant) {
             // no-op
         }
-
-        @Override
-        public String toString() {
-            return "this arrow does nothing";
-        }
     };
 
     private static int nextArrowId = 0;
