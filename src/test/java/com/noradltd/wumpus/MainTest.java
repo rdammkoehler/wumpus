@@ -7,10 +7,13 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.regex.Pattern;
 
 import static org.hamcrest.Matchers.matchesRegex;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class MainTest {
 
@@ -164,6 +167,32 @@ public class MainTest {
     @Test
     public void reportsScoreAtTheEnd() {
         assertThat("Score: Hunter \\d+ Wumpus \\d+", QUIT_QUIT);
+    }
+
+    @Test
+    public void fatalErrorsReportThatSomethingWentTerriblyWrong() {
+        InputStream originalStdin = System.in;
+        ByteArrayOutputStream stdout = Helpers.captureStdout();
+        String regex = preProcessRegularExpression("something went terribly wrong.");
+        Pattern pattern = Pattern.compile(regex, Pattern.DOTALL);
+        String fatalMessage = "using this stream is fatal";
+        try {
+            System.setIn(new InputStream() {
+                             @Override
+                             public int read() throws IOException {
+                                 throw new RuntimeException(fatalMessage);
+                             }
+                         }
+            );
+
+            Throwable thrown = assertThrows(RuntimeException.class, () -> Main.main(new String[]{}));
+
+            assertEquals(thrown.getMessage(), fatalMessage);
+            org.hamcrest.MatcherAssert.assertThat(stdout.toString(), matchesRegex(pattern));
+        } finally {
+            Helpers.resetStdout();
+            System.setIn(originalStdin);
+        }
     }
 
 //    @Test  //TODO needs help!
