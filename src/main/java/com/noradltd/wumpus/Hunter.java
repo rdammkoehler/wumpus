@@ -107,17 +107,15 @@ class Hunter extends Room.Occupant {
     }
 
     void takeArrow() {
-        getRoom().occupants().stream()
-                .filter(occupant -> occupant instanceof Arrow).toList()
-                .forEach(occupant -> {
-                    if (occupant instanceof Arrow arrow) {
-                        if (arrow.isBroken()) {
-                            Logger.info("The broken arrow crumbles in your hand.");
-                        } else {
-                            arrow.addToQuiver(quiver);
-                        }
-                    }
-                });
+        getRoom().occupants().forEach(occupant -> {
+            if (occupant instanceof Arrow arrow) {
+                if (arrow.isBroken()) {
+                    Logger.info("The broken arrow crumbles in your hand.");
+                } else {
+                    arrow.addToQuiver(quiver);
+                }
+            }
+        });
     }
 
     @Override

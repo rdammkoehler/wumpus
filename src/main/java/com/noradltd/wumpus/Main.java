@@ -55,23 +55,25 @@ public class Main {
         this.input = input;
     }
 
-    private void play(String... options) {
+    private void play(String... options) throws IOException {
         Logger.info("Welcome to Hunt The Wumpus!");
         try {
             game = new Game(options);
             while (game.isPlaying()) {
                 promptUser();
-                executeUserCommand();
+                executeUserCommand(nextCommand());
             }
-        } catch (Throwable thrown) {
-            Logger.error("something went terribly wrong.", thrown);
         } finally {
             Logger.info(game.getScore());
         }
     }
 
-    private void executeUserCommand() {
-        Matcher matcher = USER_COMMAND.matcher(nextCommand());
+    private String nextCommand() throws IOException {
+            return input.readLine();
+    }
+
+    private void executeUserCommand(String command) {
+        Matcher matcher = USER_COMMAND.matcher(command);
         if (matcher.matches()) {
             COMMANDS.get(matcher.group(1).toLowerCase()).execute(matcher.group(2).toLowerCase());
         } else {
@@ -83,23 +85,17 @@ public class Main {
         Logger.info("i|l|m|s|t?");
     }
 
-    private String nextCommand() {
-        try {
-            return input.readLine();
-        } catch (IOException e) {
-            return "help";
-        }
-    }
-
     private void showHelp() {
-        Logger.info("Instructions:\n" +
-                "(i|inv|inventory)\tShow inventory\n" +
-                "(l|look)\t\t\tLook around\n" +
-                "(m|move) #\t\t\tMove through tunnel #\n" +
-                "(s|shoot) #\t\t\tShoot through tunnel #\n" +
-                "(t|take)\t\t\tTake (an unbroken arrow)\n" +
-                "(?|h|help)\t\t\tShow help\n" +
-                "(q|x|quit|exit)\t\tQuit the game\n");
+        Logger.info("""
+                Instructions:
+                (i|inv|inventory)\tShow inventory
+                (l|look)\t\t\tLook around
+                (m|move) #\t\t\tMove through tunnel #
+                (s|shoot) #\t\t\tShoot through tunnel #
+                (t|take)\t\t\tTake (an unbroken arrow)
+                (?|h|help)\t\t\tShow help
+                (q|x|quit|exit)\t\tQuit the game
+                """);
     }
 
     public static void main(String[] args) {

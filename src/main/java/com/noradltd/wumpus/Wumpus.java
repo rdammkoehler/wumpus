@@ -2,15 +2,11 @@ package com.noradltd.wumpus;
 
 class Wumpus extends Room.Occupant {
 
-    private void flee(Hunter hunter) {
+    private void flee() {
         int exitCount = getRoom().exits().size();
-        if (exitCount > 0) {  // TODO this should never be possible, minimum maze size is 2 isn't it?
-            Room exitRoom = getRoom().exits().get(Random.getRandomizer().nextInt(exitCount));
-            moveTo(exitRoom);
-            Logger.info("The startled Wumpus runs away!");
-        } else {
-            eat(hunter);
-        }
+        Room exitRoom = getRoom().exits().get(Random.getRandomizer().nextInt(exitCount));
+        moveTo(exitRoom);
+        Logger.info("The startled Wumpus runs away!");
     }
 
     private void eat(Hunter hunter) {
@@ -27,7 +23,7 @@ class Wumpus extends Room.Occupant {
                 if (Random.getRandomizer().nextBoolean()) {
                     eat(hunter);
                 } else {
-                    flee(hunter);
+                    flee();
                 }
             }
         }
