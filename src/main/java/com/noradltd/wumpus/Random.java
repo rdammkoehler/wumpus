@@ -1,18 +1,29 @@
 package com.noradltd.wumpus;
 
-public class Random {
-    private final java.util.Random randomizer = new java.util.Random();
 
-    int nextInt(int bound) {
-        return randomizer.nextInt(bound);
+public class Random  {
+    private java.util.Random randomizer;
+
+    public Random() {
     }
 
-    boolean nextBoolean() {
-        return randomizer.nextBoolean();
+    private java.util.Random getDelegateRandomizer() {
+        if (randomizer == null) {
+            randomizer = new java.util.Random();
+        }
+        return randomizer;
     }
 
-    void setSeed(long seed) {
-        randomizer.setSeed(seed);
+    public int nextInt(int bound) {
+        return getDelegateRandomizer().nextInt(bound);
+    }
+
+    public boolean nextBoolean() {
+        return getDelegateRandomizer().nextBoolean();
+    }
+
+    public void setSeed(long seed) {
+        getDelegateRandomizer().setSeed(seed);
     }
 
     static Random getRandomizer() {

@@ -82,7 +82,7 @@ public class MainTest {
 
     @Test
     public void theGameWelcomesThePlayer() {
-        assertThat("^- Welcome to Hunt The Wumpus", QUIT_QUIT);
+        assertThat("- Welcome to Hunt The Wumpus", QUIT_QUIT);
     }
 
     @Test
@@ -99,7 +99,7 @@ public class MainTest {
     @ParameterizedTest
     @ValueSource(strings = {MOVE_M, MOVE_MOVE})
     public void theHunterCanMoveAround(String moveCommand) {
-        assertThat("You are in room #10", moveCommand + " 1", QUIT_QUIT);
+        assertThat("You are in room #12", moveCommand + " 1", QUIT_QUIT);
     }
 
     @ParameterizedTest

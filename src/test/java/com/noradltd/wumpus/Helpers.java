@@ -103,7 +103,7 @@ public class Helpers {
         }
 
         @Override
-        boolean nextBoolean() {
+        public boolean nextBoolean() {
             if (bools.length > 0 && boolIdx < bools.length) {
                 return bools[boolIdx++];
             }
@@ -111,7 +111,7 @@ public class Helpers {
         }
 
         @Override
-        int nextInt(int bound) {
+        public int nextInt(int bound) {
             if (ints.length > 0 && intIdx < ints.length) {
                 return ints[intIdx++];
             }

@@ -1,7 +1,5 @@
 package com.noradltd.wumpus;
 
-import java.util.stream.Collectors;
-
 class Hunter extends Room.Occupant {
 
     interface Quiver {
@@ -87,26 +85,30 @@ class Hunter extends Room.Occupant {
     }
 
     void kill(Wumpus wumpus) {
-        if (!isDead() && !wumpus.isDead() && getRoom().equals(wumpus.getRoom())) {
+        if (isDead()) {
+            // Hunter is dead and cannot act
+            return;
+        }
+        if (wumpus.isDead()) {
+            // Wumpus is already dead
+            return;
+        }
+        if (getRoom().equals(wumpus.getRoom())) {
+            // need to check that the wumpus has not fled, hence the room check
             if (Random.getRandomizer().nextBoolean()) {
                 Logger.info("With a slash of your knife you eviscerate a Wumpus; it's corpse slides to the floor");
                 wumpus.die();
                 kills += 1;
             } else {
-                Logger.info("You slash you knife at the Wumpus as it's slimy tentacles wrap around you, trying to crushing the life out of your body");
+                Logger.info("You slash you knife at the Wumpus as it's slimy tentacles wrap around you, trying to crush the life out of your body");
                 wumpus.respondTo(this);
             }
-        } else {
-            if (isDead() && !wumpus.isDead()) {
-                Logger.info("The Wumpus escapes your violent assault");
-            }
         }
-
     }
 
     void takeArrow() {
         getRoom().occupants().stream()
-                .filter(occupant -> occupant instanceof Arrow).collect(Collectors.toList())
+                .filter(occupant -> occupant instanceof Arrow).toList()
                 .forEach(occupant -> {
                     if (occupant instanceof Arrow arrow) {
                         if (arrow.isBroken()) {

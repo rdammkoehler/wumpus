@@ -16,7 +16,7 @@ class Room {
             if (room != null) {
                 Logger.debug("Moving " + getClass().getSimpleName() + " from " + room.number() + " to " + newRoom.number());
                 room.remove(this);
-                Logger.info(newRoom.toString());  // TODO sneaky and confusing, report only if we were previously in a room suppresses startup noise BUT this code now doesn't make sense
+//                Logger.info(newRoom.toString());  // TODO sneaky and confusing, report only if we were previously in a room suppresses startup noise BUT this code now doesn't make sense
             } else {
                 Logger.debug("Moving " + getClass().getSimpleName() + " to " + newRoom.number());
             }
@@ -63,6 +63,10 @@ class Room {
     private final Set<Room> exits = new HashSet<>();
     private final List<Occupant> occupants = new ArrayList<>();
 
+    Room() {
+        Logger.debug("New Room " + this.instanceNumber);
+    }
+
     List<Room> exits() {
         return new ArrayList<>(exits);
     }
@@ -73,26 +77,31 @@ class Room {
     }
 
     private void executeOccupantInteractions(Occupant interloper) {
-        if (occupants.size() > 0) {
+        class Interactor {
+            final Occupant instigator;
+
+            Interactor(Occupant instigator) {
+                this.instigator = instigator;
+            }
+
+            void interact(Occupant victim) {
+                victim.respondTo(instigator);
+                if (victim.getRoom().number().equals(instigator.getRoom().number())) {
+                    instigator.respondTo(victim);
+                }
+            }
+        }
+        if (!occupants.isEmpty()) {
             Logger.debug(interloper.getClass().getSimpleName() + " is interacting with " + occupants.stream()
                     .map(occupant -> occupant.getClass().getSimpleName() + "(" + ((occupant.isDead()) ? "DEAD" : "ALIVE") + ")")
                     .collect(Collectors.joining(", ")));
             ArrayList<Occupant> copyOfOccupants = new ArrayList<>(occupants);
             for (Occupant cohabitant : copyOfOccupants) {
-                if (!interloper.isDead()) {
-                    // TODO the following should work effectively the same as the later version but doesn't
-//                    List<Occupant> occupantList = Arrays.asList(new Occupant[]{interloper, cohabitant});
-//                    if (Random.getRandomizer().nextBoolean()) {
-//                        Collections.reverse(occupantList);
-//                    }
-//                    occupantList.get(0).respondTo(occupantList.get(1));
-//                  TODO this could potentially be cleaner, see above
+                if (!interloper.isDead()) {  // TODO consider guard location
                     if (Random.getRandomizer().nextBoolean()) {
-                        cohabitant.respondTo(interloper);
-                        interloper.respondTo(cohabitant);
+                        new Interactor(interloper).interact(cohabitant);
                     } else {
-                        interloper.respondTo(cohabitant);
-                        cohabitant.respondTo(interloper);
+                        new Interactor(cohabitant).interact(interloper);
                     }
                 }
             }
