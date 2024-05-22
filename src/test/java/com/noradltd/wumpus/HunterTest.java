@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.io.ByteArrayOutputStream;
+import java.util.regex.Pattern;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -90,18 +91,6 @@ public class HunterTest {
         assertThat(hunter.kills(), is(equalTo(1)));
     }
 
-    @Test
-    public void byDefaultAnHunterOnlyHasNullArrows() {
-        Room room = new Room();
-        Room exit = new Room();
-        room.add(exit);
-        Hunter hunter = new Hunter();
-        hunter.moveTo(room);
-
-        hunter.shoot(0);
-
-        assertThat(exit.occupants(), contains(Arrow.NULL_ARROW));
-    }
 
     @Test
     public void huntersCanShootDownTunnels() {
@@ -289,11 +278,10 @@ public class HunterTest {
         ByteArrayOutputStream stdout = Helpers.captureStdout();
         try {
             hunter.kill(wumpus);
-
-            assertThat(stdout.toString(), is(emptyString()));
         } finally {
             Helpers.resetStdout();
         }
+        assertThat(stdout.toString(), is(emptyString()));
     }
 
     @Test
@@ -308,11 +296,10 @@ public class HunterTest {
         ByteArrayOutputStream stdout = Helpers.captureStdout();
         try {
             hunter.kill(wumpus);
-
-            assertThat(stdout.toString(), is(emptyString()));
         } finally {
             Helpers.resetStdout();
         }
+        assertThat(stdout.toString(), is(emptyString()));
     }
 
     @ExtendWith(ResetRandomizerExtension.class)
@@ -345,5 +332,57 @@ public class HunterTest {
         hunter.takeArrow();
 
         assertThat(quiver.arrowsRemaining(), is(equalTo("0")));
+    }
+
+    @ExtendWith(ResetRandomizerExtension.class)
+    @Test
+    public void huntersWithoutQuiversCantTakeArrows() {
+        Helpers.programRandomizer(false);
+        Hunter hunter = new Hunter();
+        Room room = new Room();
+        Arrow arrow = new Arrow();
+        arrow.moveTo(room);
+        hunter.moveTo(room);
+        Pattern arrowsAreZero = Pattern.compile(".*Arrows: 0.*", Pattern.DOTALL);
+
+        hunter.takeArrow();
+
+        assertThat(hunter.inventory(), matchesPattern(arrowsAreZero));
+    }
+
+    @Test
+    public void huntersWithoutQuiversCantShootArrows() {
+        Room room0 = new Room();
+        Room room1 = new Room();
+        room0.add(room1);
+        Hunter hunter = new Hunter();
+        hunter.moveTo(room0);
+        Pattern noMoreArrows = Pattern.compile(".*You have no more arrows.*", Pattern.DOTALL);
+
+        ByteArrayOutputStream stdout = Helpers.captureStdout();
+        try {
+            hunter.shoot(0);
+        } finally {
+            Helpers.resetStdout();
+        }
+        assertThat(stdout.toString(), matchesPattern(noMoreArrows));
+    }
+
+    @Test
+    public void byDefaultAnHunterOnlyHasNullArrows() {
+        Room room = new Room();
+        Room exit = new Room();
+        room.add(exit);
+        Hunter hunter = new Hunter();
+        hunter.moveTo(room);
+        Pattern noMoreArrows = Pattern.compile(".*You have no more arrows.*", Pattern.DOTALL);
+
+        ByteArrayOutputStream stdout = Helpers.captureStdout();
+        try {
+            hunter.shoot(0);
+        } finally {
+            Helpers.resetStdout();
+        }
+        assertThat(stdout.toString(), matchesPattern(noMoreArrows));
     }
 }

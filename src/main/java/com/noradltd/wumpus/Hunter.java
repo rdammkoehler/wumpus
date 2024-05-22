@@ -52,15 +52,19 @@ class Hunter extends Room.Occupant {
         if (validExitNumber(exitNumber)) {
             Room target = getRoom().exits().get(exitNumber);
             Arrow arrow = quiver.next();
-            Logger.info("Your arrow hurtles down tunnel " + (exitNumber + 1));
-            if (target.occupants().stream().anyMatch(Wumpus.class::isInstance)) {
-                Logger.info("There is a Wumpus in the room!");
+            if (arrow == Arrow.NULL_ARROW) {
+                Logger.info("You have no more arrows");
             } else {
-                Logger.info("There is no Wumpus there");
-            }
-            arrow.moveTo(target);
-            if (arrow.killedAWumpus()) {
-                kills++;
+                Logger.info("Your arrow hurtles down tunnel " + (exitNumber + 1));
+                if (target.occupants().stream().anyMatch(Wumpus.class::isInstance)) {
+                    Logger.info("There is a Wumpus in the room!");
+                } else {
+                    Logger.info("There is no Wumpus there");
+                }
+                arrow.moveTo(target);
+                if (arrow.killedAWumpus()) {
+                    kills++;
+                }
             }
         } else {
             Logger.info("You can't shoot that way");
