@@ -16,7 +16,6 @@ class Room {
             if (room != null) {
                 Logger.debug("Moving " + getClass().getSimpleName() + " from " + room.number() + " to " + newRoom.number());
                 room.remove(this);
-//                Logger.info(newRoom.toString());  // TODO sneaky and confusing, report only if we were previously in a room suppresses startup noise BUT this code now doesn't make sense
             } else {
                 Logger.debug("Moving " + getClass().getSimpleName() + " to " + newRoom.number());
             }

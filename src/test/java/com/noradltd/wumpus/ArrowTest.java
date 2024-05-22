@@ -116,4 +116,15 @@ public class ArrowTest {
     public void weCanAskAnArrowQuiverHowManyArrowsRemain() {
         assertThat(new ArrowQuiver(5).arrowsRemaining(), is(equalTo("5")));
     }
+
+    @Test
+    public void youCannotPutBrokenArrowsIntoAnArrowQuiver() {
+        ArrowQuiver quiver = new ArrowQuiver(0);
+        Arrow arrow = new Arrow();
+        arrow.die();
+
+        quiver.add(arrow);
+
+        assertThat(quiver.isEmpty(), is(true));
+    }
 }
