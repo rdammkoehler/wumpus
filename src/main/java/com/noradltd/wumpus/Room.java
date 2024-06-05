@@ -70,9 +70,8 @@ class Room {
         return new ArrayList<>(exits);
     }
 
-    Room add(Occupant occupant) {
+    void add(Occupant occupant) {
         executeOccupantInteractions(occupant);
-        return this;
     }
 
     private void executeOccupantInteractions(Occupant interloper) {
@@ -91,12 +90,12 @@ class Room {
             }
         }
         if (!occupants.isEmpty()) {
-            Logger.debug(interloper.getClass().getSimpleName() + " is interacting with " + occupants.stream()
-                    .map(occupant -> occupant.getClass().getSimpleName() + "(" + ((occupant.isDead()) ? "DEAD" : "ALIVE") + ")")
-                    .collect(Collectors.joining(", ")));
-            ArrayList<Occupant> copyOfOccupants = new ArrayList<>(occupants);
-            for (Occupant cohabitant : copyOfOccupants) {
-                if (!interloper.isDead()) {  // TODO consider guard location
+            if (!interloper.isDead()) {
+                Logger.debug(interloper.getClass().getSimpleName() + " is interacting with " + occupants.stream()
+                        .map(occupant -> occupant.getClass().getSimpleName() + "(" + ((occupant.isDead()) ? "DEAD" : "ALIVE") + ")")
+                        .collect(Collectors.joining(", ")));
+                ArrayList<Occupant> copyOfOccupants = new ArrayList<>(occupants);
+                for (Occupant cohabitant : copyOfOccupants) {
                     if (Random.getRandomizer().nextBoolean()) {
                         new Interactor(interloper).interact(cohabitant);
                     } else {
@@ -107,7 +106,7 @@ class Room {
         } else {
             Logger.debug("this room is empty");
         }
-        if (!interloper.isDead() && interloper.getRoom().equals(this)) { // bad casting, please fix
+        if (!interloper.isDead() && interloper.getRoom().equals(this)) {
             occupants.add(interloper);
         }
     }
@@ -149,12 +148,12 @@ class Room {
         return new RoomDescriber(this).description();
     }
 
-    private class RoomDescriber {
-        private final Room room;
-
-        private RoomDescriber(Room room) {
-            this.room = room;
-        }
+    /*
+     I think it is weird to make this a record class b/c its really verby
+     So is this sort of antipattern thing in Java now?
+     Or is this actually a super sexy way to make a decorator?
+    */
+    private record RoomDescriber(Room room) {
 
         private String description() {
             StringBuilder sb = new StringBuilder();
@@ -180,7 +179,7 @@ class Room {
             Collection<Occupant> describableOccupants = room.occupants().stream()
                     .filter(occupant -> !(occupant instanceof Hunter && !occupant.isDead()))
                     .sorted()
-                    .collect(Collectors.toList());
+                    .toList();
             if (!describableOccupants.isEmpty()) {
                 sb.append("\nContains ")
                         .append(describableOccupants.stream()
