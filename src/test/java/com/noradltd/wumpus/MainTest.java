@@ -146,7 +146,7 @@ public class MainTest {
     @ParameterizedTest
     @ValueSource(strings = {TAKE_T, TAKE_TAKE})
     public void huntersCannotPickupBrokenArrows(String takeCommand) {
-        // TODO the excessive number of shots is because we can't controll the randomizer!
+        // TODO the excessive number of shots is because we can't control the randomizer!
         assertThat("The broken arrow crumbles in your hand.", SHOOT_SHOOT + " 1",
                 SHOOT_SHOOT + " 1", SHOOT_SHOOT + " 1", SHOOT_SHOOT + " 1", SHOOT_SHOOT + " 1", SHOOT_SHOOT + " 1",
                 SHOOT_SHOOT + " 1", SHOOT_SHOOT + " 1", SHOOT_SHOOT + " 1", SHOOT_SHOOT + " 1", SHOOT_SHOOT + " 1",

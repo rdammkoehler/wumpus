@@ -121,29 +121,36 @@ class MazeBuilder {
 }
 
 class MazeLoader {
-    private static final int MINIMUM_PIT_COUNT = 1;
-    private static final int MINIMUM_WUMPUS_COUNT = 1;
-    private static final int MINIMUM_BAT_COUNT = 1;
+    private static final int MINIMUM_PIT_COUNT = 0;
+    private static final int MINIMUM_WUMPUS_COUNT = 0;
+    private static final int MINIMUM_BAT_COUNT = 0;
     private final Game.Options options;
     private final List<Room> rooms;
     private final Maze maze;
 
     MazeLoader(Game.Options options, Maze maze) {
         this.options = options;
+        System.err.println("loader: " + options);
         this.maze = maze;
         rooms = collectAllRooms();
     }
 
     private int getPitCount() {
-        return Math.max(Math.max(MINIMUM_PIT_COUNT, options.getRoomCount() / 5), options.getPitCount());
+        return options.getPitCount();
+        // TODO this is broken and does not respect the argument
+//        return Math.max(Math.max(MINIMUM_PIT_COUNT, options.getRoomCount() / 5), options.getPitCount());
     }
 
     private int getWumpiCount() {
-        return Math.max(Math.max(MINIMUM_WUMPUS_COUNT, options.getRoomCount() / 7), options.getWumpiCount());
+        return options.getWumpiCount();
+        // TODO this is broken and does not respect the argument
+//        return Math.max(Math.max(MINIMUM_WUMPUS_COUNT, options.getRoomCount() / 7), options.getWumpiCount());
     }
 
     private int getBatCount() {
-        return Math.max(Math.max(MINIMUM_BAT_COUNT, options.getRoomCount() / 5), options.getBatCount());
+        return options.getBatCount();
+        // TODO this is broken and does not respect the argument
+//        return Math.max(Math.max(MINIMUM_BAT_COUNT, options.getRoomCount() / 5), options.getBatCount());
     }
 
     private Maze populateMaze() {
@@ -166,7 +173,7 @@ class MazeLoader {
                     rooms.add(room);
                     room.exits().stream().filter(exit -> !rooms.contains(exit)).forEach(exit -> collectRoom(exit, rooms));
                 }
-                return rooms.stream().collect(Collectors.toUnmodifiableList());
+                return rooms.stream().toList();
             }
 
             public List<Room> getAllRooms() {
@@ -190,7 +197,7 @@ class MazeLoader {
     }
 
     private void addOccupants(Collection<? extends Room.Occupant> occupants) {
-        occupants.stream().forEach(occupant -> {
+        occupants.forEach(occupant -> {
             Room room = selectRoomRandomly();
             while (isInvalidOccupantPlacement(occupant, room)) {
                 room = selectRoomRandomly();
@@ -214,6 +221,7 @@ class MazeLoader {
 
 
     private Collection<Room.Occupant> createOccupantsByType(int requiredCount, Class<? extends Room.Occupant> klass) {
+        System.err.println(requiredCount + "x" +klass.getSimpleName());
         return IntStream
                 .range(0, requiredCount)
                 .mapToObj((idx) -> newOccupant(klass))

@@ -10,6 +10,10 @@ public final class Logger {
         logger.error(message);
     }
 
+    static void error(String message, Throwable thrown) {
+        logger.error(message, thrown);
+    }
+
 //    static void error(String message, Throwable thrown) {
 //        logger.error(message, thrown);
 //    }

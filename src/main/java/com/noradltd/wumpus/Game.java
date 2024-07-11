@@ -4,7 +4,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
-import java.util.stream.Collectors;
 
 class Game {
     private final Hunter hunter;
@@ -12,8 +11,10 @@ class Game {
 
     Game(String[] options) {
         Game.Options gameOptions = new Game.Options(options);
+        System.err.println(gameOptions + "\n******");
         Maze maze = MazeLoader.populate(MazeBuilder.build(gameOptions), gameOptions);
         hunter = new Hunter(new ArrowQuiver(gameOptions.getInitialArrowCount()));
+        Logger.debug("Placing Hunter in room " + maze.entrance().number());
         hunter.moveTo(maze.entrance());
         Logger.info(toString());
     }
@@ -44,6 +45,7 @@ class Game {
     }
 
     public void quit() {
+        Logger.debug("user quit");
         playing = false;
     }
 
@@ -64,13 +66,13 @@ class Game {
                 if (rooms == null) {
                     rooms = collectRoom(hunter.getRoom(), new HashSet<>());
                 }
-                return rooms.stream().collect(Collectors.toUnmodifiableList());
+                return rooms.stream().toList();
             }
 
             private Set<Room> collectRoom(Room room, Set<Room> rooms) {
                 if (!rooms.contains(room)) {
                     rooms.add(room);
-                    room.exits().stream().forEach(exit -> collectRoom(exit, rooms));
+                    room.exits().forEach(exit -> collectRoom(exit, rooms));
                 }
                 return rooms;
             }
@@ -119,7 +121,7 @@ class Game {
             } else {
                 processOptions(options);
             }
-            Logger.debug(this.toString());
+            Logger.debug("new " + this);
         }
 
         @Override

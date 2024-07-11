@@ -31,6 +31,7 @@ class Room {
 
         void die() {
             Logger.debug(getClass().getSimpleName() + " has died!");
+            System.err.println(getClass().getSimpleName() + " has died!");
             dead = Boolean.TRUE;
         }
 

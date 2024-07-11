@@ -61,24 +61,29 @@ public class Main {
             game = new Game(options);
             while (game.isPlaying()) {
                 promptUser();
-                executeUserCommand(nextCommand());
+                execute(nextCommand());
             }
+            System.err.println("not playing");
         } finally {
             Logger.info(game.getScore());
         }
     }
 
     private String nextCommand() throws IOException {
-            return input.readLine();
+        System.err.println("waiting for input");
+        return input.readLine();
     }
 
-    private void executeUserCommand(String command) {
+    private void execute(String command) {
+        Logger.debug("executing command \"" + command + "\"");
+        System.err.println("executing command \"" + command + "\"");
         Matcher matcher = USER_COMMAND.matcher(command);
         if (matcher.matches()) {
             COMMANDS.get(matcher.group(1).toLowerCase()).execute(matcher.group(2).toLowerCase());
         } else {
             ASK_USER_WHAT.execute(null);
         }
+        Logger.debug("==========");
     }
 
     private void promptUser() {
@@ -102,7 +107,7 @@ public class Main {
         try (final BufferedReader input = new BufferedReader(new InputStreamReader(System.in))) {
             do new Main(input).play(args); while (promptToPlayAgain(input));
         } catch (IOException ioException) {
-            Logger.debug("System Failure", ioException);
+            Logger.error("System Failure", ioException);
         } finally {
             Logger.info("Goodbye");
         }
@@ -111,6 +116,7 @@ public class Main {
     private static boolean promptToPlayAgain(BufferedReader input) throws IOException {
         Logger.info("Play again? (yes/[no])");
         String yesOrNo = input.readLine();
+        Logger.debug("Player responded with \"" + yesOrNo + "\"");
         return yesOrNo.toLowerCase().charAt(0) == 'y';
     }
 }
