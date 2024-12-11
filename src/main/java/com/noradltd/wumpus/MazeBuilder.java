@@ -121,9 +121,9 @@ class MazeBuilder {
 }
 
 class MazeLoader {
-    private static final int MINIMUM_PIT_COUNT = 0;
-    private static final int MINIMUM_WUMPUS_COUNT = 0;
-    private static final int MINIMUM_BAT_COUNT = 0;
+    private static final int MINIMUM_PIT_COUNT = 1;
+    private static final int MINIMUM_WUMPUS_COUNT = 1;
+    private static final int MINIMUM_BAT_COUNT = 1;
     private final Game.Options options;
     private final List<Room> rooms;
     private final Maze maze;
@@ -136,21 +136,15 @@ class MazeLoader {
     }
 
     private int getPitCount() {
-        return options.getPitCount();
-        // TODO this is broken and does not respect the argument
-//        return Math.max(Math.max(MINIMUM_PIT_COUNT, options.getRoomCount() / 5), options.getPitCount());
+        return Math.max(Math.max(MINIMUM_PIT_COUNT, options.getRoomCount() / 5), options.getPitCount());
     }
 
     private int getWumpiCount() {
-        return options.getWumpiCount();
-        // TODO this is broken and does not respect the argument
-//        return Math.max(Math.max(MINIMUM_WUMPUS_COUNT, options.getRoomCount() / 7), options.getWumpiCount());
+        return Math.max(Math.max(MINIMUM_WUMPUS_COUNT, options.getRoomCount() / 7), options.getWumpiCount());
     }
 
     private int getBatCount() {
-        return options.getBatCount();
-        // TODO this is broken and does not respect the argument
-//        return Math.max(Math.max(MINIMUM_BAT_COUNT, options.getRoomCount() / 5), options.getBatCount());
+        return Math.max(Math.max(MINIMUM_BAT_COUNT, options.getRoomCount() / 5), options.getBatCount());
     }
 
     private Maze populateMaze() {
