@@ -1,6 +1,7 @@
 package com.noradltd.wumpus;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -45,6 +46,7 @@ public class ArrowTest {
         assertThat(arrow.killedAWumpus(), is(false));
     }
 
+    @ExtendWith(ResetRandomizerExtension.class)
     @Test
     public void brokenArrowsCannotBeReused() {
         Helpers.programRandomizer(true, true);
@@ -58,6 +60,7 @@ public class ArrowTest {
         assertThat(arrow.isBroken(), is(true));
     }
 
+    @ExtendWith(ResetRandomizerExtension.class)
     @Test
     public void unBrokenArrowsCanBeReused() {
         Room batRoom = new Room();

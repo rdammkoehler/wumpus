@@ -4,6 +4,7 @@ class Wumpus extends Room.Occupant {
 
     private void flee() {
         int exitCount = getRoom().exits().size();
+        Logger.debug("exit count: " + exitCount);
         Room exitRoom = getRoom().exits().get(Random.getRandomizer().nextInt(exitCount));
         moveTo(exitRoom);
         Logger.info("The startled Wumpus runs away!");

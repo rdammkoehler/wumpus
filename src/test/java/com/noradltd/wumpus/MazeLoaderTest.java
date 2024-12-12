@@ -16,7 +16,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 
-public class MazePopulaterTest {
+public class MazeLoaderTest {
 
     public static final Map<Class<? extends Room.Occupant>, String> OPTION_KEY_LOOKUP_BY_OCCUPANT_TYPE = new HashMap<>() {{
         put(Wumpus.class, "--wumpi");

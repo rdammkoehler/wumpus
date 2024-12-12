@@ -11,7 +11,7 @@ class Game {
 
     Game(String[] options) {
         Game.Options gameOptions = new Game.Options(options);
-        System.err.println(gameOptions + "\n******");
+        Logger.debug(gameOptions + "\n******");
         Maze maze = MazeLoader.populate(MazeBuilder.build(gameOptions), gameOptions);
         hunter = new Hunter(new ArrowQuiver(gameOptions.getInitialArrowCount()));
         Logger.debug("Placing Hunter in room " + maze.entrance().number());
@@ -101,6 +101,7 @@ class Game {
             put("--rooms", "roomCount");
             put("--seed", "randomSeed");
             put("--wumpi", "wumpiCount");
+            put("--max_exits", "maxExitCount");
         }};
         public static final Options DEFAULT = new Options();
         public static final int DEFAULT_BAT_COUNT = 0;
@@ -108,13 +109,17 @@ class Game {
         public static final int DEFAULT_WUMPUS_COUNT = 1;
         public static final int DEFAULT_ROOM_COUNT = 20;
         public static final int DEFAULT_INITIAL_ARROW_COUNT = 5;
+        public static final int DEFAULT_EXIT_COUNT = 3;
         private Integer roomCount = DEFAULT_ROOM_COUNT;
         private Long randomSeed = null;
         private Integer wumpiCount = DEFAULT_WUMPUS_COUNT;
         private Integer pitCount = DEFAULT_PIT_COUNT;
         private Integer batCount = DEFAULT_BAT_COUNT;
         private Integer initialArrowCount = DEFAULT_INITIAL_ARROW_COUNT;
+        private Integer maxExitCount = DEFAULT_EXIT_COUNT;
 
+
+        // todo split the value determination out to an Options Adapter
         protected Options(String... options) {
             if (isHelpRequested(options)) {
                 printHelp();
@@ -133,6 +138,7 @@ class Game {
             sb.append(", pitCount=").append(pitCount);
             sb.append(", batCount=").append(batCount);
             sb.append(", initialArrowCount=").append(initialArrowCount);
+            sb.append(", maxExitCount=").append(maxExitCount);
             sb.append('}');
             return sb.toString();
         }
@@ -170,7 +176,8 @@ class Game {
                             "\t--pits #\t\tLimit the number of bottomless pits\n" +
                             "\t--rooms #\t\tLimit the number of rooms\n" +
                             "\t--seed  #\t\tSet the Randomizer seed\n" +
-                            "\t--wumpi  #\t\tLimit the number of wumpi\n"
+                            "\t--wumpi  #\t\tLimit the number of wumpi\n" +
+                            "\t--exits  #\t\tLimit the number of room exits\n"
             );
         }
 
@@ -204,6 +211,10 @@ class Game {
 
         public Integer getInitialArrowCount() {
             return initialArrowCount;
+        }
+
+        public Integer getMaxExitCount() {
+            return maxExitCount;
         }
     }
 }

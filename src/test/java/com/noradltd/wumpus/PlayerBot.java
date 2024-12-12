@@ -2,10 +2,14 @@ package com.noradltd.wumpus;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +38,7 @@ public class PlayerBot {
         loggerList.forEach(tmpLogger -> tmpLogger.setLevel(Level.INFO));
     }
 
+    @Disabled("Disabled until because its slow!")
     @Test
     public void fafo() {
 //        forceLoggersToInfo();

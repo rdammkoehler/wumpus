@@ -54,8 +54,13 @@ class MazeBuilder {
 
     private void addExits(Room room, boolean forceLinking) {
         if (needsMoreExits(room)) {
-            randomLengthIntegerStream(3)  // TODO max exits as a parameter?
-                    .forEach(integer -> addExit(room, forceLinking));
+            // create exits for this room
+            int randNum = Random.getRandomizer().nextInt(options.getMaxExitCount() - 1) + 1;
+            for (int idx = 0; idx < randNum; idx++) {
+                addExit(room, forceLinking);
+            }
+
+            // randomly ensure each exit has enough exits
             room.exits().stream()
                     .filter(exit -> Random.getRandomizer().nextBoolean())
                     .forEach(exit -> addExits(exit, hasEnoughRooms()));
@@ -68,10 +73,16 @@ class MazeBuilder {
     }
 
     private void addExit(Room room, boolean forceLinking) {
-        if (!forceLinking && needsMoreRooms()) {
-            addExit(room);
-        } else {
-            linkExit(room);
+        if (room.exits().size() < options.getMaxExitCount()) {
+            if (needsMoreRooms()) {
+                if (forceLinking) {
+                    linkExit(room);
+                } else {
+                    addExit(room);
+                }
+            } else {
+                linkExit(room);
+            }
         }
     }
 
@@ -81,10 +92,13 @@ class MazeBuilder {
 
     private void linkExit(Room room) {
         Room exit = room;
-        while (exit == room) {
+        int ct = 0;
+        for (;ct < rooms.size() && ( room == exit || exit.exits().size() >= options.getMaxExitCount()); ct++) {
             exit = getRandomRoom(rooms);
         }
-        room.add(exit);
+        if (ct < rooms.size()) {
+            room.add(exit);
+        }
     }
 
     private static Room getRandomRoom(Collection<Room> rooms) {
@@ -96,7 +110,7 @@ class MazeBuilder {
     }
 
     private boolean hasEnoughRooms() {
-        return rooms.size() > getRoomCount() - 1;
+        return rooms.size() > getRoomCount() - 1;  // why -1?
     }
 
     private Integer getRoomCount() {
@@ -104,7 +118,7 @@ class MazeBuilder {
     }
 
     private boolean needsMoreExits(Room room) {
-        return room.exits().size() < 2;
+        return room.exits().size() < 2;  // ensures every room has at least two exits
     }
 
     private Maze buildMaze() {
@@ -130,7 +144,6 @@ class MazeLoader {
 
     MazeLoader(Game.Options options, Maze maze) {
         this.options = options;
-        System.err.println("loader: " + options);
         this.maze = maze;
         rooms = collectAllRooms();
     }
@@ -215,7 +228,7 @@ class MazeLoader {
 
 
     private Collection<Room.Occupant> createOccupantsByType(int requiredCount, Class<? extends Room.Occupant> klass) {
-        System.err.println(requiredCount + "x" +klass.getSimpleName());
+        Logger.debug(requiredCount + "x" + klass.getSimpleName());
         return IntStream
                 .range(0, requiredCount)
                 .mapToObj((idx) -> newOccupant(klass))

@@ -1,6 +1,7 @@
 package com.noradltd.wumpus;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import static com.noradltd.wumpus.Helpers.programRandomizer;
 import static com.noradltd.wumpus.Helpers.resetRandomizer;
@@ -9,6 +10,7 @@ import static org.hamcrest.Matchers.*;
 
 public class WumpusTest {
 
+    @ExtendWith(ResetRandomizerExtension.class)
     @Test
     public void wumpusMovesFromOneRoomToAnotherWhenFleeing() {
         Wumpus wumpus = new Wumpus();
@@ -26,6 +28,7 @@ public class WumpusTest {
         assertThat(secondRoom.occupants(), hasItem(wumpus));
     }
 
+    @ExtendWith(ResetRandomizerExtension.class)
     @Test
     public void wumpusOnlyMovesOneRoomAtATimeWhenFleeing() {
         Wumpus wumpus = new Wumpus();
@@ -46,14 +49,15 @@ public class WumpusTest {
         assertThat(thirdRoom.occupants(), not(hasItem(wumpus)));
     }
 
+    @ExtendWith(ResetRandomizerExtension.class)
     @Test
     public void wumpusEatsHunterWhenGivenAChance() {
         Room room = new Room();
         Wumpus wumpus = new Wumpus();
         wumpus.moveTo(room);
         Hunter hunter = new Hunter();
+        programRandomizer(true, true); // choose wumpus first, then choose eat(hunter)
         hunter.moveTo(room);
-        programRandomizer(true);
 
         wumpus.respondTo(hunter);
 
@@ -61,6 +65,7 @@ public class WumpusTest {
         assertThat(hunter.isDead(), is(true));
     }
 
+    @ExtendWith(ResetRandomizerExtension.class)
     @Test
     public void wumpusWillEatHunterIfThereIsNoEscape() {
         Room room = new Room();
