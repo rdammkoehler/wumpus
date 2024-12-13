@@ -8,6 +8,8 @@ import guru.nidi.graphviz.engine.Format;
 import guru.nidi.graphviz.engine.Graphviz;
 import guru.nidi.graphviz.model.Graph;
 import guru.nidi.graphviz.model.MutableGraph;
+import guru.nidi.graphviz.rough.FillStyle;
+import guru.nidi.graphviz.rough.Roughifyer;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -47,6 +49,7 @@ public class VisualizerTest {
         }
         return Integer.toString(room.number());
     }
+
     Color getRoomColor(Room room, String label) {
         if (isHazardous(room, label)) {
             return Color.BLACK;
@@ -114,13 +117,55 @@ public class VisualizerTest {
                     }
                     links.get(exitLabel).add(roomLabel);
                     graph.add(
-                            node(""+room.number())
+                            node("" + room.number())
                                     .with(roomColor)
-                                    .link(node(""+exit.number()))
+                                    .link(node("" + exit.number()))
                     );
                 }
             }
         }
         Graphviz.fromGraph(graph).height(1000).render(Format.PNG).toFile(new File("maze.png"));
+    }
+
+    // i very much like how this looks
+    @Test
+    public void testGraphMazeRough() throws IOException {
+        List<Room> rooms = getAllRooms(MazeLoader.populate(MazeBuilder.build(), new Game.Options("")));
+        MutableGraph graph = mutGraph("maze").setDirected(false);
+        HashMap<String, List<String>> links = new HashMap<>();
+        for (Room room : rooms) {
+            String roomLabel = createRoomLabel(room);
+            Color roomColor = getRoomColor(room, roomLabel);
+            links.put(roomLabel, new ArrayList<String>());
+            for (Room exit : room.exits()) {
+                String exitLabel = createRoomLabel(exit);
+                if (links.containsKey(roomLabel) && links.get(roomLabel).contains(exitLabel)) {
+                    //skip!
+                } else if (links.containsKey(exitLabel) && links.get(exitLabel).contains(roomLabel)) {
+                    //skip!
+                } else {
+                    links.get(roomLabel).add(exitLabel);
+                    if (!links.containsKey(exitLabel)) {
+                        links.put(exitLabel, new ArrayList<String>());
+                    }
+                    links.get(exitLabel).add(roomLabel);
+                    graph.add(
+                            node("" + room.number())
+                                    .with(roomColor)
+                                    .link(node("" + exit.number()))
+                    );
+                }
+            }
+        }
+        Graphviz.fromGraph(graph)
+                .processor(new Roughifyer()
+                        .bowing(2)
+                        .curveStepCount(6)
+                        .roughness(1)
+                        .fillStyle(FillStyle.hachure().width(2).gap(5).angle(0))
+                        .font("*serif", "Comic Sans MS"))
+                .height(1000)
+                .render(Format.PNG)
+                .toFile(new File("maze.png"));
     }
 }
