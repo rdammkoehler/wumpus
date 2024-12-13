@@ -46,6 +46,7 @@ public class MainTest {
         InputStream originalStdin = System.in;
         try {
             System.setIn(new ByteArrayInputStream(instructions.getBytes()));
+            // TODO could we control the Ransomizer at this point? I think we can
             Main.main(new String[]{"--seed", "0", "--arrows", "20"});
             return stdout.toString();
         } finally {
@@ -152,7 +153,7 @@ public class MainTest {
     @ParameterizedTest
     @ValueSource(strings = {TAKE_T, TAKE_TAKE})
     public void huntersCannotPickupBrokenArrows(String takeCommand) {
-        // TODO the excessive number of shots is because we can't control the randomizer!
+        // TODO the excessive number of shots is because we can't control the randomizer! But I think we can now
         assertThat("The broken arrow crumbles in your hand.", SHOOT_SHOOT + " 1",
                 SHOOT_SHOOT + " 1", SHOOT_SHOOT + " 1", SHOOT_SHOOT + " 1", SHOOT_SHOOT + " 1", SHOOT_SHOOT + " 1",
                 SHOOT_SHOOT + " 1", SHOOT_SHOOT + " 1", SHOOT_SHOOT + " 1", SHOOT_SHOOT + " 1", SHOOT_SHOOT + " 1",

@@ -120,6 +120,7 @@ class Game {
 
 
         // todo split the value determination out to an Options Adapter
+        // todo add a 'visualize' option that allows you to output the graph of the maze
         protected Options(String... options) {
             if (isHelpRequested(options)) {
                 printHelp();
