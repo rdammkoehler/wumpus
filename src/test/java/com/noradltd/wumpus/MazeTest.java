@@ -1,6 +1,6 @@
 package com.noradltd.wumpus;
 
-import org.junit.Ignore;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
@@ -72,7 +72,7 @@ public class MazeTest {
         MazeBuilder.build(options);
     }
 
-    @Ignore("come back and update this when you finalize the output")
+    @Disabled("come back and update this when you finalize the output")
     public void testMazeBuilderPrintsHelpWhenAsked() {
         ByteArrayOutputStream stdout = captureStdout();
         Game.Options options = new Game.Options("--help");
