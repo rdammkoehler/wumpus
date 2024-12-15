@@ -63,20 +63,20 @@ public class Main {
                 promptUser();
                 execute(nextCommand());
             }
-            System.err.println("not playing");
+            Logger.debug("not playing");
         } finally {
             Logger.info(game.getScore());
         }
     }
 
     private String nextCommand() throws IOException {
-        System.err.println("waiting for input");
+        Logger.debug("waiting for input");
         return input.readLine();
     }
 
     private void execute(String command) {
         Logger.debug("executing command \"" + command + "\"");
-        System.err.println("executing command \"" + command + "\"");
+        Logger.debug("executing command \"" + command + "\"");
         Matcher matcher = USER_COMMAND.matcher(command);
         if (matcher.matches()) {
             COMMANDS.get(matcher.group(1).toLowerCase()).execute(matcher.group(2).toLowerCase());

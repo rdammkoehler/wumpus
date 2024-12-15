@@ -7,24 +7,28 @@ import java.util.*;
 
 class Game {
     private final Hunter hunter;
+    private final Maze maze;
     private boolean playing = true;
 
     Game(String[] options) {
         Game.Options gameOptions = new Game.Options(options);
         Logger.debug(gameOptions + "\n******");
-        Maze maze = MazeLoader.populate(MazeBuilder.build(gameOptions), gameOptions);
+        maze = MazeLoader.populate(MazeBuilder.build(gameOptions), gameOptions);
         hunter = new Hunter(new ArrowQuiver(gameOptions.getInitialArrowCount()));
         Logger.debug("Placing Hunter in room " + maze.entrance().number());
         hunter.moveTo(maze.entrance());
         Logger.info(toString());
+        Visualizer.visualize(maze);
     }
 
     public void move(Integer exitIndex) {
         hunter.moveTo(exitIndex);
+        Visualizer.visualize(maze);
     }
 
     public void shoot(Integer exitIndex) {
         hunter.shoot(exitIndex);
+        Visualizer.visualize(maze);
     }
 
     public String inventory() {
@@ -33,6 +37,7 @@ class Game {
 
     public void takeArrow() {
         hunter.takeArrow();
+        Visualizer.visualize(maze);
     }
 
     @Override
@@ -46,6 +51,7 @@ class Game {
 
     public void quit() {
         Logger.debug("user quit");
+        Visualizer.visualize(maze);
         playing = false;
     }
 

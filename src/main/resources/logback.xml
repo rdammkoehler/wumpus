@@ -12,6 +12,7 @@
             <pattern>%-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>
         </encoder>
     </appender>
+    <logger name="guru" levle="OFF"/>
     <logger name="HuntTheWumpusLogger" level="info" additivity="false">
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="FILE"/>

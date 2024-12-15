@@ -23,7 +23,7 @@ public class Helpers {
     }
 
     static List<Room> getAllRooms(Maze maze) {
-        return collectRoom(maze.entrance(), new HashSet<>()).stream().collect(Collectors.toUnmodifiableList());
+        return collectRoom(maze.entrance(), new HashSet<>()).stream().toList();
     }
 
     static Integer countMazeOccupantsByType(Maze maze, Class<? extends Room.Occupant> occupantType) {
