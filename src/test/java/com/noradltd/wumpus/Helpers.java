@@ -86,6 +86,10 @@ public class Helpers {
         };
     }
 
+    static void visualize(Room startingRoom) {
+        Visualizer.visualize(() -> startingRoom);
+    }
+
     static class ProgrammableRandom extends Random {
         private final boolean[] bools;
         private int boolIdx = 0;

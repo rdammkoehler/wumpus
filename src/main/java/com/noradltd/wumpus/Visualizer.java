@@ -32,6 +32,7 @@ public class Visualizer {
     }
 
     private String createRoomLabel(Room room) {
+        Logger.debug("Labeling room " + room.number());
         if (!room.occupants().isEmpty()) {
             StringBuilder text = new StringBuilder();
             for (Room.Occupant occupant : room.occupants()) {
@@ -77,7 +78,12 @@ public class Visualizer {
         for (Room room : rooms) {
             String roomLabel = createRoomLabel(room);
             Color roomColor = getRoomColor(room, roomLabel);
-            links.put(roomLabel, new ArrayList<String>());
+            graph.add(
+                    node("" + room.number())
+                            .with(roomColor)
+                            .with(Label.raw(roomLabel))
+            );
+            links.put(roomLabel, new ArrayList<>());
             for (Room exit : room.exits()) {
                 String exitLabel = createRoomLabel(exit);
                 if (links.containsKey(roomLabel) && links.get(roomLabel).contains(exitLabel)) {
@@ -87,7 +93,7 @@ public class Visualizer {
                 } else {
                     links.get(roomLabel).add(exitLabel);
                     if (!links.containsKey(exitLabel)) {
-                        links.put(exitLabel, new ArrayList<String>());
+                        links.put(exitLabel, new ArrayList<>());
                     }
                     links.get(exitLabel).add(roomLabel);
                     graph.add(

@@ -79,4 +79,47 @@ public class ColonyOfBatsTest {
 
         assertThat(hunter.getRoom(), is(equalTo(finishingRoom)));
     }
+
+    @Test
+    public void aColonyOfBatsDropsTheHunterInAnUnOccupiedRoom() {
+        Room startingRoom = new Room();
+        Room occupiedRoom = new Room();
+        Room finishingRoom = new Room();
+        startingRoom.add(occupiedRoom);
+        occupiedRoom.add(finishingRoom);
+        ColonyOfBats bats = new ColonyOfBats();
+        bats.moveTo(startingRoom);
+        BottomlessPit pit = new BottomlessPit();
+        pit.moveTo(occupiedRoom);
+        Hunter hunter = new Hunter();
+
+        hunter.moveTo(startingRoom);
+
+        assertThat(hunter.getRoom(), is(equalTo(finishingRoom)));
+    }
+
+    @Test
+    public void aColonyOfBatsMovesToAnotherUnoccupiedRoom() {
+        Room startingRoom = new Room();
+        Room occupiedRoom = new Room();
+        Room emptyRoom = new Room();
+        Room finishingRoom = new Room();
+        startingRoom.add(occupiedRoom);
+        occupiedRoom.add(emptyRoom);
+        emptyRoom.add(finishingRoom);
+        ColonyOfBats bats = new ColonyOfBats();
+        bats.moveTo(startingRoom);
+        BottomlessPit pit = new BottomlessPit();
+        pit.moveTo(occupiedRoom);
+        Hunter hunter = new Hunter();
+
+        hunter.moveTo(startingRoom);
+
+//        Helpers.visualize(startingRoom);
+
+        assertThat(bats.getRoom(), is(not(equalTo(hunter.getRoom()))));
+        assertThat(bats.getRoom(), is(not(equalTo(pit.getRoom()))));
+        assertThat(bats.getRoom(), is(not(equalTo(startingRoom))));
+    }
+
 }
