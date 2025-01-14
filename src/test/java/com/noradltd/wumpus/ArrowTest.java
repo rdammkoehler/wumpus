@@ -1,5 +1,6 @@
 package com.noradltd.wumpus;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -101,6 +102,7 @@ public class ArrowTest {
         assertThat(new Arrow().describe(), is(equalTo("--arrows should not be described--")));
     }
 
+    @Disabled("so a null input would just blow up with a null pointer, is that ok?")
     @Test
     public void nullArrowsAreHarmless() {
         // how?

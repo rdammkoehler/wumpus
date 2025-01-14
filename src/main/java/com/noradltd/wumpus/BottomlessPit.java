@@ -1,12 +1,11 @@
 package com.noradltd.wumpus;
 
 public class BottomlessPit extends Room.Occupant {
-    @Override
-    public void respondTo(Room.Occupant interloper) {
-        if (interloper instanceof Hunter hunter) {
+    {
+        interactions.put(Hunter.class, interloper -> {
             Logger.info("You've stumbled into a bottomless pit and died!");
-            hunter.die();
-        }
+            interloper.die();
+        });
     }
 
     @Override

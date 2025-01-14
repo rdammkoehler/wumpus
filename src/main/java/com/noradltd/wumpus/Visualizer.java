@@ -1,6 +1,7 @@
 package com.noradltd.wumpus;
 
 import guru.nidi.graphviz.attribute.Color;
+import guru.nidi.graphviz.attribute.Label;
 import guru.nidi.graphviz.engine.Format;
 import guru.nidi.graphviz.engine.Graphviz;
 import guru.nidi.graphviz.model.MutableGraph;
@@ -9,14 +10,25 @@ import guru.nidi.graphviz.rough.Roughifyer;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static guru.nidi.graphviz.model.Factory.mutGraph;
 import static guru.nidi.graphviz.model.Factory.node;
 
 public class Visualizer {
+
+
+    private static String createDttmStamp() {
+        Date utilDate = new Date(); // Date.from(LocalDate.now().atStartOfDay(ZoneOffset.UTC).toInstant());
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX");
+        return dateFormat.format(utilDate);
+    }
+
     static void visualize(Maze maze) {
         new Visualizer().visualize_(maze);
+        Logger.info("Visualizing maze");
     }
 
     private String createRoomLabel(Room room) {
@@ -32,13 +44,14 @@ public class Visualizer {
 
     private Color getRoomColor(Room room, String label) {
         if (isHazardous(room, label)) {
-            return Color.BLACK;
+            return Color.RED;
         }
-        return Color.RED;
+        return Color.BLACK;
     }
 
     private boolean isHazardous(Room room, String label) {
-        return label.equals(Integer.toString(room.number()));
+        // note: even a dead wumpus is considered dangerous
+        return !label.equals(Integer.toString(room.number()));
     }
 
     private List<Room> getAllRooms(Maze maze) {
@@ -80,22 +93,27 @@ public class Visualizer {
                     graph.add(
                             node("" + room.number())
                                     .with(roomColor)
+                                    .with(Label.raw(roomLabel))
                                     .link(node("" + exit.number()))
                     );
                 }
             }
         }
+        exportGraph(graph);
+    }
+
+    private static void exportGraph(MutableGraph graph) {
         try {
+            String fileName = createDttmStamp() + "_maze.png";
             Graphviz.fromGraph(graph)
                     .processor(new Roughifyer()
                             .bowing(2)
                             .curveStepCount(6)
                             .roughness(1)
-                            .fillStyle(FillStyle.hachure().width(2).gap(5).angle(0))
-                            .font("*serif", "Comic Sans MS"))
+                            .fillStyle(FillStyle.hachure().width(2).gap(5).angle(0)))
                     .height(1000)
                     .render(Format.PNG)
-                    .toFile(new File("maze.png"));
+                    .toFile(new File(fileName));
         } catch (IOException ioe) {
             Logger.error("Could not visualize maze", ioe);
         }

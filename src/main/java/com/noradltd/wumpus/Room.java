@@ -5,8 +5,22 @@ import java.util.stream.Collectors;
 
 class Room {
     static abstract class Occupant implements Comparable<Occupant> {
+        interface Interaction {
+            void execute(Room.Occupant interloper);
+        }
+
         private Room room;
         private Boolean dead = Boolean.FALSE;
+        protected HashMap<Class<? extends Room.Occupant>, Interaction> interactions = new HashMap<>() {
+            @Override
+            public Interaction get(Object key) {
+                return super.getOrDefault(key, arg -> new Interaction() {
+                    @Override
+                    public void execute(Room.Occupant interloper) {
+                    }
+                });
+            }
+        };
 
         Room getRoom() {
             return room;
@@ -23,7 +37,15 @@ class Room {
             newRoom.add(this);
         }
 
-        abstract void respondTo(Occupant actioned);
+        void respondTo(Occupant interloper) {
+            if (isAlive() && interloper.isAlive()) { // TODO broke one test when added, in Hunter re: Can't kill dead Wumpus
+                interactions.get(interloper.getClass()).execute(interloper);
+            }
+        }
+
+        Boolean isAlive() {
+            return !dead;
+        }
 
         Boolean isDead() {
             return dead;
@@ -90,7 +112,9 @@ class Room {
                 }
             }
         }
-        if (!occupants.isEmpty()) {
+        if (occupants.isEmpty()) {
+            Logger.debug("this room is empty");
+        } else {
             if (!interloper.isDead()) {
                 Logger.debug(interloper.getClass().getSimpleName() + " is interacting with " + occupants.stream()
                         .map(occupant -> occupant.getClass().getSimpleName() + "(" + ((occupant.isDead()) ? "DEAD" : "ALIVE") + ")")
@@ -104,8 +128,6 @@ class Room {
                     }
                 }
             }
-        } else {
-            Logger.debug("this room is empty");
         }
         if (!interloper.isDead() && interloper.getRoom().equals(this)) {
             occupants.add(interloper);

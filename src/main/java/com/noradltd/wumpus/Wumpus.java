@@ -1,6 +1,17 @@
 package com.noradltd.wumpus;
 
 class Wumpus extends Room.Occupant {
+    {
+        interactions.put(Hunter.class, interloper -> {
+            if (interloper.isAlive()) {
+                if (Random.getRandomizer().nextBoolean()) {
+                    eat(interloper);
+                } else {
+                    flee();
+                }
+            }
+        });
+    }
 
     private void flee() {
         int exitCount = getRoom().exits().size();
@@ -10,23 +21,10 @@ class Wumpus extends Room.Occupant {
         Logger.info("The startled Wumpus runs away!");
     }
 
-    private void eat(Hunter hunter) {
+    private void eat(Room.Occupant hunter) {
         if (hunter.getRoom().equals(getRoom())) {
             Logger.info("Nom Nom Nom, a Wumpus has eaten you.");
             hunter.die();
-        }
-    }
-
-    @Override
-    public void respondTo(Room.Occupant interloper) {
-        if (!isDead() && !interloper.isDead()) {
-            if (interloper instanceof Hunter hunter) {
-                if (Random.getRandomizer().nextBoolean()) {
-                    eat(hunter);
-                } else {
-                    flee();
-                }
-            }
         }
     }
 

@@ -18,17 +18,19 @@ class Game {
         Logger.debug("Placing Hunter in room " + maze.entrance().number());
         hunter.moveTo(maze.entrance());
         Logger.info(toString());
+    }
+
+    void vizualize() {
         Visualizer.visualize(maze);
     }
 
     public void move(Integer exitIndex) {
         hunter.moveTo(exitIndex);
-        Visualizer.visualize(maze);
+        Logger.info(toString());
     }
 
     public void shoot(Integer exitIndex) {
         hunter.shoot(exitIndex);
-        Visualizer.visualize(maze);
     }
 
     public String inventory() {
@@ -37,7 +39,6 @@ class Game {
 
     public void takeArrow() {
         hunter.takeArrow();
-        Visualizer.visualize(maze);
     }
 
     @Override
@@ -51,7 +52,6 @@ class Game {
 
     public void quit() {
         Logger.debug("user quit");
-        Visualizer.visualize(maze);
         playing = false;
     }
 

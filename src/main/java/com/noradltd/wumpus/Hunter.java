@@ -2,6 +2,10 @@ package com.noradltd.wumpus;
 
 class Hunter extends Room.Occupant {
 
+    {
+        interactions.put(Wumpus.class, this::kill);
+    }
+
     interface Quiver {
         boolean isEmpty();
 
@@ -88,15 +92,15 @@ class Hunter extends Room.Occupant {
         return true;
     }
 
-    void kill(Wumpus wumpus) {
-        if (isDead()) {
-            // Hunter is dead and cannot act
-            return;
-        }
-        if (wumpus.isDead()) {
-            // Wumpus is already dead
-            return;
-        }
+    void kill(Room.Occupant wumpus) {
+//        if (isDead()) {
+//            // Hunter is dead and cannot act
+//            return;
+//        }
+//        if (wumpus.isDead()) {
+//            // Wumpus is already dead
+//            return;
+//        }
         if (getRoom().equals(wumpus.getRoom())) {
             // need to check that the wumpus has not fled, hence the room check
             if (Random.getRandomizer().nextBoolean()) {
@@ -120,13 +124,6 @@ class Hunter extends Room.Occupant {
                 }
             }
         });
-    }
-
-    @Override
-    public void respondTo(Room.Occupant interloper) {
-        if (interloper instanceof Wumpus wumpus) {
-            kill(wumpus);
-        }
     }
 
     @Override

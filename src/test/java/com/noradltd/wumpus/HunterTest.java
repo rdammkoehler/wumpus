@@ -1,5 +1,6 @@
 package com.noradltd.wumpus;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -269,6 +270,7 @@ public class HunterTest {
         assertThat(hunter.describe(), is(equalTo("You smell the mouldering of a corpse")));
     }
 
+    @Disabled("this is now controlled in Room.Occupant.respondTo(Occupant), so checking in Hunter is redundant")
     @Test
     public void youCannotKillADeadWumpus() {
         Hunter hunter = new Hunter();

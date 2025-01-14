@@ -1,25 +1,20 @@
 package com.noradltd.wumpus;
 
 public class Arrow extends Room.Occupant {
-    static final Arrow NULL_ARROW = new Arrow() {
-        @Override
-        public void respondTo(Room.Occupant occupant) {
-            // no-op
-        }
-    };
-
+    static final Arrow NULL_ARROW = new Arrow();
     private static int nextArrowId = 0;
+
     private final int arrowId = nextArrowId++;
     private boolean killedAWumpus = false;
 
-    @Override
-    public void respondTo(Room.Occupant interloper) {
-        if (!isBroken() && interloper instanceof Wumpus) {
-            interloper.die();
-            killedAWumpus = true;
-            Logger.info("Your arrow drives itself deep into the hideous beast; it's life force escaping from the hole in it's leathery hide");
-            shatter();
-        }
+    {
+        interactions.put(Wumpus.class,
+                interloper -> {
+                    interloper.die();
+                    killedAWumpus = true; // forcing order of definition issues
+                    Logger.info("Your arrow drives itself deep into the hideous beast; it's life force escaping from the hole in it's leathery hide");
+                    shatter();  // TODO this is weird but shatter has more than us as a caller
+                });
     }
 
     @Override

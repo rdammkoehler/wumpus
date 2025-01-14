@@ -39,6 +39,7 @@ public class Main {
             addCommands(arg -> showHelp(), "?", "h", "help");
             addCommands(arg -> Logger.info(game.toString()), "l", "look");
             addCommands(arg -> game.takeArrow(), "t", "take");
+            addCommands(arg -> game.vizualize(), "v", "viz"); // hidden
         }
 
         private Integer exitNumber(String arg) {
@@ -75,7 +76,6 @@ public class Main {
     }
 
     private void execute(String command) {
-        Logger.debug("executing command \"" + command + "\"");
         Logger.debug("executing command \"" + command + "\"");
         Matcher matcher = USER_COMMAND.matcher(command);
         if (matcher.matches()) {
