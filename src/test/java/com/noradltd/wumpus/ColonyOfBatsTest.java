@@ -94,7 +94,7 @@ public class ColonyOfBatsTest {
         Hunter hunter = new Hunter();
 
         hunter.moveTo(startingRoom);
-
+        Helpers.visualize(startingRoom);
         assertThat(hunter.getRoom(), is(equalTo(finishingRoom)));
     }
 
@@ -115,11 +115,34 @@ public class ColonyOfBatsTest {
 
         hunter.moveTo(startingRoom);
 
-//        Helpers.visualize(startingRoom);
+       Helpers.visualize(startingRoom);
 
         assertThat(bats.getRoom(), is(not(equalTo(hunter.getRoom()))));
         assertThat(bats.getRoom(), is(not(equalTo(pit.getRoom()))));
         assertThat(bats.getRoom(), is(not(equalTo(startingRoom))));
     }
 
+
+    // interesting problem, because there are only two rooms and the rules say the target must be empty for
+    // both the hunter and the bats move and the new room cannot be the starting room the bats keep landing in the room
+    // with the hunter and the whole thing starts again until we run out of stack space
+    // how to fix?
+    // this seems to be because we move the hunter to occupied room (no choice)
+    // then we try to move the bats but they can only go to the occupied room, which trigges the bats. So the
+    // other option is 'don't move the bats'
+    @Test
+    public void aColonyOfBatsMovesHunterToAnOccupiedRoomIfItHasNoOtherOptions() {
+        Room startingRoom = new Room();
+        Room occupiedRoom = new Room();
+        ColonyOfBats bats = new ColonyOfBats();startingRoom.add(occupiedRoom);
+        bats.moveTo(startingRoom);
+        BottomlessPit pit = new BottomlessPit();
+        pit.moveTo(occupiedRoom);
+        Hunter hunter = new Hunter();
+
+        hunter.moveTo(startingRoom);
+
+        assertThat(hunter.getRoom(), is(equalTo(startingRoom)));
+        assertThat(hunter.isAlive(), is(true));
+    }
 }

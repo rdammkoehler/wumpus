@@ -7,11 +7,20 @@ public class ColonyOfBats extends Room.Occupant {
     {
         interactions.put(Hunter.class,
                 interloper -> {
+            /* these new rules about Bats and relocating and empty rooms are 'hard' you need to focus */
+                    Room originalRoom = interloper.getRoom();
                     Room randomRoom = findRandomRoom();
-                    Logger.info("A swarm of bats lift you from the ground in a blinding flurry of leathery wings. They drop you in room " + randomRoom.number());
-                    interloper.moveTo(randomRoom);
-                    // TODO should the Colony return to it's original location or find a new one?
-                    moveTo(findRandomRoom());
+                    if (randomRoom.number().equals(originalRoom.number())) {
+                        Logger.info("A swarm of bats swirls around you, screeching and wailing"); // TODO add test here
+                    } else {
+                        Logger.info("A swarm of bats lift you from the ground in a blinding flurry of leathery wings. They drop you in room " + randomRoom.number());
+                        interloper.moveTo(randomRoom);
+                    }
+                    Room newBatRoom = findRandomRoom();
+                    if (!newBatRoom.number().equals(getRoom().number())) {
+                        Logger.debug("Moving the colony of bats to room " + newBatRoom.number());
+                        moveTo(newBatRoom);
+                    }
                 }
 
         );
@@ -21,9 +30,8 @@ public class ColonyOfBats extends Room.Occupant {
         Room currentRoom = getRoom();
         Stack<Room> stack = new Stack<>();
         stack.push(currentRoom);
-        final int limit = 30;
-        int count = 0;
-        while (count < limit && getRoom().equals(currentRoom)) {
+        final int limit = 3;
+        for (int count = 0; count < limit && getRoom().equals(currentRoom); count++) {
             // TODO max moves parameterized?
             IntStream.range(0, Random.getRandomizer().nextInt(10) + 1)
                     .forEach(idx ->
@@ -42,8 +50,6 @@ public class ColonyOfBats extends Room.Occupant {
             if (candidateRoom.occupants().isEmpty()) {
                 currentRoom = candidateRoom;
             }
-            // TODO what about the case where there are no unoccupied rooms to go to?
-            count++;
         }
         return currentRoom;
     }
