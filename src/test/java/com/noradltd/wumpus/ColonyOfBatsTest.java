@@ -115,11 +115,12 @@ public class ColonyOfBatsTest {
 
         hunter.moveTo(startingRoom);
 
-       Helpers.visualize(startingRoom);
+        Helpers.visualize(startingRoom);
 
         assertThat(bats.getRoom(), is(not(equalTo(hunter.getRoom()))));
         assertThat(bats.getRoom(), is(not(equalTo(pit.getRoom()))));
         assertThat(bats.getRoom(), is(not(equalTo(startingRoom))));
+        assertThat(bats.getRoom(), is(equalTo(finishingRoom)));
     }
 
 
@@ -134,7 +135,8 @@ public class ColonyOfBatsTest {
     public void aColonyOfBatsMovesHunterToAnOccupiedRoomIfItHasNoOtherOptions() {
         Room startingRoom = new Room();
         Room occupiedRoom = new Room();
-        ColonyOfBats bats = new ColonyOfBats();startingRoom.add(occupiedRoom);
+        ColonyOfBats bats = new ColonyOfBats();
+        startingRoom.add(occupiedRoom);
         bats.moveTo(startingRoom);
         BottomlessPit pit = new BottomlessPit();
         pit.moveTo(occupiedRoom);

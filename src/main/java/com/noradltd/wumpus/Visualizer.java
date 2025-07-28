@@ -120,6 +120,7 @@ public class Visualizer {
                     .height(1000)
                     .render(Format.PNG)
                     .toFile(new File(fileName));
+            Logger.info("exported maze to " + fileName);
         } catch (IOException ioe) {
             Logger.error("Could not visualize maze", ioe);
         }

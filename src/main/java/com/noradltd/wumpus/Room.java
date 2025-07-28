@@ -106,8 +106,10 @@ class Room {
             }
 
             void interact(Occupant victim) {
+                Logger.debug(" victim " + victim.getClass().getSimpleName() + " responding to " + instigator.getClass().getSimpleName());
                 victim.respondTo(instigator);
                 if (victim.getRoom().number().equals(instigator.getRoom().number())) {
+                    Logger.debug(" instigator " + instigator.getClass().getSimpleName() + " responding to " + victim.getClass().getSimpleName());
                     instigator.respondTo(victim);
                 }
             }
