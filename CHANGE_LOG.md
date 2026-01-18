@@ -2,6 +2,46 @@
 
 All notable changes to the Hunt the Wumpus project are documented in this file.
 
+## [1.0.8] - 2026-01-18
+
+### Added
+
+#### Docker Support
+
+**Feature:** Added Dockerfile for containerized gameplay with visualization support.
+
+**File:** `Dockerfile`
+
+**Image Details:**
+- **Base:** Alpine 3.19 (minimal footprint)
+- **Java:** OpenJDK 17 JRE
+- **Visualization:** Graphviz + DejaVu fonts
+- **Size:** ~354MB
+- **Multi-stage build:** Separates build (JDK + Maven) from runtime (JRE only)
+
+**Usage:**
+```bash
+# Build the image
+docker build -t wumpus:latest .
+
+# Run the game interactively
+docker run --rm -it wumpus:latest
+
+# Run with custom options
+docker run --rm -it wumpus:latest --rooms 30 --wumpi 3
+
+# Show help
+docker run --rm wumpus:latest --help
+```
+
+**Dockerfile Features:**
+- Multi-stage build for minimal runtime image
+- Dependency caching via `mvn dependency:go-offline`
+- Graphviz included for maze visualization command
+- DejaVu fonts for proper text rendering in visualizations
+
+---
+
 ## [1.0.7] - 2026-01-18
 
 ### Added
