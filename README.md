@@ -8,16 +8,69 @@ Guided by Gregory Brown's [article](https://practicingruby.com/articles/wumpus)
 
 ## Playing
 
-Ensure that JRE 17+ is in your path
+### Option 1: Using the Launch Script
 
-```shell script
+Ensure that JRE 17+ is available, then run:
+
+```bash
+./bin/wump
+```
+
+With custom options:
+
+```bash
+./bin/wump --rooms 30 --wumpi 3 --arrows 10
+```
+
+### Option 2: Using Docker
+
+Build and run with Docker (no Java installation required):
+
+```bash
+# Build the image
+docker build -t wumpus:latest .
+
+# Run the game interactively
+docker run --rm -it wumpus:latest
+
+# Run with custom options
+docker run --rm -it wumpus:latest --rooms 30 --wumpi 3
+```
+
+### Option 3: Using the JAR Directly
+
+Ensure that JRE 17+ is in your path:
+
+```bash
 export PATH=$JAVA_HOME/bin:$PATH
 ```
 
+Build and run:
+
+```bash
+mvn package
+java -jar target/wumpus-1.0-SNAPSHOT.jar
+```
+
+### Command Line Options
+
+| Option | Description | Default |
+|--------|-------------|---------|
+| `--rooms #` | Number of rooms in the maze | 20 |
+| `--wumpi #` | Number of wumpi | 1 |
+| `--arrows #` | Number of arrows | 5 |
+| `--pits #` | Number of bottomless pits | 0 |
+| `--bats #` | Number of bat colonies | 0 |
+| `--max_exits #` | Maximum exits per room | 3 |
+| `--seed #` | Random seed for reproducibility | - |
+| `--help` | Show help | - |
+
+### Gameplay
+
 Start the Game
 
-```shell script
-wump
+```bash
+./bin/wump
 ```
 
 When prompted, type your command followed by 'Enter'
