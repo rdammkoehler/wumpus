@@ -111,6 +111,9 @@ public class Visualizer {
             Logger.info("exported maze to " + fileName);
         } catch (IOException ioe) {
             Logger.error("Could not visualize maze", ioe);
+        } catch (Exception e) {
+            // Handle cases where native libraries (J2V8, Graphviz) are not available
+            Logger.error("Visualization unavailable: " + e.getMessage());
         }
     }
 }

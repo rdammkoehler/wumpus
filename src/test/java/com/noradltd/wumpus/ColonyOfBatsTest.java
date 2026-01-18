@@ -84,6 +84,7 @@ public class ColonyOfBatsTest {
         assertThat(hunter.getRoom(), is(equalTo(finishingRoom)));
     }
 
+    @ExtendWith(ResetRandomizerExtension.class)
     @Test
     public void aColonyOfBatsDropsTheHunterInAnUnOccupiedRoom() {
         Room startingRoom = new Room();
@@ -96,12 +97,21 @@ public class ColonyOfBatsTest {
         BottomlessPit pit = new BottomlessPit();
         pit.moveTo(occupiedRoom);
         Hunter hunter = new Hunter();
+        // Program randomizer with:
+        // - booleans: false for interaction order (bats respond to hunter)
+        // - ints for RandomRoomFinder: 1 means 2 iterations (to traverse 5→6→7),
+        //   then 0,1 to select exits (0 from room5=room6, 1 from room6=room7)
+        Helpers.programRandomizer(
+                new boolean[]{false, false},
+                new int[]{1, 0, 1, 0, 0, 0, 0, 0, 0, 0}
+        );
 
         hunter.moveTo(startingRoom);
         Helpers.visualize(startingRoom);
         assertThat(hunter.getRoom(), is(equalTo(finishingRoom)));
     }
 
+    @ExtendWith(ResetRandomizerExtension.class)
     @Test
     public void aColonyOfBatsMovesToAnotherUnoccupiedRoom() {
         Room startingRoom = new Room();
@@ -116,6 +126,13 @@ public class ColonyOfBatsTest {
         BottomlessPit pit = new BottomlessPit();
         pit.moveTo(occupiedRoom);
         Hunter hunter = new Hunter();
+        // Program randomizer with:
+        // - booleans: false for interaction order (bats respond to hunter)
+        // - ints for RandomRoomFinder navigation
+        Helpers.programRandomizer(
+                new boolean[]{false, false},
+                new int[]{0, 0, 0, 1, 0, 0, 0, 1, 0, 1}
+        );
 
         hunter.moveTo(startingRoom);
 

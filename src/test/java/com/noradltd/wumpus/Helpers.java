@@ -57,6 +57,10 @@ public class Helpers {
         Game.getThreadLocalBag().replace(RANDOMIZER_THREADLOCALBAGKEY, new Helpers.ProgrammableRandom(ints));
     }
 
+    public static void programRandomizer(boolean[] bools, int[] ints) {
+        Game.getThreadLocalBag().replace(RANDOMIZER_THREADLOCALBAGKEY, new Helpers.ProgrammableRandom(bools, ints));
+    }
+
     public static void resetRandomizer() {
         final Random random = new Random();
         random.setSeed(0L);
@@ -75,7 +79,12 @@ public class Helpers {
     }
 
     static void visualize(Room startingRoom) {
-        Visualizer.visualize(() -> startingRoom);
+        try {
+            Visualizer.visualize(() -> startingRoom);
+        } catch (Exception e) {
+            // Visualization is optional - don't fail tests if native libraries are unavailable
+            Logger.debug("Visualization skipped: " + e.getMessage());
+        }
     }
 
     static class ProgrammableRandom extends Random {
@@ -92,6 +101,11 @@ public class Helpers {
         ProgrammableRandom(int... ints) {
             this.ints = ints;
             this.bools = new boolean[0];
+        }
+
+        ProgrammableRandom(boolean[] bools, int[] ints) {
+            this.bools = bools;
+            this.ints = ints;
         }
 
         @Override
