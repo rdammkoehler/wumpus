@@ -2,6 +2,48 @@
 
 All notable changes to the Hunt the Wumpus project are documented in this file.
 
+## [1.0.5] - 2026-01-18
+
+### Added
+
+#### Executable JAR with Bundled Dependencies
+
+**Feature:** Configure Maven to produce a fully executable fat JAR.
+
+**Changes to pom.xml:**
+
+##### maven-jar-plugin (v3.3.0)
+- Generates manifest with `Main-Class: com.noradltd.wumpus.Main`
+- Adds default implementation entries (version, title, vendor)
+
+##### maven-shade-plugin (v3.5.1)
+- Creates uber-JAR with all runtime dependencies bundled
+- `ServicesResourceTransformer` merges META-INF/services files (required for logging)
+- Filters exclude signature files (*.SF, *.DSA, *.RSA) to avoid security conflicts
+
+**Generated Manifest:**
+```
+Manifest-Version: 1.0
+Implementation-Title: wumpus
+Implementation-Version: 1.0-SNAPSHOT
+Implementation-Vendor: NOrad Ltd.
+Main-Class: com.noradltd.wumpus.Main
+```
+
+**Output JARs:**
+| File | Size | Description |
+|------|------|-------------|
+| `target/wumpus-1.0-SNAPSHOT.jar` | 8MB | Shaded JAR with all dependencies |
+| `target/original-wumpus-1.0-SNAPSHOT.jar` | 55K | Original JAR without dependencies |
+
+**Usage:**
+```bash
+mvn package
+java -jar target/wumpus-1.0-SNAPSHOT.jar
+```
+
+---
+
 ## [1.0.4] - 2026-01-18
 
 ### Changed
