@@ -1,9 +1,7 @@
 package com.noradltd.wumpus;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.*;
+import java.util.function.Consumer;
 
 class Game {
     private final Hunter hunter;
@@ -82,16 +80,6 @@ class Game {
     }
 
     public static class Options {
-        private static final Map<String, String> optionNameAttrMap = new HashMap<>() {{
-            put("--arrows", "initialArrowCount");
-            put("--bats", "batCount");
-            put("--format", "displayFormat");
-            put("--pits", "pitCount");
-            put("--rooms", "roomCount");
-            put("--seed", "randomSeed");
-            put("--wumpi", "wumpiCount");
-            put("--max_exits", "maxExitCount");
-        }};
         public static final Options DEFAULT = new Options();
         public static final int DEFAULT_BAT_COUNT = 0;
         public static final int DEFAULT_PIT_COUNT = 0;
@@ -107,6 +95,15 @@ class Game {
         private Integer initialArrowCount = DEFAULT_INITIAL_ARROW_COUNT;
         private Integer maxExitCount = DEFAULT_EXIT_COUNT;
 
+        private final Map<String, Consumer<String>> optionSetters = Map.of(
+                "--arrows", value -> initialArrowCount = Integer.valueOf(value),
+                "--bats", value -> batCount = Integer.valueOf(value),
+                "--pits", value -> pitCount = Integer.valueOf(value),
+                "--rooms", value -> roomCount = Integer.valueOf(value),
+                "--seed", value -> randomSeed = Long.valueOf(value),
+                "--wumpi", value -> wumpiCount = Integer.valueOf(value),
+                "--max_exits", value -> maxExitCount = Integer.valueOf(value)
+        );
 
         // todo split the value determination out to an Options Adapter
         // todo add a 'visualize' option that allows you to output the graph of the maze
@@ -137,7 +134,7 @@ class Game {
             Map<String, String> optionValues = mapOptionValues(options);
             Arrays.stream(options)
                     .filter(option -> option.startsWith("--"))
-                    .forEach(option -> setOptionValue(optionNameAttrMap.get(option), optionValues.get(option)));
+                    .forEach(option -> setOptionValue(option, optionValues.get(option)));
         }
 
         private static Map<String, String> mapOptionValues(String[] options) {
@@ -148,16 +145,12 @@ class Game {
             return optionValues;
         }
 
-        // TODO STRUCTURAL: Replace reflection-based configuration - bypasses type safety, hard to debug,
-        //   breaks with refactoring. Consider: explicit setters, or use a CLI library (Picocli, JCommander)
-        private void setOptionValue(String attrName, String optionValue) {
-            try {
-                Field field = getClass().getDeclaredField(attrName);
-                Method valueOf = field.getType().getMethod("valueOf", String.class);
-                field.set(this, valueOf.invoke(null, optionValue));
-            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException |
-                     NoSuchFieldException | NullPointerException ex) {
-                Logger.debug("cli: unknown argument " + attrName + " " + ex.getMessage(), ex);
+        private void setOptionValue(String optionName, String optionValue) {
+            Consumer<String> setter = optionSetters.get(optionName);
+            if (setter != null) {
+                setter.accept(optionValue);
+            } else {
+                Logger.debug("cli: unknown argument " + optionName);
             }
         }
 

@@ -2,6 +2,67 @@
 
 All notable changes to the Hunt the Wumpus project are documented in this file.
 
+## [1.0.4] - 2026-01-18
+
+### Changed
+
+#### Game.Options - Replace Reflection with Explicit Setters
+
+**Problem:** The `Options` inner class in `Game.java` used reflection-based configuration that bypassed type safety, was hard to debug, and would break with refactoring (identified in TODO comment at lines 151-152).
+
+**Solution:** Replaced reflection with a `Map<String, Consumer<String>>` of explicit setter lambdas.
+
+**Before:**
+```java
+private static final Map<String, String> optionNameAttrMap = new HashMap<>() {{
+    put("--arrows", "initialArrowCount");
+    put("--bats", "batCount");
+    // ... field name strings
+}};
+
+private void setOptionValue(String attrName, String optionValue) {
+    try {
+        Field field = getClass().getDeclaredField(attrName);
+        Method valueOf = field.getType().getMethod("valueOf", String.class);
+        field.set(this, valueOf.invoke(null, optionValue));
+    } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException |
+             NoSuchFieldException | NullPointerException ex) {
+        Logger.debug("cli: unknown argument " + attrName + " " + ex.getMessage(), ex);
+    }
+}
+```
+
+**After:**
+```java
+private final Map<String, Consumer<String>> optionSetters = Map.of(
+    "--arrows", value -> initialArrowCount = Integer.valueOf(value),
+    "--bats", value -> batCount = Integer.valueOf(value),
+    "--pits", value -> pitCount = Integer.valueOf(value),
+    "--rooms", value -> roomCount = Integer.valueOf(value),
+    "--seed", value -> randomSeed = Long.valueOf(value),
+    "--wumpi", value -> wumpiCount = Integer.valueOf(value),
+    "--max_exits", value -> maxExitCount = Integer.valueOf(value)
+);
+
+private void setOptionValue(String optionName, String optionValue) {
+    Consumer<String> setter = optionSetters.get(optionName);
+    if (setter != null) {
+        setter.accept(optionValue);
+    } else {
+        Logger.debug("cli: unknown argument " + optionName);
+    }
+}
+```
+
+**Benefits:**
+- Type-safe: compiler catches type mismatches
+- Refactoring-safe: IDE renames update the lambdas automatically
+- Debuggable: no reflection stack traces, clear control flow
+- Removed reflection imports (`java.lang.reflect.Field`, `Method`, `InvocationTargetException`)
+- Removed TODO comment (issue resolved)
+
+---
+
 ## [1.0.3] - 2026-01-18
 
 ### Changed
@@ -342,9 +403,9 @@ The following structural improvements are documented as TODO comments for future
 **Issue:** ThreadLocal state management creates hidden dependencies and makes testing harder.
 **Suggestion:** Use explicit dependency injection - pass `Random` instance through constructors.
 
-#### Game.java (Line 172-173)
+#### ~~Game.java (Line 172-173)~~ ✅ RESOLVED in v1.0.4
 **Issue:** Reflection-based configuration in `Options.setOptionValue()` bypasses type safety and is hard to debug.
-**Suggestion:** Use explicit setter methods or a CLI library (Picocli, JCommander).
+**Resolution:** Replaced with `Map<String, Consumer<String>>` of explicit setter lambdas.
 
 #### ~~Main.java (Line 14-15)~~ ✅ RESOLVED in v1.0.2
 **Issue:** Mixed concerns - CLI I/O, game loop, command parsing, and help text generation.
