@@ -1,5 +1,7 @@
 package com.noradltd.wumpus;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
@@ -7,7 +9,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-interface Maze {
+interface Maze extends Serializable {
     Room entrance();
 }
 
@@ -15,6 +17,9 @@ class MazeBuilder {
     private static final Integer MIN_ROOM_COUNT = 2;
 
     static class MazeStruct implements Maze {
+        @Serial
+        private static final long serialVersionUID = 1L;
+
         private final Room entrance;
 
         private MazeStruct(Set<Room> rooms) {

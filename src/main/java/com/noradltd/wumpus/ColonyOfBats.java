@@ -1,7 +1,14 @@
 package com.noradltd.wumpus;
 
+import java.io.Serial;
+
 public class ColonyOfBats extends Room.Occupant {
-    {
+    @Serial
+    private static final long serialVersionUID = 1L;
+
+    @Override
+    protected void initInteractions() {
+        super.initInteractions();
         interactions.put(Hunter.class,
                 interloper -> {
             /* these new rules about Bats and relocating and empty rooms are 'hard' you need to focus */

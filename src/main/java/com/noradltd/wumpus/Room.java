@@ -1,26 +1,43 @@
 package com.noradltd.wumpus;
 
+import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
-class Room {
-    static abstract class Occupant implements Comparable<Occupant> {
+class Room implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
+
+    static abstract class Occupant implements Comparable<Occupant>, Serializable {
+        @Serial
+        private static final long serialVersionUID = 1L;
+
         interface Interaction {
             void execute(Room.Occupant interloper);
         }
 
         private Room room;
         private Boolean dead = Boolean.FALSE;
-        protected HashMap<Class<? extends Room.Occupant>, Interaction> interactions = new HashMap<>() {
-            @Override
-            public Interaction get(Object key) {
-                return super.getOrDefault(key, arg -> new Interaction() {
-                    @Override
-                    public void execute(Room.Occupant interloper) {
-                    }
-                });
-            }
-        };
+        protected transient HashMap<Class<? extends Room.Occupant>, Interaction> interactions;
+
+        protected Occupant() {
+            initInteractions();
+        }
+
+        protected void initInteractions() {
+            interactions = new HashMap<>() {
+                @Override
+                public Interaction get(Object key) {
+                    return super.getOrDefault(key, arg -> {});
+                }
+            };
+        }
+
+        @Serial
+        private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+            in.defaultReadObject();
+            initInteractions();
+        }
 
         Room getRoom() {
             return room;

@@ -1,9 +1,13 @@
 package com.noradltd.wumpus;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.List;
 import java.util.stream.Collectors;
 
-class InteractionResolver {
+class InteractionResolver implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private final Room room;
     private final OccupantManager occupantManager;

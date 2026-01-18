@@ -1,7 +1,14 @@
 package com.noradltd.wumpus;
 
+import java.io.Serial;
+
 class Wumpus extends Room.Occupant {
-    {
+    @Serial
+    private static final long serialVersionUID = 1L;
+
+    @Override
+    protected void initInteractions() {
+        super.initInteractions();
         interactions.put(Hunter.class, interloper -> {
             if (interloper.isAlive()) {
                 if (Random.getRandomizer().nextBoolean()) {

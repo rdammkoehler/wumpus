@@ -1,9 +1,14 @@
 package com.noradltd.wumpus;
 
+import java.io.*;
 import java.util.*;
 import java.util.function.Consumer;
 
-class Game {
+class Game implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
+    private static final String SAVE_FILE = "game_state";
+
     private final Hunter hunter;
     private final Maze maze;
     private boolean playing = true;
@@ -51,6 +56,15 @@ class Game {
     public void quit() {
         Logger.debug("user quit");
         playing = false;
+    }
+
+    public void saveState() {
+        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(SAVE_FILE))) {
+            out.writeObject(this);
+            Logger.info("Game state saved to " + SAVE_FILE);
+        } catch (IOException e) {
+            Logger.error("Failed to save game state", e);
+        }
     }
 
     public String getScore() {

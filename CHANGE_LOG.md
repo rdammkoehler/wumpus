@@ -2,6 +2,48 @@
 
 All notable changes to the Hunt the Wumpus project are documented in this file.
 
+## [1.0.9] - 2026-01-18
+
+### Added
+
+#### Save Game State Feature
+
+**Feature:** Added ability to save game state during gameplay.
+
+**Commands:**
+- `r` or `remember` - Save current game state to file
+
+**Implementation:**
+- Game state saved to file named `game_state` using Java serialization
+- All game classes now implement `Serializable`
+- Interactions (lambda expressions) handled via transient fields with `initInteractions()` pattern
+
+**Classes Modified:**
+| Class | Change |
+|-------|--------|
+| `Game` | Added `Serializable`, `saveState()` method |
+| `Room` | Added `Serializable` |
+| `Room.Occupant` | Added `Serializable`, transient `interactions`, `initInteractions()` |
+| `Hunter` | Added `serialVersionUID`, `initInteractions()` override |
+| `Wumpus` | Added `serialVersionUID`, `initInteractions()` override |
+| `Arrow` | Added `serialVersionUID`, `initInteractions()` override |
+| `ArrowQuiver` | Added `Serializable` |
+| `BottomlessPit` | Added `serialVersionUID`, `initInteractions()` override |
+| `ColonyOfBats` | Added `serialVersionUID`, `initInteractions()` override |
+| `OccupantManager` | Added `Serializable` |
+| `InteractionResolver` | Added `Serializable` |
+| `Maze` | Extended `Serializable` |
+| `MazeBuilder.MazeStruct` | Added `serialVersionUID` |
+| `CommandParser` | Added `r`/`remember` command |
+
+**Usage:**
+```
+i|l|m|s|t? r
+Game state saved to game_state
+```
+
+---
+
 ## [1.0.8] - 2026-01-18
 
 ### Added

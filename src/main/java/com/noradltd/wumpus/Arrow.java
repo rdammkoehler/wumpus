@@ -1,6 +1,11 @@
 package com.noradltd.wumpus;
 
+import java.io.Serial;
+
 public class Arrow extends Room.Occupant {
+    @Serial
+    private static final long serialVersionUID = 1L;
+
     static final Arrow NULL_ARROW = new Arrow();
     private static int nextArrowId = 0;
 
@@ -8,7 +13,9 @@ public class Arrow extends Room.Occupant {
     private boolean killedAWumpus = false;
     private boolean broken = false;
 
-    {
+    @Override
+    protected void initInteractions() {
+        super.initInteractions();
         interactions.put(Wumpus.class,
                 interloper -> {
                     interloper.die();
@@ -71,7 +78,9 @@ public class Arrow extends Room.Occupant {
     }
 }
 
-class ArrowQuiver implements Hunter.Quiver {
+class ArrowQuiver implements Hunter.Quiver, java.io.Serializable {
+    @java.io.Serial
+    private static final long serialVersionUID = 1L;
 
     private int arrowCount;
 

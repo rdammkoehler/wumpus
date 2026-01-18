@@ -1,7 +1,14 @@
 package com.noradltd.wumpus;
 
+import java.io.Serial;
+
 public class BottomlessPit extends Room.Occupant {
-    {
+    @Serial
+    private static final long serialVersionUID = 1L;
+
+    @Override
+    protected void initInteractions() {
+        super.initInteractions();
         interactions.put(Hunter.class, interloper -> {
             Logger.info("You've stumbled into a bottomless pit and died!");
             interloper.die();

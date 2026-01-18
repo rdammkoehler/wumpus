@@ -1,8 +1,14 @@
 package com.noradltd.wumpus;
 
-class Hunter extends Room.Occupant {
+import java.io.Serial;
 
-    {
+class Hunter extends Room.Occupant {
+    @Serial
+    private static final long serialVersionUID = 1L;
+
+    @Override
+    protected void initInteractions() {
+        super.initInteractions();
         interactions.put(Wumpus.class, this::kill);
     }
 
