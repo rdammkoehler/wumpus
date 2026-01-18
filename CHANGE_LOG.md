@@ -2,6 +2,21 @@
 
 All notable changes to the Hunt the Wumpus project are documented in this file.
 
+## [1.0.1] - 2026-01-18
+
+### Added
+
+#### CLAUDE.md - Claude Code Guidance File
+- **File:** `CLAUDE.md`
+- **Purpose:** Provides guidance to Claude Code (claude.ai/code) for working in this repository
+- **Contents:**
+  - Build and test commands (Maven compile, test, single test execution)
+  - Architecture overview covering core game loop, maze structure, room/occupant system
+  - Randomization and testing patterns (ProgrammableRandom, ResetRandomizerExtension)
+  - Visualization notes including ARM Mac compatibility caveat
+
+---
+
 ## [1.0.0] - 2026-01-17
 
 ### Overview
