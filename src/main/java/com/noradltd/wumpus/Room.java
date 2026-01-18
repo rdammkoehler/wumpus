@@ -3,11 +3,6 @@ package com.noradltd.wumpus;
 import java.util.*;
 import java.util.stream.Collectors;
 
-// TODO STRUCTURAL: This class violates Single Responsibility Principle - it handles:
-//   1. Room topology (exits, connectivity)
-//   2. Occupant collection management
-//   3. Interaction dispatch logic
-//   Consider splitting into: Room (topology), OccupantManager, InteractionResolver
 class Room {
     static abstract class Occupant implements Comparable<Occupant> {
         interface Interaction {
@@ -86,84 +81,32 @@ class Room {
 
     // TODO how do we get this to be NOT package protected?
     static RoomNumberer roomNumberer = DEFAULT_ROOM_NUMBERER;
+
+    // Topology
     private final int instanceNumber = roomNumberer.nextRoomNumber();
     private final Set<Room> exits = new HashSet<>();
-    private final List<Occupant> occupants = new ArrayList<>();
+
+    // Occupant management (delegated)
+    private final OccupantManager occupantManager = new OccupantManager();
+    private final InteractionResolver interactionResolver = new InteractionResolver(this, occupantManager);
 
     Room() {
         Logger.debug("New Room " + this.instanceNumber);
     }
 
+    // Topology methods
     List<Room> exits() {
         return new ArrayList<>(exits);
-    }
-
-    void add(Occupant occupant) {
-        executeOccupantInteractions(occupant);
-    }
-
-    // TODO STRUCTURAL: Simplify interaction system - random ordering (line 131) creates non-deterministic behavior
-    //   Consider: define clear interaction precedence, use InteractionHandler interface with explicit ordering
-    private void executeOccupantInteractions(Occupant interloper) {
-        class Interactor {
-            final Occupant instigator;
-
-            Interactor(Occupant instigator) {
-                this.instigator = instigator;
-            }
-
-            void interact(Occupant victim) {
-                Logger.debug(" victim " + victim.getClass().getSimpleName() + " responding to " + instigator.getClass().getSimpleName());
-                victim.respondTo(instigator);
-                if (victim.getRoom().number().equals(instigator.getRoom().number())) {
-                    Logger.debug(" instigator " + instigator.getClass().getSimpleName() + " responding to " + victim.getClass().getSimpleName());
-                    instigator.respondTo(victim);
-                }
-            }
-        }
-        if (occupants.isEmpty()) {
-            Logger.debug("this room is empty");
-        } else {
-            if (!interloper.isDead()) {
-                Logger.debug(interloper.getClass().getSimpleName() + " is interacting with " + occupants.stream()
-                        .map(occupant -> occupant.getClass().getSimpleName() + "(" + ((occupant.isDead()) ? "DEAD" : "ALIVE") + ")")
-                        .collect(Collectors.joining(", ")));
-                ArrayList<Occupant> copyOfOccupants = new ArrayList<>(occupants);
-                for (Occupant cohabitant : copyOfOccupants) {
-                    if (Random.getRandomizer().nextBoolean()) {
-                        new Interactor(interloper).interact(cohabitant);
-                    } else {
-                        new Interactor(cohabitant).interact(interloper);
-                    }
-                }
-            }
-        }
-        if (!interloper.isDead() && interloper.getRoom().equals(this)) {
-            occupants.add(interloper);
-        }
-    }
-
-    void remove(Occupant occupant) {
-        Logger.debug("removing " + occupant.getClass().getSimpleName() + " from " + number());
-        occupants.remove(occupant);
-    }
-
-    Set<Occupant> occupants() {
-        return occupants.stream().collect(Collectors.toUnmodifiableSet());
-    }
-
-    boolean containsSameTypeOfOccupant(Occupant occupant) {
-        return occupants().stream().anyMatch(occ -> occupant.getClass().isInstance(occ));
-    }
-
-    private static void connectRooms(Room one, Room two) {
-        one.exits.add(two);
-        two.exits.add(one);
     }
 
     Room add(Room exit) {
         connectRooms(this, exit);
         return this;
+    }
+
+    private static void connectRooms(Room one, Room two) {
+        one.exits.add(two);
+        two.exits.add(one);
     }
 
     Integer number() {
@@ -173,6 +116,24 @@ class Room {
     @Override
     public int hashCode() {
         return instanceNumber;
+    }
+
+    // Occupant management methods (delegated)
+    void add(Occupant occupant) {
+        interactionResolver.resolveInteractions(occupant);
+    }
+
+    void remove(Occupant occupant) {
+        Logger.debug("removing " + occupant.getClass().getSimpleName() + " from " + number());
+        occupantManager.removeOccupant(occupant);
+    }
+
+    Set<Occupant> occupants() {
+        return occupantManager.getOccupants();
+    }
+
+    boolean containsSameTypeOfOccupant(Occupant occupant) {
+        return occupantManager.containsSameTypeOfOccupant(occupant);
     }
 
     @Override

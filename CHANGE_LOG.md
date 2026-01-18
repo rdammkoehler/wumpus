@@ -2,6 +2,52 @@
 
 All notable changes to the Hunt the Wumpus project are documented in this file.
 
+## [1.0.3] - 2026-01-18
+
+### Changed
+
+#### Room.java Refactoring - Separation of Concerns
+
+**Problem:** `Room.java` violated Single Responsibility Principle - it handled room topology, occupant collection management, and interaction dispatch logic (identified in TODO comment at lines 6-10).
+
+**Solution:** Extracted two new classes to separate responsibilities while keeping the intentionally non-deterministic interaction model.
+
+**New Files Created:**
+
+##### OccupantManager.java
+- **Purpose:** Manages the collection of occupants within a room
+- **Methods:**
+  - `getOccupantsSnapshot()` - Returns a mutable copy of the occupant list (for iteration during interactions)
+  - `getOccupants()` - Returns an unmodifiable set of occupants
+  - `isEmpty()` - Check if room has no occupants
+  - `addOccupant(Occupant)` - Add an occupant to the collection
+  - `removeOccupant(Occupant)` - Remove an occupant from the collection
+  - `containsSameTypeOfOccupant(Occupant)` - Check if room contains same type of occupant
+
+##### InteractionResolver.java
+- **Purpose:** Handles interaction dispatch logic between occupants entering a room and existing occupants
+- **Key Features:**
+  - Preserves non-deterministic interaction ordering (random boolean determines who acts first)
+  - Manages bidirectional interactions (victim responds to instigator, then instigator responds to victim if still in same room)
+  - Only adds interloper to room if still alive and present after interactions
+- **Methods:**
+  - `resolveInteractions(Occupant)` - Main entry point for interaction resolution
+
+**Changes to Room.java:**
+- Reduced from 231 lines to 192 lines
+- Now delegates occupant management to `OccupantManager`
+- Now delegates interaction resolution to `InteractionResolver`
+- Focuses on topology: room numbering, exit connections, room identity
+- Removed TODO comment about SRP violation (issue resolved)
+- Kept TODO comment about non-deterministic interaction ordering (intentional design)
+
+**Design Notes:**
+- The `Occupant` inner class remains in `Room` as it is conceptually tied to the Room abstraction
+- The `RoomDescriber` record remains in `Room` as it needs access to room internals for description generation
+- Non-deterministic interaction ordering is preserved per user requirement
+
+---
+
 ## [1.0.2] - 2026-01-18
 
 ### Changed
@@ -284,13 +330,13 @@ Two tests were failing intermittently due to uncontrolled randomization:
 
 The following structural improvements are documented as TODO comments for future consideration:
 
-#### Room.java (Line 6-10)
+#### ~~Room.java (Line 6-10)~~ ✅ RESOLVED in v1.0.3
 **Issue:** Single Responsibility Principle violation - the class handles room topology, occupant management, and interaction dispatch.
-**Suggestion:** Split into `Room` (topology), `OccupantManager`, and `InteractionResolver`.
+**Resolution:** Split into `Room` (topology), `OccupantManager`, and `InteractionResolver`.
 
-#### Room.java (Line 105-106)
-**Issue:** Non-deterministic interaction ordering due to `Random.getRandomizer().nextBoolean()`.
-**Suggestion:** Define clear interaction precedence with an `InteractionHandler` interface.
+#### Room.java (Line 105-106) - INTENTIONAL DESIGN
+**Note:** Non-deterministic interaction ordering due to `Random.getRandomizer().nextBoolean()`.
+**Status:** This is intentional game design, not technical debt. The randomness adds unpredictability to encounters.
 
 #### Game.java (Line 93-94)
 **Issue:** ThreadLocal state management creates hidden dependencies and makes testing harder.
