@@ -2,6 +2,43 @@
 
 All notable changes to the Hunt the Wumpus project are documented in this file.
 
+## [1.0.7] - 2026-01-18
+
+### Added
+
+#### Game Launcher Script
+
+**Feature:** Added convenience script to launch the game.
+
+**File:** `bin/wump`
+
+**Features:**
+- Starts Hunt the Wumpus game
+- Auto-detects Java installation (Homebrew, JAVA_HOME, PATH)
+- Builds JAR automatically if not present
+- Passes all command line arguments to the game
+
+**Usage:**
+```bash
+./bin/wump                              # Start with defaults
+./bin/wump --help                       # Show options
+./bin/wump --rooms 30 --wumpi 3         # Custom game settings
+```
+
+**Available Options:**
+| Option | Description |
+|--------|-------------|
+| `--arrows #` | Limit the number of arrows |
+| `--bats #` | Limit the number of colonies of bats |
+| `--pits #` | Limit the number of bottomless pits |
+| `--rooms #` | Limit the number of rooms |
+| `--seed #` | Set the Randomizer seed |
+| `--wumpi #` | Limit the number of wumpi |
+| `--max_exits #` | Limit the number of room exits |
+| `--help` | Show help |
+
+---
+
 ## [1.0.6] - 2026-01-18
 
 ### Added
