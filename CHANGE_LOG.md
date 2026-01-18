@@ -2,6 +2,82 @@
 
 All notable changes to the Hunt the Wumpus project are documented in this file.
 
+## [1.0.2] - 2026-01-18
+
+### Changed
+
+#### Main.java Refactoring - Separation of Concerns
+
+**Problem:** `Main.java` mixed multiple concerns - CLI I/O, game loop, command parsing, and help text generation (identified in TODO comment at lines 14-15).
+
+**Solution:** Extracted three new classes to separate responsibilities.
+
+**New Files Created:**
+
+##### ConsoleUI.java
+- **Purpose:** Handles all user I/O operations
+- **Methods:**
+  - `showWelcome()` - Display welcome message
+  - `showPrompt()` - Display command prompt "i|l|m|s|t?"
+  - `showHelp()` - Display help text
+  - `showGoodbye()` - Display goodbye message
+  - `showScore(String)` - Display game score
+  - `showMessage(String)` - General message display
+  - `readCommand()` - Read user input
+  - `promptPlayAgain()` - Ask user to play again
+
+##### CommandParser.java
+- **Purpose:** Parses and routes user commands
+- **Components:**
+  - `Command` interface with `execute(String arg)` method
+  - `ParsedCommand` record holding command and argument
+  - Command map supporting: quit, move, shoot, inventory, help, look, take, viz
+- **Methods:**
+  - `parse(String input)` - Returns `ParsedCommand` from user input
+  - `execute(ParsedCommand)` - Executes the parsed command
+
+##### GameController.java
+- **Purpose:** Controls the game loop
+- **Methods:**
+  - `play()` - Main game loop (welcome, create game, command loop, show score)
+
+**Changes to Main.java:**
+- Reduced from 124 lines to 21 lines
+- Now only creates `ConsoleUI`, loops `GameController.play()` while user wants to play
+- Removed TODO comment (issue resolved)
+
+**Before:**
+```java
+public class Main {
+    private static final Pattern USER_COMMAND = ...;
+    private Game game;
+    private final BufferedReader input;
+    private interface Command { ... }
+    private final Map<String, Command> COMMANDS = ...;
+    // ... 120+ lines of mixed concerns
+}
+```
+
+**After:**
+```java
+public class Main {
+    public static void main(String[] args) {
+        try (BufferedReader input = new BufferedReader(new InputStreamReader(System.in))) {
+            ConsoleUI ui = new ConsoleUI(input);
+            do {
+                new GameController(ui, args).play();
+            } while (ui.promptPlayAgain());
+        } catch (IOException ioException) {
+            Logger.error("System Failure", ioException);
+        } finally {
+            Logger.info("Goodbye");
+        }
+    }
+}
+```
+
+---
+
 ## [1.0.1] - 2026-01-18
 
 ### Added
@@ -224,9 +300,9 @@ The following structural improvements are documented as TODO comments for future
 **Issue:** Reflection-based configuration in `Options.setOptionValue()` bypasses type safety and is hard to debug.
 **Suggestion:** Use explicit setter methods or a CLI library (Picocli, JCommander).
 
-#### Main.java (Line 14-15)
+#### ~~Main.java (Line 14-15)~~ ✅ RESOLVED in v1.0.2
 **Issue:** Mixed concerns - CLI I/O, game loop, command parsing, and help text generation.
-**Suggestion:** Extract `CommandParser`, `GameController`, and `ConsoleUI` classes.
+**Resolution:** Extracted `CommandParser`, `GameController`, and `ConsoleUI` classes.
 
 ---
 
