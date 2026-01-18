@@ -2,6 +2,39 @@
 
 All notable changes to the Hunt the Wumpus project are documented in this file.
 
+## [1.0.10] - 2026-01-18
+
+### Added
+
+#### Load Game State Feature
+
+**Feature:** Added ability to load saved game state.
+
+**Command Line Option:**
+- `--load` - Start game from saved state instead of new game
+
+**In-Game Commands:**
+- `f`, `forget`, or `load` - Load saved game state during gameplay
+
+**Implementation:**
+- `Game.loadState()` - Static method to deserialize game from `game_state` file
+- `Game.hasSavedGame()` - Check if save file exists
+- `Game.requestLoad()` - Request load during gameplay
+- `Game.getPendingLoad()` - Get pending loaded game for controller swap
+- `GameController` checks for `--load` option and pending loads
+
+**Usage:**
+```bash
+# Start from saved game
+./bin/wump --load
+
+# Or in-game:
+i|l|m|s|t? f
+Game state loaded from game_state
+```
+
+---
+
 ## [1.0.9] - 2026-01-18
 
 ### Added

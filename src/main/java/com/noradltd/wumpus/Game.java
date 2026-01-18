@@ -12,6 +12,7 @@ class Game implements Serializable {
     private final Hunter hunter;
     private final Maze maze;
     private boolean playing = true;
+    private transient Game pendingLoad = null;
 
     Game(String[] options) {
         Game.Options gameOptions = new Game.Options(options);
@@ -65,6 +66,38 @@ class Game implements Serializable {
         } catch (IOException e) {
             Logger.error("Failed to save game state", e);
         }
+    }
+
+    public static Game loadState() {
+        File saveFile = new File(SAVE_FILE);
+        if (!saveFile.exists()) {
+            Logger.info("No saved game found");
+            return null;
+        }
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(saveFile))) {
+            Game game = (Game) in.readObject();
+            Logger.info("Game state loaded from " + SAVE_FILE);
+            Logger.info(game.toString());
+            return game;
+        } catch (IOException | ClassNotFoundException e) {
+            Logger.error("Failed to load game state", e);
+            return null;
+        }
+    }
+
+    public static boolean hasSavedGame() {
+        return new File(SAVE_FILE).exists();
+    }
+
+    public void requestLoad() {
+        Game loaded = loadState();
+        if (loaded != null) {
+            this.pendingLoad = loaded;
+        }
+    }
+
+    public Game getPendingLoad() {
+        return pendingLoad;
     }
 
     public String getScore() {
