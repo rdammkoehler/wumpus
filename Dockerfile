@@ -14,7 +14,7 @@ RUN mvn dependency:go-offline -q || true
 
 # Copy source and build
 COPY src ./src
-RUN mvn package -DskipTests -q
+RUN mvn package -q
 
 # Runtime image - minimal Alpine with JRE
 FROM alpine:3.19
