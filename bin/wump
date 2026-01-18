@@ -1,0 +1,80 @@
+#!/bin/bash
+#
+# Starts Hunt the Wumpus game.
+# Usage: ./bin/wump [options]
+#
+# Options are passed directly to the game:
+#   --arrows #     Limit the number of arrows
+#   --bats #       Limit the number of colonies of bats
+#   --pits #       Limit the number of bottomless pits
+#   --rooms #      Limit the number of rooms
+#   --seed #       Set the Randomizer seed
+#   --wumpi #      Limit the number of wumpi
+#   --max_exits #  Limit the number of room exits
+#   --help         Show help
+#
+
+set -e
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
+JAR_FILE="$PROJECT_DIR/target/wumpus-1.0-SNAPSHOT.jar"
+
+# Find Java
+find_java() {
+    # Check Homebrew OpenJDK first (common on macOS)
+    local homebrew_java=$(find /opt/homebrew/Cellar/openjdk -name "java" -type f 2>/dev/null | head -1)
+    if [[ -n "$homebrew_java" && -x "$homebrew_java" ]]; then
+        echo "$homebrew_java"
+        return 0
+    fi
+
+    # Check JAVA_HOME
+    if [[ -n "$JAVA_HOME" && -x "$JAVA_HOME/bin/java" ]]; then
+        echo "$JAVA_HOME/bin/java"
+        return 0
+    fi
+
+    # Check macOS java_home
+    if [[ -x /usr/libexec/java_home ]]; then
+        local java_home=$(/usr/libexec/java_home 2>/dev/null)
+        if [[ -n "$java_home" && -x "$java_home/bin/java" ]]; then
+            echo "$java_home/bin/java"
+            return 0
+        fi
+    fi
+
+    # Try java in PATH (test it actually works)
+    if command -v java &> /dev/null && java -version &> /dev/null; then
+        echo "java"
+        return 0
+    fi
+
+    return 1
+}
+
+# Build JAR if it doesn't exist
+build_jar() {
+    echo "Building game JAR..."
+    (cd "$PROJECT_DIR" && mvn package -DskipTests -q)
+}
+
+# Main
+main() {
+    # Find Java
+    JAVA=$(find_java)
+    if [[ -z "$JAVA" ]]; then
+        echo "Error: Java not found. Please install Java or set JAVA_HOME."
+        exit 1
+    fi
+
+    # Build JAR if needed
+    if [[ ! -f "$JAR_FILE" ]]; then
+        build_jar
+    fi
+
+    # Run the game
+    exec "$JAVA" -jar "$JAR_FILE" "$@"
+}
+
+main "$@"
