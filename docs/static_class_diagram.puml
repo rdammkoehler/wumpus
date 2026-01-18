@@ -1,0 +1,279 @@
+@startuml static_class_diagram
+
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+skinparam nodesep 60
+skinparam ranksep 40
+
+package "com.noradltd.wumpus" {
+
+    ' ===== INTERFACES =====
+    interface Maze {
+        +entrance(): Room
+    }
+
+    interface "Room.Occupant.Interaction" as Interaction {
+        +execute(interloper: Room.Occupant): void
+    }
+
+    interface "Room.RoomNumberer" as RoomNumberer {
+        +nextRoomNumber(): Integer
+    }
+
+    interface "Hunter.Quiver" as Quiver {
+        +isEmpty(): boolean
+        +next(): Arrow
+        +arrowsRemaining(): String
+        +add(arrow: Arrow): void
+    }
+
+    interface "CommandParser.Command" as Command {
+        +execute(arg: String): void
+    }
+
+    ' ===== CORE ROOM CLASSES =====
+    class Room {
+        -instanceNumber: int
+        -exits: Set<Room>
+        -occupantManager: OccupantManager
+        -interactionResolver: InteractionResolver
+        +exits(): List<Room>
+        +add(exit: Room): Room
+        +add(occupant: Occupant): void
+        +remove(occupant: Occupant): void
+        +occupants(): Set<Occupant>
+        +containsSameTypeOfOccupant(occupant: Occupant): boolean
+        +number(): Integer
+    }
+
+    abstract class "Room.Occupant" as Occupant {
+        -room: Room
+        -dead: Boolean
+        #interactions: HashMap
+        +getRoom(): Room
+        +moveTo(newRoom: Room): void
+        +respondTo(interloper: Occupant): void
+        +isAlive(): Boolean
+        +isDead(): Boolean
+        +die(): void
+        {abstract} +describe(): String
+    }
+
+    class OccupantManager {
+        -occupants: List<Room.Occupant>
+        +getOccupantsSnapshot(): List<Room.Occupant>
+        +getOccupants(): Set<Room.Occupant>
+        +isEmpty(): boolean
+        +addOccupant(occupant: Room.Occupant): void
+        +removeOccupant(occupant: Room.Occupant): void
+        +containsSameTypeOfOccupant(occupant: Room.Occupant): boolean
+    }
+
+    class InteractionResolver {
+        -room: Room
+        -occupantManager: OccupantManager
+        +resolveInteractions(interloper: Room.Occupant): void
+    }
+
+    ' ===== OCCUPANT SUBCLASSES =====
+    class Hunter {
+        -kills: Integer
+        -quiver: Quiver
+        +kills(): Integer
+        +shoot(exitNumber: Integer): void
+        +moveTo(exitNumber: Integer): void
+        +kill(wumpus: Room.Occupant): void
+        +takeArrow(): void
+        +inventory(): String
+    }
+
+    class Wumpus {
+        +describe(): String
+        -flee(): void
+        -eat(hunter: Room.Occupant): void
+    }
+
+    class Arrow {
+        -arrowId: int
+        -killedAWumpus: boolean
+        -broken: boolean
+        +isBroken(): boolean
+        +killedAWumpus(): boolean
+        +addToQuiver(quiver: Quiver): void
+    }
+
+    class BottomlessPit {
+        +describe(): String
+    }
+
+    class ColonyOfBats {
+        +describe(): String
+    }
+
+    class ArrowQuiver {
+        -arrowCount: int
+        +isEmpty(): boolean
+        +next(): Arrow
+        +arrowsRemaining(): String
+        +add(arrow: Arrow): void
+    }
+
+    ' ===== GAME MANAGEMENT =====
+    class Main {
+        +{static} main(args: String[]): void
+    }
+
+    class Game {
+        -hunter: Hunter
+        -maze: Maze
+        -playing: boolean
+        +move(exitIndex: Integer): void
+        +shoot(exitIndex: Integer): void
+        +inventory(): String
+        +takeArrow(): void
+        +isPlaying(): boolean
+        +quit(): void
+        +getScore(): String
+        +vizualize(): void
+    }
+
+    class "Game.Options" as Options {
+        -roomCount: Integer
+        -randomSeed: Long
+        -wumpiCount: Integer
+        -pitCount: Integer
+        -batCount: Integer
+        -initialArrowCount: Integer
+        -maxExitCount: Integer
+        +getRoomCount(): Integer
+        +getWumpiCount(): Integer
+        +getPitCount(): Integer
+        +getBatCount(): Integer
+        +getInitialArrowCount(): Integer
+        +getMaxExitCount(): Integer
+    }
+
+    class GameController {
+        -ui: ConsoleUI
+        -options: String[]
+        +play(): void
+    }
+
+    class CommandParser {
+        -commands: Map<String, Command>
+        +parse(input: String): ParsedCommand
+        +execute(cmd: ParsedCommand): void
+    }
+
+    class ConsoleUI {
+        -input: BufferedReader
+        +showWelcome(): void
+        +showPrompt(): void
+        +showHelp(): void
+        +showGoodbye(): void
+        +showScore(score: String): void
+        +showMessage(message: String): void
+        +readCommand(): String
+        +promptPlayAgain(): boolean
+    }
+
+    ' ===== MAZE BUILDING =====
+    class MazeBuilder {
+        -rooms: Set<Room>
+        -options: Game.Options
+        +{static} build(): Maze
+        +{static} build(options: Game.Options): Maze
+    }
+
+    class MazeLoader {
+        -options: Game.Options
+        -rooms: List<Room>
+        -maze: Maze
+        +{static} populate(maze: Maze, options: Game.Options): Maze
+    }
+
+    class MazeTraverser {
+        +{static} collectAllRooms(startingRoom: Room): Set<Room>
+        +{static} collectAllRoomsAsList(startingRoom: Room): List<Room>
+    }
+
+    class RandomRoomFinder {
+        +{static} findRandomRoom(startingRoom: Room): Room
+    }
+
+    ' ===== UTILITIES =====
+    class Random {
+        -randomizer: java.util.Random
+        +nextInt(bound: int): int
+        +nextBoolean(): boolean
+        +setSeed(seed: long): void
+        +{static} getRandomizer(): Random
+    }
+
+    class Logger {
+        +{static} error(message: String): void
+        +{static} info(message: String): void
+        +{static} debug(message: String): void
+    }
+
+    class Visualizer {
+        +{static} visualize(maze: Maze): void
+    }
+
+    ' ===== RELATIONSHIPS =====
+
+    ' Inheritance
+    Occupant <|-- Hunter
+    Occupant <|-- Wumpus
+    Occupant <|-- Arrow
+    Occupant <|-- BottomlessPit
+    Occupant <|-- ColonyOfBats
+
+    ' Interface implementations
+    Quiver <|.. ArrowQuiver
+    Maze <|.. MazeBuilder : creates
+
+    ' Inner classes
+    Room +-- Occupant
+    Room +-- RoomNumberer
+    Occupant +-- Interaction
+    Hunter +-- Quiver
+    Game +-- Options
+    CommandParser +-- Command
+
+    ' Composition
+    Room *-- OccupantManager
+    Room *-- InteractionResolver
+    InteractionResolver o-- OccupantManager
+
+    ' Associations
+    Game --> Hunter : uses
+    Game --> Maze : uses
+    Game --> Options : uses
+    Hunter --> Quiver : uses
+    Occupant --> Room : located in
+
+    ' Dependencies
+    Main ..> GameController : creates
+    GameController ..> Game : creates
+    GameController ..> CommandParser : creates
+    GameController --> ConsoleUI : uses
+    CommandParser --> Game : controls
+    CommandParser --> ConsoleUI : uses
+
+    MazeBuilder ..> Room : creates
+    MazeBuilder --> Options : uses
+    MazeLoader ..> Hunter : creates
+    MazeLoader ..> Wumpus : creates
+    MazeLoader ..> Arrow : creates
+    MazeLoader ..> BottomlessPit : creates
+    MazeLoader ..> ColonyOfBats : creates
+    MazeLoader --> Options : uses
+
+    Visualizer ..> Maze : visualizes
+    Visualizer ..> MazeTraverser : uses
+    MazeTraverser ..> Room : traverses
+    RandomRoomFinder ..> Room : finds
+}
+
+@enduml
