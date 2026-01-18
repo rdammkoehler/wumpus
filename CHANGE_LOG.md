@@ -2,6 +2,42 @@
 
 All notable changes to the Hunt the Wumpus project are documented in this file.
 
+## [1.0.6] - 2026-01-18
+
+### Added
+
+#### UML Static Class Diagram
+
+**Feature:** Added comprehensive UML class diagram for all main source classes.
+
+**Files:**
+| File | Description |
+|------|-------------|
+| `docs/static_class_diagram.png` | PNG diagram (2618x2295 pixels) |
+| `docs/static_class_diagram.puml` | PlantUML source for updates |
+| `bin/update-class-diagram.sh` | Script to regenerate PNG |
+
+**Diagram Contents:**
+- **Inheritance hierarchy:** `Room.Occupant` → `Hunter`, `Wumpus`, `Arrow`, `BottomlessPit`, `ColonyOfBats`
+- **Interfaces:** `Maze`, `Quiver`, `Command`, `Interaction`, `RoomNumberer`
+- **Inner classes:** `Game.Options`, `Room.Occupant`, `CommandParser.Command`, etc.
+- **Composition:** `Room` contains `OccupantManager` and `InteractionResolver`
+- **Game flow:** `Main` → `GameController` → `Game` / `CommandParser` → `ConsoleUI`
+- **Maze construction:** `MazeBuilder` → `MazeLoader`
+
+**Update Script Features:**
+- Auto-detects Java installation (Homebrew, JAVA_HOME, PATH)
+- Downloads PlantUML JAR if not cached
+- Generates PNG from PlantUML source
+- Requires Graphviz (`brew install graphviz`)
+
+**Usage:**
+```bash
+./bin/update-class-diagram.sh
+```
+
+---
+
 ## [1.0.5] - 2026-01-18
 
 ### Added
