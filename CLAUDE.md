@@ -66,3 +66,7 @@ Each occupant defines interactions via a `HashMap<Class<? extends Occupant>, Int
 ### Visualization
 
 `Visualizer` generates Graphviz maze diagrams using the `guru.nidi:graphviz-java` library. Note: Some visualization tests may error on ARM Mac due to missing J2V8 native binaries.
+
+## Coding Guidelines
+
+- **Always write unit tests for new code.** Every new class or significant functionality must have corresponding unit tests before committing.
