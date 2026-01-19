@@ -16,7 +16,8 @@ class CommandParser {
         void execute(String arg);
     }
 
-    record ParsedCommand(Command command, String arg) {}
+    record ParsedCommand(Command command, String arg) {
+    }
 
     private final Map<String, Command> commands;
     private final Command askUserWhat;
@@ -47,7 +48,7 @@ class CommandParser {
                 addCommands(arg -> game.takeArrow(), "t", "take");
                 addCommands(arg -> game.vizualize(), "v", "viz"); // hidden
                 addCommands(arg -> game.saveState(), "r", "remember");
-                addCommands(arg -> game.requestLoad(), "l", "load");
+                addCommands(arg -> game.requestLoad(), "load");
             }
         });
     }
