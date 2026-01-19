@@ -98,30 +98,35 @@ class GameStateLoader {
     }
 
     private static class ReconstructedHunter extends Hunter {
+        private final int storedKills;
+
         ReconstructedHunter(Quiver quiver, int kills, boolean dead) {
             super(quiver);
-            for (int i = 0; i < kills; i++) {
-                this.kill(new DummyWumpus());
-            }
+            this.storedKills = kills;
             if (dead) {
                 this.die();
             }
         }
-    }
 
-    private static class DummyWumpus extends Wumpus {
-        private Room dummyRoom = new Room();
         @Override
-        Room getRoom() {
-            return dummyRoom;
+        Integer kills() {
+            return storedKills;
         }
     }
 
     private static class ReconstructedArrow extends Arrow {
+        private final boolean loadedBroken;
+
         ReconstructedArrow(boolean broken, boolean killedWumpus) {
-            if (broken) {
-                this.die();
-            }
+            // Don't call die() here - let reconstructOccupants handle it after moveTo
+            // This ensures the arrow is added to the room before being marked dead
+            this.loadedBroken = broken;
+        }
+
+        @Override
+        public boolean isBroken() {
+            // Return true if loaded as broken to prevent random shattering during moveTo
+            return loadedBroken || super.isBroken();
         }
     }
 }

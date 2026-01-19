@@ -260,4 +260,93 @@ public class GameStateLoaderTest {
         List<Integer> roomNumbers = allRooms.stream().map(Room::number).toList();
         assertThat(roomNumbers, containsInAnyOrder(1, 2, 3));
     }
+
+    @Test
+    public void loadReconstructsHunterWithKills() {
+        // Create a minimal GameState directly to test loading hunter with kills
+        Room room = new Room();
+        Hunter hunter = new Hunter(new ArrowQuiver(5));
+        hunter.moveTo(room);
+        GameState state = GameState.fromGame(null, hunter, room);
+
+        // Manually set kills in the hunter state
+        state.hunter.kills = 3;
+
+        Helpers.restartRoomNumberer();
+        GameStateLoader.LoadedGame loaded = GameStateLoader.load(state);
+
+        assertThat(loaded.hunter.kills(), is(3));
+    }
+
+    @Test
+    public void loadReconstructsDeadHunter() {
+        Room room1 = new Room();
+        Hunter hunter = new Hunter(new ArrowQuiver(5));
+        hunter.moveTo(room1);
+        hunter.die();
+        GameState state = GameState.fromGame(null, hunter, room1);
+
+        Helpers.restartRoomNumberer();
+        GameStateLoader.LoadedGame loaded = GameStateLoader.load(state);
+
+        assertTrue(loaded.hunter.isDead());
+    }
+
+    @Test
+    public void loadReconstructsBrokenArrow() {
+        // Create a minimal GameState with a broken arrow
+        Room room = new Room();
+        Hunter hunter = new Hunter(new ArrowQuiver(5));
+        hunter.moveTo(room);
+        GameState state = GameState.fromGame(null, hunter, room);
+
+        // Manually add a broken arrow occupant state
+        GameState.OccupantState arrowState = new GameState.OccupantState();
+        arrowState.type = "Arrow";
+        arrowState.roomNumber = 1;
+        arrowState.dead = true;
+        arrowState.broken = true;
+        arrowState.killedWumpus = false;
+        state.occupants = List.of(arrowState);
+
+        Helpers.restartRoomNumberer();
+        GameStateLoader.LoadedGame loaded = GameStateLoader.load(state);
+
+        Set<Room> allRooms = MazeTraverser.collectAllRooms(loaded.maze.entrance());
+        Arrow loadedArrow = allRooms.stream()
+                .flatMap(r -> r.occupants().stream())
+                .filter(Arrow.class::isInstance)
+                .map(Arrow.class::cast)
+                .findFirst()
+                .orElse(null);
+        assertNotNull(loadedArrow);
+        assertTrue(loadedArrow.isBroken());
+    }
+
+    @Test
+    public void loadHandlesUnknownOccupantType() {
+        Room room = new Room();
+        Hunter hunter = new Hunter(new ArrowQuiver(5));
+        hunter.moveTo(room);
+        GameState state = GameState.fromGame(null, hunter, room);
+
+        // Manually add an unknown occupant type
+        GameState.OccupantState unknownOccupant = new GameState.OccupantState();
+        unknownOccupant.type = "UnknownType";
+        unknownOccupant.roomNumber = 1;
+        unknownOccupant.dead = false;
+        state.occupants = List.of(unknownOccupant);
+
+        Helpers.restartRoomNumberer();
+        GameStateLoader.LoadedGame loaded = GameStateLoader.load(state);
+
+        // Should not crash, unknown occupant is just skipped
+        assertNotNull(loaded);
+        Set<Room> allRooms = MazeTraverser.collectAllRooms(loaded.maze.entrance());
+        long occupantCount = allRooms.stream()
+                .flatMap(r -> r.occupants().stream())
+                .filter(o -> !(o instanceof Hunter))
+                .count();
+        assertThat(occupantCount, is(0L));
+    }
 }

@@ -70,3 +70,8 @@ Each occupant defines interactions via a `HashMap<Class<? extends Occupant>, Int
 ## Coding Guidelines
 
 - **Always write unit tests for new code.** Every new class or significant functionality must have corresponding unit tests before committing.
+- **Always run the full suite of tests before making a commit.** All tests must run and pass without errors or warnings before commiting the code.
+- **Always use significant variable names.** Do not use single character variable names and wherever possible name the variables using a meaningful name.
+- **Always format the source code before commiting.** Keep the source code formatted and cleaned up. Remove any unused dependency references. Ensure white space and indentation is consistent.
+- **Always update the CHANGE_LOG.md after making a change.** Keep the log of changes up to date for each change made to the system.
+- **Update the VERSION in the POM file whenever a new feature is added.** Update the minor rev by one each time a feature is added to the application.

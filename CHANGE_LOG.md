@@ -2,6 +2,96 @@
 
 All notable changes to the Hunt the Wumpus project are documented in this file.
 
+## [1.0.12] - 2026-01-19
+
+### Added
+
+#### Code Coverage Reporting and Enforcement
+
+**Feature:** Added JaCoCo code coverage reporting to the build process with 95% minimum coverage enforcement.
+
+**Changes to pom.xml:**
+
+##### JaCoCo Maven Plugin (v0.8.11)
+- `prepare-agent` execution - instruments classes for coverage tracking
+- `report` execution (test phase) - generates HTML coverage report
+- `check` execution (verify phase) - enforces 95% minimum instruction coverage
+
+**Configuration:**
+```xml
+<plugin>
+    <groupId>org.jacoco</groupId>
+    <artifactId>jacoco-maven-plugin</artifactId>
+    <version>0.8.11</version>
+    <executions>
+        <execution>
+            <id>prepare-agent</id>
+            <goals><goal>prepare-agent</goal></goals>
+        </execution>
+        <execution>
+            <id>report</id>
+            <phase>test</phase>
+            <goals><goal>report</goal></goals>
+        </execution>
+        <execution>
+            <id>check</id>
+            <phase>verify</phase>
+            <goals><goal>check</goal></goals>
+            <configuration>
+                <rules>
+                    <rule>
+                        <element>BUNDLE</element>
+                        <limits>
+                            <limit>
+                                <counter>INSTRUCTION</counter>
+                                <value>COVEREDRATIO</value>
+                                <minimum>0.95</minimum>
+                            </limit>
+                        </limits>
+                    </rule>
+                </rules>
+            </configuration>
+        </execution>
+    </executions>
+</plugin>
+```
+
+**New Test Files:**
+
+| File | Tests | Description |
+|------|-------|-------------|
+| `ConsoleUITest.java` | 10 | Tests for ConsoleUI I/O methods |
+| `GameStateLoaderTest.java` | 16 | Tests for game state loading (expanded from 12) |
+
+**GameStateLoader Improvements:**
+- Fixed `ReconstructedHunter` to properly handle kills without NullPointerException
+- Fixed `ReconstructedArrow` to properly restore broken arrows to rooms
+- Removed unused `DummyWumpus` class
+
+**Coverage Report:**
+
+| Metric | Coverage |
+|--------|----------|
+| Instructions | 95% (3351/3502) |
+| Branches | 89% (201/225) |
+| Lines | 94% (783/835) |
+| Methods | 100% (290/290) |
+| Classes | 100% (40/40) |
+
+**Usage:**
+```bash
+# Run tests with coverage report
+mvn test
+
+# View coverage report
+open target/site/jacoco/index.html
+
+# Run full build with coverage check
+mvn verify
+```
+
+---
+
 ## [1.0.11] - 2026-01-19
 
 ### Changed
