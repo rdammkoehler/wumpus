@@ -13,6 +13,8 @@ class ConsoleUI {
             (s|shoot) #\t\t\tShoot through tunnel #
             (t|take)\t\t\tTake (an unbroken arrow)
             (?|h|help)\t\t\tShow help
+            (r|remember)\t\t\tSave game state
+            (l|load)\t\t\tReload game state
             (q|x|quit|exit)\t\tQuit the game
             """;
 

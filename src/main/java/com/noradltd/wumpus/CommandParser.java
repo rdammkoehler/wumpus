@@ -47,7 +47,7 @@ class CommandParser {
                 addCommands(arg -> game.takeArrow(), "t", "take");
                 addCommands(arg -> game.vizualize(), "v", "viz"); // hidden
                 addCommands(arg -> game.saveState(), "r", "remember");
-                addCommands(arg -> game.requestLoad(), "f", "forget", "load");
+                addCommands(arg -> game.requestLoad(), "l", "load");
             }
         });
     }
