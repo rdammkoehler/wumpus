@@ -4,10 +4,8 @@ import java.io.*;
 import java.util.*;
 import java.util.function.Consumer;
 
-class Game implements Serializable {
-    @Serial
-    private static final long serialVersionUID = 1L;
-    private static final String SAVE_FILE = "game_state";
+class Game {
+    private static final String SAVE_FILE = "game_state.json";
 
     private final Hunter hunter;
     private final Maze maze;
@@ -21,6 +19,12 @@ class Game implements Serializable {
         hunter = new Hunter(new ArrowQuiver(gameOptions.getInitialArrowCount()));
         Logger.debug("Placing Hunter in room " + maze.entrance().number());
         hunter.moveTo(maze.entrance());
+        Logger.info(toString());
+    }
+
+    private Game(GameStateLoader.LoadedGame loaded) {
+        this.maze = loaded.maze;
+        this.hunter = loaded.hunter;
         Logger.info(toString());
     }
 
@@ -60,8 +64,9 @@ class Game implements Serializable {
     }
 
     public void saveState() {
-        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(SAVE_FILE))) {
-            out.writeObject(this);
+        try {
+            GameState state = GameState.fromGame(this, hunter, maze.entrance());
+            state.saveToFile(SAVE_FILE);
             Logger.info("Game state saved to " + SAVE_FILE);
         } catch (IOException e) {
             Logger.error("Failed to save game state", e);
@@ -74,12 +79,13 @@ class Game implements Serializable {
             Logger.info("No saved game found");
             return null;
         }
-        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(saveFile))) {
-            Game game = (Game) in.readObject();
+        try {
+            GameState state = GameState.loadFromFile(SAVE_FILE);
+            GameStateLoader.LoadedGame loaded = GameStateLoader.load(state);
+            Game game = new Game(loaded);
             Logger.info("Game state loaded from " + SAVE_FILE);
-            Logger.info(game.toString());
             return game;
-        } catch (IOException | ClassNotFoundException e) {
+        } catch (IOException e) {
             Logger.error("Failed to load game state", e);
             return null;
         }

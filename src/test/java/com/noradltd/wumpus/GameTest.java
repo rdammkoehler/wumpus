@@ -1,15 +1,64 @@
 package com.noradltd.wumpus;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.util.regex.Pattern;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.matchesPattern;
-import static org.hamcrest.Matchers.matchesRegex;
+import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.*;
 
+@ExtendWith(ResetRandomizerExtension.class)
 public class GameTest {
+
+    private static final String SAVE_FILE = "game_state.json";
+
+    @BeforeEach
+    void setup() {
+        new File(SAVE_FILE).delete();
+    }
+
+    @AfterEach
+    void cleanup() {
+        new File(SAVE_FILE).delete();
+        Helpers.restartRoomNumberer();
+    }
+
+    @Test
+    public void saveStateCreatesJsonFile() {
+        Game game = new Game(new String[]{"--rooms", "5", "--seed", "42"});
+
+        game.saveState();
+
+        File saveFile = new File(SAVE_FILE);
+        assertTrue(saveFile.exists(), "Save file should exist");
+        assertTrue(saveFile.length() > 0, "Save file should not be empty");
+    }
+
+    @Test
+    public void loadStateRestoresGame() {
+        Game original = new Game(new String[]{"--rooms", "5", "--seed", "42"});
+        original.saveState();
+
+        Game loaded = Game.loadState();
+
+        assertNotNull(loaded, "Loaded game should not be null");
+        assertThat(loaded.toString(), containsString("You are in room"));
+    }
+
+    @Test
+    public void hasSavedGameReturnsTrueWhenSaveExists() {
+        Game game = new Game(new String[]{"--rooms", "5", "--seed", "42"});
+
+        assertFalse(Game.hasSavedGame());
+        game.saveState();
+        assertTrue(Game.hasSavedGame());
+    }
 
     @Test
     public void getScoreReportsTheScore() {

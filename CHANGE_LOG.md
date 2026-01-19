@@ -2,6 +2,75 @@
 
 All notable changes to the Hunt the Wumpus project are documented in this file.
 
+## [1.0.11] - 2026-01-19
+
+### Changed
+
+#### JSON Serialization for Game State
+
+**Feature:** Replaced Java Serialization with JSON for game state persistence.
+
+**Benefits:**
+- Human-readable save files
+- Lighter file format
+- No serialVersionUID compatibility issues
+- Includes score data in the save file
+
+**New Files:**
+| File | Description |
+|------|-------------|
+| `GameState.java` | JSON serialization model with nested state classes |
+| `GameStateLoader.java` | Reconstructs Game from JSON state |
+
+**Dependencies Added:**
+- `com.fasterxml.jackson.core:jackson-databind:2.17.0`
+
+**Implementation Details:**
+
+The JSON save format captures:
+- Room topology (room numbers and exit connections)
+- Occupant state (type, room, dead/alive, arrow-specific state)
+- Hunter state (room, dead/alive, kills, arrow count)
+- Score data (hunter deaths, wumpus kills)
+
+**Example Save File (`game_state.json`):**
+```json
+{
+  "rooms" : [ {
+    "number" : 1,
+    "exits" : [ 2, 3 ]
+  }, ... ],
+  "occupants" : [ {
+    "type" : "Wumpus",
+    "roomNumber" : 2,
+    "dead" : false
+  }, ... ],
+  "hunter" : {
+    "roomNumber" : 3,
+    "dead" : false,
+    "kills" : 0,
+    "arrowCount" : 5
+  },
+  "score" : {
+    "hunterDeaths" : 0,
+    "wumpusKills" : 0
+  }
+}
+```
+
+**Classes Modified:**
+| Class | Change |
+|-------|--------|
+| `Game` | Removed `Serializable`, updated `saveState()`/`loadState()` to use JSON |
+| `pom.xml` | Added Jackson databind dependency |
+
+**Save File:**
+- Changed from `game_state` (binary) to `game_state.json` (human-readable)
+
+**Note:** Serializable interfaces remain on game classes for potential future use but are no longer required for save/load functionality.
+
+---
+
 ## [1.0.10] - 2026-01-18
 
 ### Added
@@ -14,7 +83,7 @@ All notable changes to the Hunt the Wumpus project are documented in this file.
 - `--load` - Start game from saved state instead of new game
 
 **In-Game Commands:**
-- `f`, `forget`, or `load` - Load saved game state during gameplay
+- `l` or `load` - Load saved game state during gameplay
 
 **Implementation:**
 - `Game.loadState()` - Static method to deserialize game from `game_state` file
@@ -29,8 +98,8 @@ All notable changes to the Hunt the Wumpus project are documented in this file.
 ./bin/wump --load
 
 # Or in-game:
-i|l|m|s|t? f
-Game state loaded from game_state
+i|l|m|s|t? l
+Game state loaded from game_state.json
 ```
 
 ---
@@ -72,7 +141,7 @@ Game state loaded from game_state
 **Usage:**
 ```
 i|l|m|s|t? r
-Game state saved to game_state
+Game state saved to game_state.json
 ```
 
 ---

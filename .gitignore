@@ -1,5 +1,6 @@
 # Build output
 target/
+dependency-reduced-pom.xml
 
 # IDE files
 .idea/
@@ -12,6 +13,9 @@ test.png
 
 # Logs
 *.log
+
+# Game save files
+game_state.json
 
 # Claude Code
 .claude/
