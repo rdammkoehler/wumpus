@@ -16,9 +16,6 @@ class GameController {
     void play() throws IOException {
         ui.showWelcome();
         Game game = createOrLoadGame();
-        if (game == null) {
-            return;
-        }
         CommandParser parser = new CommandParser(game, ui);
         try {
             while (game.isPlaying()) {
