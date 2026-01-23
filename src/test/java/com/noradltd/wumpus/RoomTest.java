@@ -239,4 +239,33 @@ public class RoomTest {
 
         assertThat(room.toString(), matchesPattern("You are in room #\\d+\\nThis room has 1 exits.\\nYou feel a cold draft\\nYou hear the rustling of leathery wings\\nYou smell something foul\\n"));
     }
+
+    @Test
+    public void adjacentHazzardDescriptionsAreOrderedByExitRoomDescription() {
+        class OrdinalOccupant extends Room.Occupant {
+            private String description = null;
+
+            OrdinalOccupant(String description) {
+                this.description = description;
+            }
+
+            @Override
+            String describe() {
+                return description;
+            }
+        }
+        Helpers.restartRoomNumberer();
+        Room room = new Room();
+        Room exit_0 = new Room();
+        new OrdinalOccupant("z").moveTo(exit_0);
+        room.add(exit_0);
+        Room exit_1 = new Room();
+        new OrdinalOccupant("y").moveTo(exit_1);
+        room.add(exit_1);
+        Room exit_2 = new Room();
+        new OrdinalOccupant("x").moveTo(exit_2);
+        room.add(exit_2);
+
+        assertThat(room.toString(), matchesPattern("You are in room #\\d+\\nThis room has 3 exits.\\nx\\ny\\nz\\n"));
+    }
 }

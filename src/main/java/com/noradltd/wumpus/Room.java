@@ -176,6 +176,14 @@ class Room implements Serializable {
 
         private void describeNeighbors(StringBuilder sb) {
             sb.append("\n");
+            // TODO this appears to sort not by Occupant description but by exit order
+            // meaning, it seems, the description is always in the order of the exits
+            // presumably by exit identity and therefore the Player can know that the
+            // description of the room infers which exit contians the wumpus based on
+            // the order of the descriptions.
+            // What test can be created to prove this?
+            // How can we ensure we have a random order so we're not tipping our hand?
+            // I guess first, prove the theory about order.
             room.exits().stream()
                     .flatMap(exit -> exit.occupants().stream())
                     .filter(occupant -> !(occupant instanceof Arrow))
