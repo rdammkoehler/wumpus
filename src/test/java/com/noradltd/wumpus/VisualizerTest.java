@@ -111,7 +111,7 @@ public class VisualizerTest {
 
     //this version does not reveal the hazard type
     @Test
-    public void testGraphMaze2() throws IOException {
+    public void testGraphMazeWithoutHazards() throws IOException {
         assumeTrue(graphvizAvailable, "Graphviz native libraries not available");
         List<Room> rooms = getAllRooms(MazeLoader.populate(MazeBuilder.build(), new Game.Options("")));
         MutableGraph graph = mutGraph("maze").setDirected(false);
@@ -122,14 +122,10 @@ public class VisualizerTest {
             links.put(roomLabel, new ArrayList<String>());
             for (Room exit : room.exits()) {
                 String exitLabel = createRoomLabel(exit);
-                if (links.containsKey(roomLabel) && links.get(roomLabel).contains(exitLabel)) {
-                    //skip!
-                } else if (links.containsKey(exitLabel) && links.get(exitLabel).contains(roomLabel)) {
-                    //skip!
-                } else {
+                if ((!links.containsKey(roomLabel) || !links.get(roomLabel).contains(exitLabel)) && (!links.containsKey(exitLabel) || !links.get(exitLabel).contains(roomLabel))) {
                     links.get(roomLabel).add(exitLabel);
                     if (!links.containsKey(exitLabel)) {
-                        links.put(exitLabel, new ArrayList<String>());
+                        links.put(exitLabel, new ArrayList<>());
                     }
                     links.get(exitLabel).add(roomLabel);
                     graph.add(
