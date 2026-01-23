@@ -80,7 +80,6 @@ public class VisualizerTest {
         return label.equals(Integer.toString(room.number()));
     }
 
-    //ok so that is a basic graph, what do we want our world to look like next?
     @Test
     public void testGraphMaze() throws IOException {
         assumeTrue(graphvizAvailable, "Graphviz native libraries not available");
@@ -90,14 +89,10 @@ public class VisualizerTest {
         for (Room room : rooms) {
             String roomLabel = createRoomLabel(room);
             Color roomColor = getRoomColor(room, roomLabel);
-            links.put(roomLabel, new ArrayList<String>());
+            links.put(roomLabel, new ArrayList<>());
             for (Room exit : room.exits()) {
                 String exitLabel = createRoomLabel(exit);
-                if (links.containsKey(roomLabel) && links.get(roomLabel).contains(exitLabel)) {
-                    //skip!
-                } else if (links.containsKey(exitLabel) && links.get(exitLabel).contains(roomLabel)) {
-                    //skip!
-                } else {
+                if ((!links.containsKey(roomLabel) || !links.get(roomLabel).contains(exitLabel)) && (!links.containsKey(exitLabel) || !links.get(exitLabel).contains(roomLabel))) {
                     links.get(roomLabel).add(exitLabel);
                     if (!links.containsKey(exitLabel)) {
                         links.put(exitLabel, new ArrayList<String>());
