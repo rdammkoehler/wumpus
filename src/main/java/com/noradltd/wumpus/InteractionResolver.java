@@ -50,10 +50,14 @@ class InteractionResolver implements Serializable {
     private void interact(Room.Occupant instigator, Room.Occupant victim) {
         Logger.debug(" victim " + victim.getClass().getSimpleName() + " responding to " + instigator.getClass().getSimpleName());
         victim.respondTo(instigator);
-        if (victim.getRoom().number().equals(instigator.getRoom().number())) {
+        if (isInSameRoom(instigator, victim)) {
             Logger.debug(" instigator " + instigator.getClass().getSimpleName() + " responding to " + victim.getClass().getSimpleName());
             instigator.respondTo(victim);
         }
+    }
+
+    private static boolean isInSameRoom(Room.Occupant instigator, Room.Occupant victim) {
+        return victim.getRoom().number().equals(instigator.getRoom().number());
     }
 
     private void addInterloperIfStillAliveAndPresent(Room.Occupant interloper) {

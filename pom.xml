@@ -6,7 +6,7 @@
 
     <groupId>org.example</groupId>
     <artifactId>wumpus</artifactId>
-    <version>1.0.12</version>
+    <version>1.0.13</version>
     <organization>
         <name>NOrad Ltd.</name>
         <url>http://www.noradltd.com</url>

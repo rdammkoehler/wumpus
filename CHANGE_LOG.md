@@ -2,9 +2,16 @@
 
 All notable changes to the Hunt the Wumpus project are documented in this file.
 
-## [Unreleased] - 2026-01-24
+## [1.0.13] - 2026-01-24
 
 ### Changed
+
+#### InteractionResolver.interact - Method Extraction
+
+**Problem** The original method contained a complex condition that was difficult to comprehend.
+
+**Solution** Extract the expression into a named method to improve readability
+- extracted condition `isInSameRoom`
 
 #### RandomRoomFinder.findRandomRoom - Algorithm Replacement
 
