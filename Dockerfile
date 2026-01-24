@@ -1,33 +1,25 @@
 # Hunt the Wumpus - Docker Image
 # Uses Alpine-based Java runtime with Graphviz for visualization support
+#
+# Requires pre-built JAR: run 'mvn package' before 'docker build'
+#
+# Usage:
+#   docker build --build-arg JAR_FILE=wumpus-1.0.12.jar -t wumpus .
+#   docker run --rm -it wumpus
 
-FROM alpine:3.19 AS builder
-
-# Install OpenJDK and Maven for building
-RUN apk add --no-cache openjdk17 maven
-
-WORKDIR /build
-
-# Copy pom.xml first for dependency caching
-COPY pom.xml .
-RUN mvn dependency:go-offline -q || true
-
-# Copy source and build
-COPY src ./src
-RUN mvn package -q
-
-# Runtime image - minimal Alpine with JRE
 FROM alpine:3.19
+
+# JAR file name (shaded JAR, not original-*)
+ARG JAR_FILE
 
 # Install OpenJDK JRE and Graphviz for visualization support
 RUN apk add --no-cache openjdk17-jre graphviz ttf-dejavu
 
 WORKDIR /app
 
-# Copy the shaded JAR from builder
-COPY --from=builder /build/target/wumpus-1.0.14.jar /app/wumpus.jar
+# Copy the specified shaded JAR
+COPY target/${JAR_FILE} /app/wumpus.jar
 
-# Set entry point to run the game
 ENTRYPOINT ["java", "-jar", "/app/wumpus.jar"]
 
 # Default to no arguments (can be overridden)

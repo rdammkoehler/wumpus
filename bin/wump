@@ -18,7 +18,18 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
-JAR_FILE="$PROJECT_DIR/target/wumpus-1.0.14.jar"
+TARGET_DIR="$PROJECT_DIR/target"
+
+# Find the most recently built JAR in target/
+find_jar() {
+    # Look for shaded JARs (not original-* prefixed), sorted by modification time
+    local jar_file=$(find "$TARGET_DIR" -maxdepth 1 -name "wumpus-*.jar" ! -name "original-*" -type f 2>/dev/null | xargs ls -t 2>/dev/null | head -1)
+    if [[ -n "$jar_file" && -f "$jar_file" ]]; then
+        echo "$jar_file"
+        return 0
+    fi
+    return 1
+}
 
 # Find Java
 find_java() {
@@ -53,12 +64,6 @@ find_java() {
     return 1
 }
 
-# Build JAR if it doesn't exist
-build_jar() {
-    echo "Building game JAR..."
-    (cd "$PROJECT_DIR" && mvn package -DskipTests -q)
-}
-
 # Main
 main() {
     # Find Java
@@ -68,9 +73,12 @@ main() {
         exit 1
     fi
 
-    # Build JAR if needed
-    if [[ ! -f "$JAR_FILE" ]]; then
-        build_jar
+    # Find the most recent JAR
+    JAR_FILE=$(find_jar)
+    if [[ -z "$JAR_FILE" ]]; then
+        echo "Error: No JAR file found in $TARGET_DIR"
+        echo "Please build the project first: mvn package"
+        exit 1
     fi
 
     # Run the game

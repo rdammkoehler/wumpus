@@ -6,13 +6,42 @@ All notable changes to the Hunt the Wumpus project are documented in this file.
 
 ### Changed
 
-#### Dockerfile
+#### bin/wump - Dynamic JAR Detection
 
-Modified to use the most recent JAR file. This is still hardcoded and needs enhancement
+**Problem:** The script used a hardcoded JAR filename and would rebuild via Maven if missing.
 
-#### wump script
+**Solution:** Dynamically find the most recently built shaded JAR in target/.
 
-Modified to use the most recent JAR file. This is still hardcoded and needs enhancement
+**Changes:**
+- Added `find_jar()` function that locates the most recent `wumpus-*.jar` (excluding `original-*` prefixed JARs)
+- Removed `build_jar()` function - no longer rebuilds automatically
+- Clear error message if no JAR found, directing user to run `mvn package`
+
+**Usage:**
+```bash
+mvn package          # Build first
+./bin/wump           # Run the game
+./bin/wump --help    # Show options
+```
+
+#### Dockerfile - Pre-built JAR Support
+
+**Problem:** The Dockerfile used a multi-stage build with hardcoded JAR filename, rebuilding the project inside Docker.
+
+**Solution:** Accept pre-built JAR via build argument, copying only the single required JAR.
+
+**Changes:**
+- Removed multi-stage build (no longer builds inside Docker)
+- Added `JAR_FILE` build argument to specify which JAR to copy
+- Copies single JAR as `/app/wumpus.jar`
+- Smaller image (no JDK/Maven, just JRE)
+
+**Usage:**
+```bash
+mvn package
+docker build --build-arg JAR_FILE=wumpus-1.0.14.jar -t wumpus .
+docker run --rm -it wumpus
+```
 
 ## [1.0.13] - 2026-01-24
 
