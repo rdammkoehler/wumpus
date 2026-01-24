@@ -2,6 +2,18 @@
 
 All notable changes to the Hunt the Wumpus project are documented in this file.
 
+## [1.0.14] - 2026-01-24
+
+### Changed
+
+#### Dockerfile
+
+Modified to use the most recent JAR file. This is still hardcoded and needs enhancement
+
+#### wump script
+
+Modified to use the most recent JAR file. This is still hardcoded and needs enhancement
+
 ## [1.0.13] - 2026-01-24
 
 ### Changed
