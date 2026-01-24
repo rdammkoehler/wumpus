@@ -6,6 +6,18 @@ All notable changes to the Hunt the Wumpus project are documented in this file.
 
 ### Changed
 
+#### bin/create_docker_image.sh - Build Docker Image with dynamic jar file location
+
+**Problem** Claude changed the `Dockerfile` to use an ARG for the location of the file, making building the Docker image more complicated
+
+**Solution** Wrap the `docker build` command in a script
+
+The script (`create_docker_image.sh`) sources the script `wump` to borrow its `find_jar` function. This way there is only one function to maintain.
+Using the absolute path of the jar file, the script determines the relative path to the jar file from the base folder of the repository.
+The script then invokes the `docker build` command to create a Docker image for use.
+Because the Docker image is untagged it simply replaces the image `:latest`
+This may evolve further.
+
 #### bin/wump - Dynamic JAR Detection
 
 **Problem:** The script used a hardcoded JAR filename and would rebuild via Maven if missing.

@@ -18,7 +18,7 @@ RUN apk add --no-cache openjdk17-jre graphviz ttf-dejavu
 WORKDIR /app
 
 # Copy the specified shaded JAR
-COPY target/${JAR_FILE} /app/wumpus.jar
+COPY ${JAR_FILE} /app/wumpus.jar
 
 ENTRYPOINT ["java", "-jar", "/app/wumpus.jar"]
 
