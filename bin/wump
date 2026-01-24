@@ -23,7 +23,11 @@ TARGET_DIR="$PROJECT_DIR/target"
 # Find the most recently built JAR in target/
 find_jar() {
     # Look for shaded JARs (not original-* prefixed), sorted by modification time
-    local jar_file=$(find "$TARGET_DIR" -maxdepth 1 -name "wumpus-*.jar" ! -name "original-*" -type f 2>/dev/null | xargs ls -t 2>/dev/null | head -1)
+    # Claude's original was overly complicated.
+    #  - the original-wumpus-*.jar will always be created before the wumpus-*.jar
+    #  - the find mask doesn't need to force excluding the original, the -name mask already does that
+    #  - xargs to ls was not necessary
+    local jar_file="$TARGET_DIR/"$(ls -t "$TARGET_DIR" 2>/dev/null | head -1)
     if [[ -n "$jar_file" && -f "$jar_file" ]]; then
         echo "$jar_file"
         return 0
@@ -80,6 +84,8 @@ main() {
         echo "Please build the project first: mvn package"
         exit 1
     fi
+
+    echo $JAR_FILE
 
     # Run the game
     exec "$JAVA" -jar "$JAR_FILE" "$@"
