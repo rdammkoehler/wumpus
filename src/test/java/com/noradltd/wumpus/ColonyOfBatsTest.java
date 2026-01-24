@@ -46,9 +46,9 @@ public class ColonyOfBatsTest {
     @ExtendWith(ResetRandomizerExtension.class)
     @Test
     public void aColonyOfBatsMovesAHunterToARandomRoomFarFarAway() {
-        final int room_count = 13;
-        final int starting_room_idx = 1;
-        Room[] rooms = new Room[room_count];
+        final int roomCount = 13;
+        final int startingRoomIdx = 1;
+        Room[] rooms = new Room[roomCount];
         Helpers.restartRoomNumberer();
         for (int idx = 0; idx < rooms.length; idx++) {
             rooms[idx] = new Room();
@@ -56,16 +56,19 @@ public class ColonyOfBatsTest {
                 rooms[idx - 1].add(rooms[idx]);
             }
         }
-        Helpers.programRandomizer(10, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
+        // New algorithm: candidates sorted by room number are [#1,#3,#4,...,#13] (12 rooms, excluding #2)
+        // To select room #13 (rooms[12]), we need index 11
+        Helpers.programRandomizer(11);
         ColonyOfBats bats = new ColonyOfBats();
-        bats.moveTo(rooms[starting_room_idx]);
+        bats.moveTo(rooms[startingRoomIdx]);
         Hunter hunter = new Hunter();
 
-        hunter.moveTo(rooms[starting_room_idx]);
+        hunter.moveTo(rooms[startingRoomIdx]);
 
-        assertThat(hunter.getRoom(), is(equalTo(rooms[room_count - 1])));
+        assertThat(hunter.getRoom(), is(equalTo(rooms[roomCount - 1])));
     }
 
+    // TODO flakey test
     @ExtendWith(ResetRandomizerExtension.class)
     @Test
     public void aColonyOfBatsUsesTheOnlyExitIfTHereIsOnlyOneExit() {
@@ -77,6 +80,8 @@ public class ColonyOfBatsTest {
         Hunter hunter = new Hunter();
         // Program randomizer: false for interaction order (bats respond to hunter),
         // then ints for RandomRoomFinder (0 iterations + exit selection)
+        // reality is we generate lots of bool and lots of int, do we need a fancier programmable randomizer?
+        // the fancy one exists
         Helpers.programRandomizer(false, false);
 
         hunter.moveTo(startingRoom);
@@ -97,13 +102,11 @@ public class ColonyOfBatsTest {
         BottomlessPit pit = new BottomlessPit();
         pit.moveTo(occupiedRoom);
         Hunter hunter = new Hunter();
-        // Program randomizer with:
-        // - booleans: false for interaction order (bats respond to hunter)
-        // - ints for RandomRoomFinder: 1 means 2 iterations (to traverse 5→6→7),
-        //   then 0,1 to select exits (0 from room5=room6, 1 from room6=room7)
+        // New algorithm: only finishingRoom is empty and not the starting room
+        // So candidates = [finishingRoom], index 0 selects it
         Helpers.programRandomizer(
                 new boolean[]{false, false},
-                new int[]{1, 0, 1, 0, 0, 0, 0, 0, 0, 0}
+                new int[]{0}
         );
 
         hunter.moveTo(startingRoom);
@@ -126,12 +129,12 @@ public class ColonyOfBatsTest {
         BottomlessPit pit = new BottomlessPit();
         pit.moveTo(occupiedRoom);
         Hunter hunter = new Hunter();
-        // Program randomizer with:
-        // - booleans: false for interaction order (bats respond to hunter)
-        // - ints for RandomRoomFinder navigation
+        // New algorithm: Two findRandomRoom calls occur:
+        // 1. For hunter: candidates = [emptyRoom, finishingRoom], index 0 selects emptyRoom
+        // 2. For bats: candidates = [finishingRoom] (emptyRoom now has hunter), index 0 selects it
         Helpers.programRandomizer(
                 new boolean[]{false, false},
-                new int[]{0, 0, 0, 1, 0, 0, 0, 1, 0, 1}
+                new int[]{0, 0}
         );
 
         hunter.moveTo(startingRoom);

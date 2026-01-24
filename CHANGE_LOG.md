@@ -2,6 +2,68 @@
 
 All notable changes to the Hunt the Wumpus project are documented in this file.
 
+## [Unreleased] - 2026-01-24
+
+### Changed
+
+#### RandomRoomFinder.findRandomRoom - Algorithm Replacement
+
+**Problem:** The original algorithm used a complex random-walk approach with multiple issues:
+- Consumed many random calls (up to 60 per invocation) with wasted iterations
+- Used an unnecessary stack data structure when only the final room mattered
+- Non-deterministic traversal could revisit rooms or oscillate between two rooms
+- Only 3 attempts meant it could fail to find a valid room even when many existed
+- Hard to test due to unpredictable random number consumption
+
+**Solution:** Replaced with a collect-and-filter algorithm.
+
+**Before (Stack-based random walk):**
+```java
+Stack<Room> stack = new Stack<Room>();
+stack.push(currentRoom);
+for (int count = 0; count < 3 && originalRoom.equals(currentRoom); count++) {
+    int bound = Random.getRandomizer().nextInt(10) + 1;
+    IntStream.range(0, bound)
+            .forEach(idx -> stack.push(stack.peek().exits()
+                    .get(Random.getRandomizer().nextInt(stack.peek().exits().size()))));
+    if (stack.peek().occupants().isEmpty()) {
+        currentRoom = stack.pop();
+    }
+}
+```
+
+**After (Collect-and-filter):**
+```java
+List<Room> allRooms = MazeTraverser.collectAllRoomsAsList(currentRoom);
+List<Room> candidates = allRooms.stream()
+        .filter(room -> !room.equals(currentRoom))
+        .filter(room -> room.occupants().isEmpty())
+        .sorted(Comparator.comparingInt(Room::number))
+        .toList();
+if (candidates.isEmpty()) {
+    return currentRoom;
+}
+return candidates.get(Random.getRandomizer().nextInt(candidates.size()));
+```
+
+**Benefits:**
+
+| Improvement | Description |
+|-------------|-------------|
+| Deterministic | Always finds a valid room if one exists |
+| Single random call | Only one `nextInt()` needed to select the final room |
+| Uniform distribution | Every valid room has equal probability of selection |
+| Simpler logic | No stack, no loops with complex bounds |
+| Testable | Easier to write deterministic tests with programmed randomizer |
+| Sorted candidates | Room selection order is deterministic (sorted by room number) |
+
+**Tests Updated:**
+- `ColonyOfBatsTest.aColonyOfBatsMovesAHunterToARandomRoomFarFarAway` - Updated random values for new algorithm
+- `ColonyOfBatsTest.aColonyOfBatsDropsTheHunterInAnUnOccupiedRoom` - Simplified random sequence
+- `ColonyOfBatsTest.aColonyOfBatsMovesToAnotherUnoccupiedRoom` - Simplified random sequence
+
+---
+
 ## [1.0.12] - 2026-01-19
 
 ### Added
