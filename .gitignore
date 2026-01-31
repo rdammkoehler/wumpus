@@ -16,3 +16,6 @@ test.png
 
 # Game save files
 game_state.json
+
+# Ignore my local Claude settings
+/.claude/settings.local.json
