@@ -6,14 +6,15 @@ public class Arrow extends Room.Occupant {
 
     private final int arrowId = nextArrowId++;
     private boolean killedAWumpus = false;
+    private boolean broken = false;
 
     {
         interactions.put(Wumpus.class,
                 interloper -> {
                     interloper.die();
-                    killedAWumpus = true; // forcing order of definition issues
+                    killedAWumpus = true;
                     Logger.info("Your arrow drives itself deep into the hideous beast; it's life force escaping from the hole in it's leathery hide");
-                    shatter();  // TODO this is weird but shatter has more than us as a caller
+                    shatter();
                 });
     }
 
@@ -30,7 +31,13 @@ public class Arrow extends Room.Occupant {
     }
 
     public boolean isBroken() {
-        return isDead();
+        return broken;
+    }
+
+    @Override
+    void die() {
+        broken = true;
+        super.die();
     }
 
     private void shatter() {
@@ -51,7 +58,7 @@ public class Arrow extends Room.Occupant {
 
     @Override
     public String toString() {
-        if (isDead()) {
+        if (isBroken()) {
             return "a shattered arrow";
         }
         return "a nasty looking arrow with a viciously barbed point lies here";

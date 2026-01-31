@@ -3,6 +3,11 @@ package com.noradltd.wumpus;
 import java.util.*;
 import java.util.stream.Collectors;
 
+// TODO STRUCTURAL: This class violates Single Responsibility Principle - it handles:
+//   1. Room topology (exits, connectivity)
+//   2. Occupant collection management
+//   3. Interaction dispatch logic
+//   Consider splitting into: Room (topology), OccupantManager, InteractionResolver
 class Room {
     static abstract class Occupant implements Comparable<Occupant> {
         interface Interaction {
@@ -97,6 +102,8 @@ class Room {
         executeOccupantInteractions(occupant);
     }
 
+    // TODO STRUCTURAL: Simplify interaction system - random ordering (line 131) creates non-deterministic behavior
+    //   Consider: define clear interaction precedence, use InteractionHandler interface with explicit ordering
     private void executeOccupantInteractions(Occupant interloper) {
         class Interactor {
             final Occupant instigator;

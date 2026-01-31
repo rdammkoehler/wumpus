@@ -1,6 +1,7 @@
 package com.noradltd.wumpus;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import static com.noradltd.wumpus.RandomRoomFinder.findRandomRoom;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -38,6 +39,7 @@ public class RandomRoomFinderTest {
         assertThat(result, is(equalTo(anExit)));
     }
 
+    @ExtendWith(ResetRandomizerExtension.class)
     @Test
     public void aRoomWithAnExitTreeTwoDeepReturnsFirstBecauseEmtpy() {
         Room aRoom = new Room();
@@ -45,13 +47,17 @@ public class RandomRoomFinderTest {
         Room anotherExit = new Room();
         anExit.add(aRoom);
         anotherExit.add(anExit);
+        // Program randomizer: navigate to anExit (empty) on first try
+        // nextInt(10)=0 (1 push), nextInt(1)=0 (select anExit which is empty)
+        Helpers.programRandomizer(0, 0);
 
         Room result = findRandomRoom(aRoom);
 
-        assertThat(result, is(equalTo(anExit))); // quite possibly just lucky
+        assertThat(result, is(equalTo(anExit)));
     }
 
     // and there it is, this narrowly demonstrats the issue
+    @ExtendWith(ResetRandomizerExtension.class)
     @Test
     public void aRoomWithAnExitTreeTwoDeepReturnsSecondBecauseNotEmtpy() {
         Room aRoom = new Room();
@@ -61,10 +67,15 @@ public class RandomRoomFinderTest {
         anotherExit.add(anExit);
         ColonyOfBats colony = new ColonyOfBats();
         colony.moveTo(anExit);
+        // Program randomizer: first iteration goes to anExit (occupied),
+        // second iteration navigates to anotherExit (empty)
+        // nextInt(10)=0 (1 push), nextInt(1)=0 (select anExit),
+        // nextInt(10)=0 (1 push), nextInt(2)=1 (select anotherExit)
+        Helpers.programRandomizer(0, 0, 0, 1);
 
         Room result = findRandomRoom(aRoom);
 
-        assertThat(result, is(equalTo(anotherExit))); // quite possibly just lucky
+        assertThat(result, is(equalTo(anotherExit)));
     }
 
 }

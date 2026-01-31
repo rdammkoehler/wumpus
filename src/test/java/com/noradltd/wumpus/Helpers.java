@@ -19,11 +19,11 @@ public class Helpers {
     }
 
     static Integer countRooms(Maze maze) {
-        return collectRoom(maze.entrance(), new HashSet<>()).size();
+        return MazeTraverser.collectAllRooms(maze.entrance()).size();
     }
 
     static List<Room> getAllRooms(Maze maze) {
-        return collectRoom(maze.entrance(), new HashSet<>()).stream().toList();
+        return MazeTraverser.collectAllRoomsAsList(maze.entrance());
     }
 
     static Integer countMazeOccupantsByType(Maze maze, Class<? extends Room.Occupant> occupantType) {
@@ -37,18 +37,6 @@ public class Helpers {
             }
         }
         return count;
-    }
-
-    private static Set<Room> collectRoom(Room room, Set<Room> rooms) {
-        if (!rooms.contains(room)) {
-            rooms.add(room);
-            for (Room exit : room.exits()) {
-                if (!rooms.contains(exit)) {
-                    collectRoom(exit, rooms);
-                }
-            }
-        }
-        return rooms;
     }
 
     public static void resetStdout() {

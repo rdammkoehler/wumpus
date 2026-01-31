@@ -56,19 +56,7 @@ public class Visualizer {
     }
 
     private List<Room> getAllRooms(Maze maze) {
-        return collectRoom(maze.entrance(), new HashSet<>()).stream().toList();
-    }
-
-    private Set<Room> collectRoom(Room room, Set<Room> rooms) {
-        if (!rooms.contains(room)) {
-            rooms.add(room);
-            for (Room exit : room.exits()) {
-                if (!rooms.contains(exit)) {
-                    collectRoom(exit, rooms);
-                }
-            }
-        }
-        return rooms;
+        return MazeTraverser.collectAllRoomsAsList(maze.entrance());
     }
 
     private void visualize_(Maze maze) {

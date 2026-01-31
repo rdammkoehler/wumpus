@@ -1,8 +1,17 @@
-.DS_Store
-.idea/
+# Build output
 target/
-wumpus.iml
 
-neato.gv
-test_maze.png
+# IDE files
+.idea/
+*.iml
+
+# Generated maze visualizations
+*_maze.png
+maze.png
+test.png
+
+# Logs
 *.log
+
+# Claude Code
+.claude/

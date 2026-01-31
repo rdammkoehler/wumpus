@@ -168,26 +168,7 @@ class MazeLoader {
     }
 
     private List<Room> collectAllRooms() {
-        class RoomCollector {
-            private final List<Room> allRooms;
-
-            RoomCollector(Maze maze) {
-                allRooms = collectRoom(maze.entrance(), new HashSet<>());
-            }
-
-            private List<Room> collectRoom(Room room, Set<Room> rooms) {
-                if (!rooms.contains(room)) {
-                    rooms.add(room);
-                    room.exits().stream().filter(exit -> !rooms.contains(exit)).forEach(exit -> collectRoom(exit, rooms));
-                }
-                return rooms.stream().toList();
-            }
-
-            public List<Room> getAllRooms() {
-                return allRooms;
-            }
-        }
-        return new RoomCollector(maze).getAllRooms();
+        return MazeTraverser.collectAllRoomsAsList(maze.entrance());
     }
 
 

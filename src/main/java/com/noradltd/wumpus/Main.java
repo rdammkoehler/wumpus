@@ -11,6 +11,8 @@ import java.util.regex.Pattern;
 
 import static java.util.Collections.unmodifiableMap;
 
+// TODO STRUCTURAL: This class mixes multiple concerns - CLI I/O, game loop, command parsing, help text.
+//   Consider extracting: CommandParser (parse/route commands), GameController (game loop), ConsoleUI (I/O)
 public class Main {
 
     private static final Pattern USER_COMMAND = Pattern.compile("\\s*(\\S+)\\s*?(\\d*)?\\s*");

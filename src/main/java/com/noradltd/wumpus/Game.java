@@ -56,40 +56,23 @@ class Game {
     }
 
     public String getScore() {
-        class MazeOccupantCounter {
-            private Set<Room> rooms = null;
-
-            Long count(Class<? extends Room.Occupant> occupantType) {
-                return getRooms().stream()
-                        .map(Room::occupants)
-                        .flatMap(Collection::stream)
-                        .filter(occupantType::isInstance)
-                        .filter(Room.Occupant::isDead)
-                        .count();
-            }
-
-            private List<Room> getRooms() {
-                if (rooms == null) {
-                    rooms = collectRoom(hunter.getRoom(), new HashSet<>());
-                }
-                return rooms.stream().toList();
-            }
-
-            private Set<Room> collectRoom(Room room, Set<Room> rooms) {
-                if (!rooms.contains(room)) {
-                    rooms.add(room);
-                    room.exits().forEach(exit -> collectRoom(exit, rooms));
-                }
-                return rooms;
-            }
-
-        }
-        MazeOccupantCounter counter = new MazeOccupantCounter();
-        Long huntersKilled = counter.count(Hunter.class);
-        Long wumpiKilled = counter.count(Wumpus.class);
+        List<Room> rooms = MazeTraverser.collectAllRoomsAsList(hunter.getRoom());
+        Long huntersKilled = countDeadOccupants(rooms, Hunter.class);
+        Long wumpiKilled = countDeadOccupants(rooms, Wumpus.class);
         return "Score: Hunter " + wumpiKilled + " Wumpus " + huntersKilled;
     }
 
+    private Long countDeadOccupants(List<Room> rooms, Class<? extends Room.Occupant> occupantType) {
+        return rooms.stream()
+                .map(Room::occupants)
+                .flatMap(Collection::stream)
+                .filter(occupantType::isInstance)
+                .filter(Room.Occupant::isDead)
+                .count();
+    }
+
+    // TODO STRUCTURAL: Eliminate ThreadLocal state management - creates hidden dependencies, makes testing harder.
+    //   Consider: explicit dependency injection - pass Random instance through constructors where needed.
     private static final ThreadLocal<Map<String, Object>> threadLocalBag = ThreadLocal.withInitial(() -> new HashMap<>() {{
         put("randomizer", new Random());
     }});
@@ -165,6 +148,8 @@ class Game {
             return optionValues;
         }
 
+        // TODO STRUCTURAL: Replace reflection-based configuration - bypasses type safety, hard to debug,
+        //   breaks with refactoring. Consider: explicit setters, or use a CLI library (Picocli, JCommander)
         private void setOptionValue(String attrName, String optionValue) {
             try {
                 Field field = getClass().getDeclaredField(attrName);
