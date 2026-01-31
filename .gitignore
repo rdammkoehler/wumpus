@@ -16,6 +16,3 @@ test.png
 
 # Game save files
 game_state.json
-
-# Claude Code
-.claude/
