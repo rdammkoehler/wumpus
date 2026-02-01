@@ -106,6 +106,10 @@ class MazeBuilder {
         }
     }
 
+    // TODO: This method is inefficient.
+    // Converting the set to an array on every call is slow.
+    // It would be better to convert the set to a list once and then get a random
+    // element from the list.
     private static Room getRandomRoom(Collection<Room> rooms) {
         return rooms.toArray(new Room[]{})[Random.getRandomizer().nextInt(rooms.size())];
     }
@@ -115,6 +119,9 @@ class MazeBuilder {
     }
 
     private boolean hasEnoughRooms() {
+        // TODO: The logic of subtracting 1 here is unclear and should be investigated.
+        // It's not obvious why this is necessary, and it could be a bug.
+        // A clear explanation should be added.
         return rooms.size() > getRoomCount() - 1;  // why -1?
     }
 
@@ -154,14 +161,20 @@ class MazeLoader {
     }
 
     private int getPitCount() {
+        // TODO: The number 5 is a magic number.
+        // It should be replaced with a named constant to improve readability.
         return Math.max(Math.max(MINIMUM_PIT_COUNT, options.getRoomCount() / 5), options.getPitCount());
     }
 
     private int getWumpiCount() {
+        // TODO: The number 7 is a magic number.
+        // It should be replaced with a named constant to improve readability.
         return Math.max(Math.max(MINIMUM_WUMPUS_COUNT, options.getRoomCount() / 7), options.getWumpiCount());
     }
 
     private int getBatCount() {
+        // TODO: The number 5 is a magic number.
+        // It should be replaced with a named constant to improve readability.
         return Math.max(Math.max(MINIMUM_BAT_COUNT, options.getRoomCount() / 5), options.getBatCount());
     }
 
@@ -173,6 +186,8 @@ class MazeLoader {
     }
 
     private List<Room> collectAllRooms() {
+        // TODO: This method's dependency on MazeTraverser violates the Law of Demeter.
+        // The Maze class should be responsible for providing a list of all rooms.
         return MazeTraverser.collectAllRoomsAsList(maze.entrance());
     }
 

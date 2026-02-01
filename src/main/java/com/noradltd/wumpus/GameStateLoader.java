@@ -25,6 +25,8 @@ class GameStateLoader {
     private static Map<Integer, Room> reconstructRooms(List<GameState.RoomState> roomStates) {
         Map<Integer, Room> roomMap = new HashMap<>();
 
+        // TODO: This is a tricky and potentially not thread-safe way to reconstruct rooms.
+        // A cleaner solution should be found.
         Room.RoomNumberer originalNumberer = Room.roomNumberer;
         try {
             for (GameState.RoomState rs : roomStates) {
@@ -40,6 +42,9 @@ class GameStateLoader {
             Room room = roomMap.get(rs.number);
             for (Integer exitNumber : rs.exits) {
                 Room exitRoom = roomMap.get(exitNumber);
+                // TODO: Law of Demeter Principle violation.
+                // This logic should be moved to a method on the Room class,
+                // such as `hasExit(Room other)`.
                 if (exitRoom != null && !room.exits().contains(exitRoom)) {
                     room.add(exitRoom);
                 }

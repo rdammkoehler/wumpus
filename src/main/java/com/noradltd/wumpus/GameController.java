@@ -15,12 +15,18 @@ class GameController {
 
     void play() throws IOException {
         ui.showWelcome();
+        // TODO: The Game and CommandParser are created within this method.
+        // For better testability, these should ideally be injected as dependencies.
         Game game = createOrLoadGame();
         CommandParser parser = new CommandParser(game, ui);
         try {
             while (game.isPlaying()) {
                 ui.showPrompt();
                 parser.execute(parser.parse(ui.readCommand()));
+                // TODO: Law of Demeter Principle violation and tight coupling.
+                // The GameController is reaching into the Game object to get its internal state.
+                // The Game class should instead notify the GameController about a pending load,
+                // or provide a method to apply a loaded game state.
                 // Check if a load was requested
                 if (game.getPendingLoad() != null) {
                     game = game.getPendingLoad();

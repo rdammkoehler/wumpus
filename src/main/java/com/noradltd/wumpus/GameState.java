@@ -25,6 +25,10 @@ class GameState {
 
     static GameState fromGame(Game game, Hunter hunter, Room startRoom) {
         GameState state = new GameState();
+        // TODO: This method has two issues:
+        // 1. It uses MazeTraverser, which is a design smell. The Maze should provide a way to get all rooms.
+        // 2. It violates the Law of Demeter by accessing room.occupants(). The Room class should provide a
+        //    method to get its occupants without exposing the underlying collection.
         List<Room> allRooms = MazeTraverser.collectAllRoomsAsList(startRoom);
 
         state.rooms = allRooms.stream()
@@ -61,6 +65,8 @@ class GameState {
         static RoomState fromRoom(Room room) {
             RoomState state = new RoomState();
             state.number = room.number();
+            // TODO: Law of Demeter Principle violation.
+            // The Room class should provide a method to get its exit numbers directly.
             state.exits = room.exits().stream().map(Room::number).toList();
             return state;
         }
@@ -79,6 +85,8 @@ class GameState {
         static OccupantState fromOccupant(Room.Occupant occupant) {
             OccupantState state = new OccupantState();
             state.type = occupant.getClass().getSimpleName();
+            // TODO: Law of Demeter Principle violation.
+            // The Occupant class should provide a method to get its room number directly.
             state.roomNumber = occupant.getRoom().number();
             state.dead = occupant.isDead();
 
@@ -102,6 +110,8 @@ class GameState {
 
         static HunterState fromHunter(Hunter hunter) {
             HunterState state = new HunterState();
+            // TODO: Law of Demeter Principle violation.
+            // The Occupant class should provide a method to get its room number directly.
             state.roomNumber = hunter.getRoom().number();
             state.dead = hunter.isDead();
             state.kills = hunter.kills();
@@ -110,6 +120,8 @@ class GameState {
         }
 
         private static int parseArrowCount(String inventory) {
+            // TODO: This is a brittle way to get the arrow count.
+            // The Hunter or Quiver class should provide a method to return the arrow count directly.
             try {
                 String[] lines = inventory.split("\n");
                 for (String line : lines) {
@@ -133,6 +145,8 @@ class GameState {
 
         static ScoreState fromGame(List<Room> rooms) {
             ScoreState state = new ScoreState();
+            // TODO: Law of Demeter Principle violation.
+            // The Room class should provide methods like `getHunters()` and `getWumpi()`.
             state.hunterDeaths = rooms.stream()
                     .flatMap(r -> r.occupants().stream())
                     .filter(Hunter.class::isInstance)

@@ -60,12 +60,19 @@ class Hunter extends Room.Occupant {
 
     void shoot(Integer exitNumber) {
         if (validExitNumber(exitNumber)) {
+            // TODO: Law of Demeter Principle violation.
+            // This logic should be moved to a method on the Room class,
+            // such as `getExit(exitNumber)`.
+            // A similar issue exists in the `moveTo` method.
             Room target = getRoom().exits().get(exitNumber);
             Arrow arrow = quiver.next();
             if (arrow == Arrow.NULL_ARROW) {
                 Logger.info("You have no more arrows");
             } else {
                 Logger.info("Your arrow hurtles down tunnel " + (exitNumber + 1));
+                // TODO: Law of Demeter Principle violation.
+                // This logic should be moved to a method on the Room class,
+                // such as `hasWumpus()`.
                 if (target.occupants().stream().anyMatch(Wumpus.class::isInstance)) {
                     Logger.info("There is a Wumpus in the room!");
                 } else {
@@ -90,6 +97,9 @@ class Hunter extends Room.Occupant {
     }
 
     private boolean validExitNumber(int exitNumber) {
+        // TODO: This method mixes validation with UI concerns (logging).
+        // It should only be responsible for validation and return a boolean.
+        // The caller should handle logging.
         int limit = getRoom().exits().size() - 1;
         if (exitNumber < 0 || exitNumber > limit) {
             Logger.error("Invalid Choice: Pick from 1 to " + (limit + 1));
@@ -99,14 +109,9 @@ class Hunter extends Room.Occupant {
     }
 
     void kill(Room.Occupant wumpus) {
-//        if (isDead()) {
-//            // Hunter is dead and cannot act
-//            return;
-//        }
-//        if (wumpus.isDead()) {
-//            // Wumpus is already dead
-//            return;
-//        }
+        // TODO: Law of Demeter Principle violation.
+        // This logic should be moved to a method on the Occupant class,
+        // such as `isInSameRoomAs(Occupant other)`.
         if (getRoom().equals(wumpus.getRoom())) {
             // need to check that the wumpus has not fled, hence the room check
             if (Random.getRandomizer().nextBoolean()) {
@@ -121,6 +126,9 @@ class Hunter extends Room.Occupant {
     }
 
     void takeArrow() {
+        // TODO: Law of Demeter Principle violation.
+        // This logic should be moved to a method on the Room class,
+        // such as `findArrow()`.
         getRoom().occupants().forEach(occupant -> {
             if (occupant instanceof Arrow arrow) {
                 if (arrow.isBroken()) {

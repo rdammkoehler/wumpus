@@ -20,6 +20,9 @@ import static guru.nidi.graphviz.model.Factory.node;
 public class Visualizer {
 
 
+    // TODO: This method violates the Single Responsibility Principle.
+    // It is not directly related to visualizing a maze.
+    // Consider moving to a utility class.
     private static String createDttmStamp() {
         Date utilDate = new Date(); // Date.from(LocalDate.now().atStartOfDay(ZoneOffset.UTC).toInstant());
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX");
@@ -55,10 +58,15 @@ public class Visualizer {
         return !label.equals(Integer.toString(room.number()));
     }
 
+    // TODO: This method's dependency on MazeTraverser violates the Law of Demeter.
+    // The Maze class should be responsible for providing a list of all rooms.
     private List<Room> getAllRooms(Maze maze) {
         return MazeTraverser.collectAllRoomsAsList(maze.entrance());
     }
 
+    // TODO: This method is too long and complex.
+    // It should be broken down into smaller methods to improve readability
+    // and separation of concerns.
     private void visualize_(Maze maze) {
         List<Room> rooms = getAllRooms(maze);
         MutableGraph graph = mutGraph("maze").setDirected(false);

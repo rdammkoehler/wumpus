@@ -51,6 +51,9 @@ class Game {
 
     @Override
     public String toString() {
+        // TODO: Law of Demeter Principle violation.
+        // The Game class should not reach into the Hunter to get its Room and then call toString() on it.
+        // The Game class should have its own way of describing the game state, or delegate to a higher-level describer.
         return hunter.getRoom().toString();
     }
 
@@ -107,6 +110,9 @@ class Game {
     }
 
     public String getScore() {
+        // TODO: This method has two design issues:
+        // 1. It uses MazeTraverser, which is a design smell. The Maze should provide a way to get all rooms.
+        // 2. It violates the Law of Demeter by accessing hunter.getRoom().
         List<Room> rooms = MazeTraverser.collectAllRoomsAsList(hunter.getRoom());
         Long huntersKilled = countDeadOccupants(rooms, Hunter.class);
         Long wumpiKilled = countDeadOccupants(rooms, Wumpus.class);
@@ -122,7 +128,7 @@ class Game {
                 .count();
     }
 
-    // TODO STRUCTURAL: Eliminate ThreadLocal state management - creates hidden dependencies, makes testing harder.
+    // TODO: This ThreadLocal state management creates hidden dependencies and makes testing harder.
     //   Consider: explicit dependency injection - pass Random instance through constructors where needed.
     private static final ThreadLocal<Map<String, Object>> threadLocalBag = ThreadLocal.withInitial(() -> new HashMap<>() {{
         put("randomizer", new Random());

@@ -57,6 +57,9 @@ class InteractionResolver implements Serializable {
     }
 
     private static boolean isInSameRoom(Room.Occupant instigator, Room.Occupant victim) {
+        // TODO: Law of Demeter Principle violation.
+        // This logic should be moved to a method on the Occupant class,
+        // such as `isInSameRoomAs(Occupant other)`.
         return victim.getRoom().number().equals(instigator.getRoom().number());
     }
 

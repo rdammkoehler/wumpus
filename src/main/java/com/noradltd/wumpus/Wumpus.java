@@ -21,6 +21,8 @@ class Wumpus extends Room.Occupant {
     }
 
     private void flee() {
+        // TODO: Law of Demeter Principle violation.
+        // This method chain should be refactored to something like getRoom().getRandomExit()
         int exitCount = getRoom().exits().size();
         Logger.debug("exit count: " + exitCount);
         Room exitRoom = getRoom().exits().get(Random.getRandomizer().nextInt(exitCount));

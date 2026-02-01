@@ -4,6 +4,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+// TODO: This class's existence may indicate a design smell.
+// The functionality of traversing the maze and collecting all rooms
+// should likely be a responsibility of the Maze class itself to improve
+// encapsulation and reduce coupling.
 public class MazeTraverser {
 
     public static Set<Room> collectAllRooms(Room startingRoom) {

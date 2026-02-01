@@ -28,6 +28,9 @@ class CommandParser {
     }
 
     private Map<String, Command> buildCommands(Game game, ConsoleUI ui) {
+        // TODO: This uses an anonymous inner class with an instance initializer block,
+        // which can be less readable. Consider using a static factory method or
+        // Map.of() / Map.ofEntries() for Java 9+ for a cleaner approach.
         return unmodifiableMap(new HashMap<>() {
             @Override
             public Command get(Object key) {

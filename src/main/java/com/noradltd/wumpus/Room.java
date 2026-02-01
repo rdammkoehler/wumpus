@@ -96,7 +96,8 @@ class Room implements Serializable {
         }
     };
 
-    // TODO how do we get this to be NOT package protected?
+    // TODO: If the RoomNumberer needs to be accessed from other packages,
+    // its visibility should be changed from package-private to public.
     static RoomNumberer roomNumberer = DEFAULT_ROOM_NUMBERER;
 
     // Topology
@@ -126,6 +127,8 @@ class Room implements Serializable {
         two.exits.add(one);
     }
 
+    // TODO: This method's reliance on hashCode() is unconventional.
+    // It should return the 'instanceNumber' field directly for clarity.
     Integer number() {
         return hashCode();
     }
@@ -184,6 +187,10 @@ class Room implements Serializable {
             // What test can be created to prove this?
             // How can we ensure we have a random order so we're not tipping our hand?
             // I guess first, prove the theory about order.
+
+            // TODO: Law of Demeter Principle violation.
+            // This stream chain should be refactored into a method on the Room class
+            // like `getNeighboringOccupants()`
             room.exits().stream()
                     .flatMap(exit -> exit.occupants().stream())
                     .filter(occupant -> !(occupant instanceof Arrow))

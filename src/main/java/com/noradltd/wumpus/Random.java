@@ -26,6 +26,10 @@ public class Random  {
         getDelegateRandomizer().setSeed(seed);
     }
 
+    // TODO: Tight coupling to the Game class.
+    // This static method makes this class difficult to reuse or test independently.
+    // Consider using a proper dependency injection mechanism to decouple this class
+    // from the Game class.
     static Random getRandomizer() {
         return (Random) Game.getThreadLocalBag().get("randomizer");
     }

@@ -11,6 +11,8 @@ public class RandomRoomFinder {
             return currentRoom;
         }
 
+        // TODO: Law of Demeter Principle violation.
+        // This functionality should be the responsibility of the Room or Maze class.
         List<Room> allRooms = MazeTraverser.collectAllRoomsAsList(currentRoom);
 
         List<Room> candidates = allRooms.stream()
