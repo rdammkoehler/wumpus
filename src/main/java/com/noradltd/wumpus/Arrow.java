@@ -2,11 +2,16 @@ package com.noradltd.wumpus;
 
 import java.io.Serial;
 
+// TODO [File Organization] ArrowQuiver class is in this file but should be in its own file.
+//   Remediation: Extract ArrowQuiver to ArrowQuiver.java following one-class-per-file convention.
 public class Arrow extends Room.Occupant {
     @Serial
     private static final long serialVersionUID = 1L;
 
     static final Arrow NULL_ARROW = new Arrow();
+    // TODO [Static Mutable State] Static counter creates shared mutable state across all Arrow instances.
+    //   This can cause issues in tests where IDs may not reset between test runs.
+    //   Remediation: Consider using an ArrowFactory that manages ID generation, or use UUID.
     private static int nextArrowId = 0;
 
     private final int arrowId = nextArrowId++;

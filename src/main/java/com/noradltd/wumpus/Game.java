@@ -4,7 +4,12 @@ import java.io.*;
 import java.util.*;
 import java.util.function.Consumer;
 
+// TODO [SRP] Game class violates Single Responsibility Principle - it handles game state, file I/O (save/load),
+//   and configuration (Options inner class). Consider extracting GamePersistence for save/load operations.
+// TODO [DIP] Game directly instantiates MazeBuilder and MazeLoader - violates Dependency Inversion Principle.
+//   Consider injecting a MazeFactory interface instead.
 class Game {
+    // TODO [SRP] Hardcoded file path couples Game to filesystem. Move file handling to a dedicated persistence class.
     private static final String SAVE_FILE = "game_state.json";
 
     private final Hunter hunter;
@@ -122,8 +127,10 @@ class Game {
                 .count();
     }
 
-    // TODO STRUCTURAL: Eliminate ThreadLocal state management - creates hidden dependencies, makes testing harder.
-    //   Consider: explicit dependency injection - pass Random instance through constructors where needed.
+    // TODO [DIP] ThreadLocal state is a Service Locator anti-pattern - creates hidden global dependencies,
+    //   makes testing harder, and violates Dependency Inversion Principle.
+    //   Remediation: Pass Random instance through constructors using dependency injection.
+    //   Example: MazeBuilder(Options options, Random random) instead of accessing via static getThreadLocalBag().
     private static final ThreadLocal<Map<String, Object>> threadLocalBag = ThreadLocal.withInitial(() -> new HashMap<>() {{
         put("randomizer", new Random());
     }});

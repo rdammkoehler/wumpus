@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+// TODO [Interface Segregation] OccupantManager exposes both read (getOccupants, getOccupantsSnapshot)
+//   and write (addOccupant, removeOccupant) operations. Consider separating into
+//   OccupantReader and OccupantWriter interfaces if clients only need subset of operations.
 class OccupantManager implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;

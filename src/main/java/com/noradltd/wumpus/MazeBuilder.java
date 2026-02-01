@@ -9,10 +9,15 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+// TODO [File Organization] Maze interface, MazeBuilder, and MazeLoader are all in one file.
+//   This violates one-class-per-file convention and makes code harder to navigate.
+//   Remediation: Extract Maze interface to Maze.java and MazeLoader to MazeLoader.java.
 interface Maze extends Serializable {
     Room entrance();
 }
 
+// TODO [DIP] MazeBuilder has static build() methods that hide the instantiation.
+//   Consider making build() an instance method and injecting dependencies for better testability.
 class MazeBuilder {
     private static final Integer MIN_ROOM_COUNT = 2;
 
@@ -139,7 +144,10 @@ class MazeBuilder {
     }
 }
 
+// TODO [File Organization] MazeLoader should be in its own file (MazeLoader.java).
 class MazeLoader {
+    // TODO [DRY] These MINIMUM_*_COUNT constants duplicate the logic in Game.Options DEFAULT_* constants.
+    //   Both define minimum occupant counts. Consider consolidating in Game.Options or a shared config.
     private static final int MINIMUM_PIT_COUNT = 1;
     private static final int MINIMUM_WUMPUS_COUNT = 1;
     private static final int MINIMUM_BAT_COUNT = 1;
@@ -221,6 +229,9 @@ class MazeLoader {
                 .collect(Collectors.toList());
     }
 
+    // TODO [OCP] Using reflection to instantiate occupants is flexible but fragile.
+    //   If a new Occupant subclass requires constructor arguments, this breaks.
+    //   Remediation: Use an OccupantFactory with registered creators, or a Map<Class, Supplier<Occupant>>.
     private static Room.Occupant newOccupant(Class<? extends Room.Occupant> occupantClass) {
         try {
             Constructor<? extends Room.Occupant> constructor = occupantClass.getDeclaredConstructor((Class<?>[]) null);

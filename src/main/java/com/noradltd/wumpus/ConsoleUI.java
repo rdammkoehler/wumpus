@@ -53,6 +53,8 @@ class ConsoleUI {
         return input.readLine();
     }
 
+    // TODO [Defensive Programming] readLine() can return null (on EOF), causing NullPointerException.
+    //   Remediation: Add null check: if (yesOrNo == null || yesOrNo.isEmpty()) return false;
     boolean promptPlayAgain() throws IOException {
         Logger.info("Play again? (yes/[no])");
         String yesOrNo = input.readLine();

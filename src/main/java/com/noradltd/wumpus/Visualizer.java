@@ -17,6 +17,10 @@ import java.util.*;
 import static guru.nidi.graphviz.model.Factory.mutGraph;
 import static guru.nidi.graphviz.model.Factory.node;
 
+// TODO [DRY] Visualizer creates room labels and checks hazardous status in multiple places.
+//   The label creation logic in createRoomLabel() and hazard check in isHazardous() could be cleaner.
+// TODO [Law of Demeter] visualize_() method deeply navigates room.exits() and room.occupants().
+//   Consider adding helper methods to Room for visualization data.
 public class Visualizer {
 
 
@@ -59,6 +63,10 @@ public class Visualizer {
         return MazeTraverser.collectAllRoomsAsList(maze.entrance());
     }
 
+    // TODO [Long Method] This method is doing too much - creating nodes, managing links, and building graph.
+    //   Remediation: Extract methods like addRoomNode(), processRoomLinks(), shouldLinkRooms().
+    // TODO [Complexity] The nested conditionals for link management are hard to follow.
+    //   Consider using a Set<Pair<Integer,Integer>> to track bidirectional links more cleanly.
     private void visualize_(Maze maze) {
         List<Room> rooms = getAllRooms(maze);
         MutableGraph graph = mutGraph("maze").setDirected(false);

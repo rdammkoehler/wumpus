@@ -9,6 +9,10 @@ public class ColonyOfBats extends Room.Occupant {
     @Override
     protected void initInteractions() {
         super.initInteractions();
+        // TODO [Law of Demeter] interloper.getRoom() followed by .number() comparisons violates Law of Demeter.
+        //   Remediation: Use Room.equals() for comparison instead of comparing room numbers.
+        // TODO [Long Method] This lambda is doing too much - consider extracting to named methods
+        //   like relocateHunter() and relocateSelf() for better readability.
         interactions.put(Hunter.class,
                 interloper -> {
             /* these new rules about Bats and relocating and empty rooms are 'hard' you need to focus */

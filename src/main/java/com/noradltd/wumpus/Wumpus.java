@@ -20,6 +20,8 @@ class Wumpus extends Room.Occupant {
         });
     }
 
+    // TODO [Law of Demeter] getRoom().exits().size() and getRoom().exits().get() violate Law of Demeter.
+    //   Remediation: Add Room.getRandomExit() or Room.exitCount() methods to encapsulate navigation.
     private void flee() {
         int exitCount = getRoom().exits().size();
         Logger.debug("exit count: " + exitCount);

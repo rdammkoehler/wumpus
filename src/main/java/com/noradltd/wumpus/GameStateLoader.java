@@ -22,6 +22,9 @@ class GameStateLoader {
         return new LoadedGame(maze, hunter);
     }
 
+    // TODO [Law of Demeter / Encapsulation] Directly manipulating Room.roomNumberer static field
+    //   breaks encapsulation and creates temporal coupling - must save/restore state carefully.
+    //   Remediation: Use a RoomFactory that accepts a RoomNumberer, avoiding static field manipulation.
     private static Map<Integer, Room> reconstructRooms(List<GameState.RoomState> roomStates) {
         Map<Integer, Room> roomMap = new HashMap<>();
 
@@ -76,6 +79,9 @@ class GameStateLoader {
         }
     }
 
+    // TODO [OCP] Switch on type string violates Open/Closed Principle - adding new occupant types
+    //   requires modifying this method.
+    //   Remediation: Use a registry Map<String, Supplier<Occupant>> or OccupantFactory interface.
     private static Room.Occupant createOccupant(GameState.OccupantState os) {
         return switch (os.type) {
             case "Wumpus" -> new Wumpus();

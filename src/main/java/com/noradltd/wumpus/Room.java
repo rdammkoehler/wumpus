@@ -4,10 +4,16 @@ import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
+// TODO [SRP] Room class has multiple responsibilities: manages room topology (exits) AND occupant collection.
+//   Consider: Room should only handle topology; create a separate RoomContents or OccupantContainer class.
+// TODO [Large Class] Room contains nested Occupant abstract class - consider extracting to its own file
+//   for better maintainability and to follow one-class-per-file convention.
 class Room implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
+    // TODO [SRP] Occupant is a significant abstraction that deserves its own file. Extract to Occupant.java.
+    //   This would also make the Room class more focused on its core responsibility.
     static abstract class Occupant implements Comparable<Occupant>, Serializable {
         @Serial
         private static final long serialVersionUID = 1L;
@@ -96,7 +102,9 @@ class Room implements Serializable {
         }
     };
 
-    // TODO how do we get this to be NOT package protected?
+    // TODO [Encapsulation] Package-protected mutable static field breaks encapsulation.
+    //   This is modified directly by GameStateLoader which creates tight coupling.
+    //   Remediation: Use dependency injection - pass RoomNumberer to a RoomFactory instead.
     static RoomNumberer roomNumberer = DEFAULT_ROOM_NUMBERER;
 
     // Topology

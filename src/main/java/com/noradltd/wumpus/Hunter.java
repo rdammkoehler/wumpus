@@ -58,6 +58,10 @@ class Hunter extends Room.Occupant {
         return kills;
     }
 
+    // TODO [Law of Demeter] Method violates Law of Demeter with getRoom().exits().get(exitNumber) chain.
+    //   Remediation: Add Room.getExit(int index) method to encapsulate exit navigation.
+    // TODO [Feature Envy] Method reaches into target room to check for Wumpus type directly.
+    //   Remediation: Room could provide hasOccupantOfType(Class) method or Arrow could handle feedback.
     void shoot(Integer exitNumber) {
         if (validExitNumber(exitNumber)) {
             Room target = getRoom().exits().get(exitNumber);
@@ -81,6 +85,8 @@ class Hunter extends Room.Occupant {
         }
     }
 
+    // TODO [Law of Demeter] getRoom().exits().get() violates Law of Demeter.
+    //   Remediation: Add Room.getExit(int index) or Room.exitTo(int index) method.
     void moveTo(Integer exitNumber) {
         if (validExitNumber(exitNumber)) {
             super.moveTo(getRoom().exits().get(exitNumber));

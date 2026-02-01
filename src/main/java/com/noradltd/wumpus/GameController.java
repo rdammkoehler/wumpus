@@ -13,6 +13,9 @@ class GameController {
         this.options = options;
     }
 
+    // TODO [Tell Don't Ask] Checking game.getPendingLoad() in a loop violates Tell-Don't-Ask principle.
+    //   The controller is asking the game for state instead of being told about state changes.
+    //   Remediation: Use an observer/callback pattern - Game notifies controller when load completes.
     void play() throws IOException {
         ui.showWelcome();
         Game game = createOrLoadGame();

@@ -109,6 +109,9 @@ class GameState {
             return state;
         }
 
+        // TODO [DRY/Coupling] parseArrowCount parses formatted string from Hunter.inventory().
+        //   This creates tight coupling through string format - if inventory() format changes, this breaks.
+        //   Remediation: Add Hunter.getArrowCount() method that returns int directly.
         private static int parseArrowCount(String inventory) {
             try {
                 String[] lines = inventory.split("\n");
@@ -131,6 +134,8 @@ class GameState {
 
         ScoreState() {}
 
+        // TODO [DRY] This logic duplicates Game.countDeadOccupants() method.
+        //   Remediation: Extract shared logic to a utility method or have ScoreState use Game directly.
         static ScoreState fromGame(List<Room> rooms) {
             ScoreState state = new ScoreState();
             state.hunterDeaths = rooms.stream()

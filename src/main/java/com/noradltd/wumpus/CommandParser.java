@@ -27,6 +27,10 @@ class CommandParser {
         this.askUserWhat = commands.get("what");
     }
 
+    // TODO [Code Smell] Anonymous inner class with overridden get() and instance initializer block
+    //   is clever but hard to read and maintain. Consider:
+    //   Remediation: Use a simple CommandRegistry class with explicit register() method calls,
+    //   or use Map.ofEntries() with a separate default command wrapper.
     private Map<String, Command> buildCommands(Game game, ConsoleUI ui) {
         return unmodifiableMap(new HashMap<>() {
             @Override
@@ -69,6 +73,8 @@ class CommandParser {
         Logger.debug("==========");
     }
 
+    // TODO [Exception Handling] Catching generic Exception is too broad.
+    //   Remediation: Catch NumberFormatException specifically since that's what parseInt throws.
     private static Integer exitNumber(String arg) {
         try {
             return Integer.parseInt(arg) - 1;

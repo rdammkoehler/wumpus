@@ -5,6 +5,10 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.stream.Collectors;
 
+// TODO [Temporal Coupling] The order of operations in resolveInteractions() matters critically:
+//   interactions must complete before adding the interloper. This ordering requirement isn't
+//   enforced by the type system.
+//   Remediation: Consider a state machine pattern or making the steps more explicit.
 class InteractionResolver implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
